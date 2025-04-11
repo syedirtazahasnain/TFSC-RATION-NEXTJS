@@ -6,6 +6,7 @@ import Sidebar from "@/app/_components/sidebar/index";
 import Breadcrumb from "@/app/_components/ui/Breadcrumb";
 import "@/app/extra.css";
 import { AddShoppingCart, Delete, HighlightOff, Close, ArrowForwardIos } from "@mui/icons-material";
+import Header from "@/app/_components/header/index";
 
 interface CartItem {
   id?: number;
@@ -381,7 +382,8 @@ export default function ProductListPage() {
         <Sidebar />
       </div>
       <div className="w-full mx-auto space-y-4 p-4">
-        <div className="px-6 py-6 bg-[#2b3990] rounded-[20px] xl:rounded-[25px] text-[#fff] relative">
+        <div><Header /></div>
+        <div className="px-6 py-6 bg-[#f9f9f9] rounded-[20px] xl:rounded-[25px] text-[#2b3990] relative">
           <h1 className="text-2xl font-bold my-0">Order Products</h1>
           <Breadcrumb
             items={[{ label: "Dashboard" }, { label: "Product List" }]}
@@ -427,7 +429,7 @@ export default function ProductListPage() {
                         >
                           <div className="bg-[#f9f9f9] rounded-t-lg overflow-hidden h-[150px] w-full">
                             <img
-                              src={product.image ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${product.image}` : "/images/items/atta.webp"} 
+                              src={product.image ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${product.image}` : "/images/items/atta.webp"}
                               alt=""
                               className="w-full h-full object-cover"
                               onError={(e) => {
@@ -517,7 +519,7 @@ export default function ProductListPage() {
                 </div>
               </div>
 
-              <div className="bg-gray-200 rounded-[15px] px-6 py-0 relative lg:col-span-2 overflow-y-auto rashnItems">
+              <div className="bg-[#f9f9f9] rounded-[15px] px-6 py-0 relative lg:col-span-2 overflow-y-auto rashnItems">
                 <div>
                   <div className="flex justify-between items-center mt-4">
                     <h2 className="text-xl font-bold my-0">Cart Items</h2>
@@ -549,10 +551,10 @@ export default function ProductListPage() {
                               <div className="">
                                 <div className="w-[50px] rounded-lg h-full overflow-hidden"><img
                                   src={
-                                    item.product?.image 
-                                      ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${item.product.image}` 
+                                    item.product?.image
+                                      ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${item.product.image}`
                                       : "/images/items/atta.webp"
-                                  } 
+                                  }
                                   alt={item.product?.name || "Product image"}
                                   className="w-full h-full object-cover"
                                   onError={(e) => {
@@ -642,16 +644,16 @@ export default function ProductListPage() {
                   <li key={item.id || item.product_id} className="mb-2 p-[10px] rounded-[15px] bg-[#fff] relative w-full flex items-center gap-[10px]">
                     <div className="">
                       <div className="w-[50px] rounded-lg h-full overflow-hidden"><img
-                       src={
-                        item.product?.image 
-                          ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${item.product.image}` 
-                          : "/images/items/atta.webp"
-                      } 
-                      alt={item.product?.name || "Product image"}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.currentTarget.src = "/images/items/atta.webp";
-                      }}
+                        src={
+                          item.product?.image
+                            ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${item.product.image}`
+                            : "/images/items/atta.webp"
+                        }
+                        alt={item.product?.name || "Product image"}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = "/images/items/atta.webp";
+                        }}
                       />
                       </div>
                     </div>
