@@ -198,7 +198,7 @@ export default function ProductListPage() {
         }
       }
     } catch (err) {
-      setError(err.message || "Failed to sync cart with backend");
+      setError((err as Error).message || "Failed to sync cart with backend");
     }
   };
 
@@ -292,7 +292,7 @@ export default function ProductListPage() {
         updateCartState(data.data.cart_data);
       }
     } catch (err) {
-      setError(err.message || "Failed to remove item from cart");
+      setError((err as Error).message || "Failed to remove item from cart");
     }
   };
 
@@ -324,7 +324,7 @@ export default function ProductListPage() {
       setLocalQuantities({});
       setApiResponse("Cart cleared successfully");
     } catch (err) {
-      setError(err.message || "Failed to clear cart");
+      setError((err as Error).message || "Failed to clear cart");
     }
   };
 
@@ -359,7 +359,7 @@ export default function ProductListPage() {
         throw new Error(data.message || "Failed to place order");
       }
     } catch (err) {
-      setApiResponse(err.message || "Failed to place order. Please try again.");
+      setApiResponse((err as Error).message || "Failed to place order. Please try again.");
     }
   };
 
@@ -507,7 +507,7 @@ export default function ProductListPage() {
                       key={index + 1}
                       onClick={() => setCurrentPage(index + 1)}
                       className={`mx-1 px-4 py-2 rounded ${currentPage === index + 1
-                        ? "bg-blue-500 text-white"
+                        ? "bg-[#2b3990] text-white"
                         : "bg-white text-blue-500 border border-blue-500"
                         }`}
                     >

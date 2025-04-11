@@ -2,7 +2,7 @@
 
 import { useRouter, useParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import Header from "@/app/_components/Header";
+import Header from "@/app/_components/header/index";
 import Sidebar from "@/app/_components/sidebar/index";
 import Breadcrumb from "@/app/_components/ui/Breadcrumb";
 
@@ -81,14 +81,15 @@ export default function OrderDetailsPage() {
         <Sidebar />
       </div>
       <div className="w-full mx-auto space-y-4 p-4">
-      <div className="px-6 py-6 bg-[#2b3990] rounded-[20px] xl:rounded-[25px] text-[#fff]">
+        <div><Header /></div>
+      <div className="px-6 py-6 bg-[#f9f9f9] rounded-[20px] xl:rounded-[25px] text-[#2b3990]">
           <h1 className="text-2xl font-bold my-0">Order Detail</h1>
           <Breadcrumb
             items={[{ label: "Dashboard" }, { label: "Single Order Detail" }]}
           />
         </div>
 
-        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
+        <div className="overflow-hidden rounded-[20px] xl:rounded-[25px] border border-gray-200 bg-white">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between px-6 py-4">
             <div className="flex gap-[10px] items-center">
               <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">

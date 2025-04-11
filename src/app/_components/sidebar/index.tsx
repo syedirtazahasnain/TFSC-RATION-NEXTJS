@@ -148,8 +148,7 @@ export default function index() {
             className=""
           />
         </div>
-        <div className="w-full h-[1px] bg-[#000] opacity-20 my-4"></div>
-        <ul>
+        <ul className="mt-4">
           <li className="py-2">
             <p className="text-sm font-semibold text-gray-800 transition-colors">
               <span className="ml-3">Main</span>
@@ -159,7 +158,7 @@ export default function index() {
             {userRole === "user" && (
               <>
                 <button
-                  onClick={() => router.push("/dashboard/user/product-list")}
+                  onClick={() => router.push("/dashboard/user")}
                   className="inline-flex items-center w-full text-sm text-gray-800 transition-colors duration-150 hover:text-gray-800 px-6"
                 >
                   <Dashboard className="w-5 h-5" />

@@ -164,7 +164,7 @@ export default function PasswordUpdateForm() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className={`w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition ${
+          className={`w-full bg-[#2b3990] text-white py-2 rounded-lg hover:bg-[#00aeef] transition ${
             isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
           }`}
         >

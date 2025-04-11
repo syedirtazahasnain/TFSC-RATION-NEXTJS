@@ -140,7 +140,7 @@ export default function Header() {
           <>
             <button
               onClick={() => router.push("/dashboard/user/product-list")}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-all duration-200"
+              className="bg-[#2b3990] hover:bg-[#00aeef] text-white px-4 py-2 rounded-lg transition-all duration-200"
             >
               Home
             </button>

@@ -23,12 +23,12 @@ export default function Breadcrumb({ items }: BreadcrumbProps) {
             {item.href ? (
               <Link
                 href={item.href}
-                className="hover:underline text-gray-200 capitalize font-semibold"
+                className="hover:underline text-gray-600 capitalize font-semibold"
               >
                 {item.label}
               </Link>
             ) : (
-              <span className="capitalize text-gray-200 font-semibold">
+              <span className="capitalize text-gray-600 font-semibold">
                 {item.label}
               </span>
             )}

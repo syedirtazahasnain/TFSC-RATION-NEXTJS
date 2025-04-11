@@ -122,7 +122,7 @@ export default function SignupPage() {
           <button 
             type="submit" 
             disabled={isLoading}
-            className={`w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors
+            className={`w-full bg-[#2b3990] text-white py-2 rounded-lg hover:bg-[#00aeef] transition-colors
               ${isLoading ? 'opacity-75 cursor-not-allowed' : ''}`}
           >
             {isLoading ? (

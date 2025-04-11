@@ -105,7 +105,7 @@ export default function LoginPage() {
           <button 
             type="submit" 
             disabled={isSubmitting}
-            className={`w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 mb-4 transition-colors
+            className={`w-full bg-[#2b3990] text-white py-2 rounded-lg hover:bg-[#00aeef] mb-4 transition-colors
               ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
             {isSubmitting ? 'Logging in...' : 'Login'}

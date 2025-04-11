@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Order } from "@/types";
 import Sidebar from "@/app/_components/sidebar/index";
+import Header from "@/app/_components/header/index";
 import Breadcrumb from "@/app/_components/ui/Breadcrumb";
 import { Visibility } from "@mui/icons-material";
 
@@ -76,7 +77,8 @@ export default function OrdersPage() {
         <Sidebar />
       </div>
       <div className="w-full mx-auto space-y-4 p-4">
-      <div className="px-6 py-6 bg-[#2b3990] rounded-[20px] xl:rounded-[25px] text-[#fff]">
+        <div><Header /></div>
+        <div className="px-6 py-6 bg-[#f9f9f9] rounded-[20px] xl:rounded-[25px] text-[#2b3990]">
           <h1 className="text-2xl font-bold my-0">All Orders Details</h1>
           <Breadcrumb
             items={[{ label: "Dashboard" }, { label: "User Orders" }]}
@@ -84,9 +86,9 @@ export default function OrdersPage() {
         </div>
 
         <div className="overflow-x-auto mb-8">
-          <div className="p-[25px] border-[2px] border-gray-300 rounded-[25px] bg-white">
+          <div className="p-[25px] rounded-[20px] xl:rounded-[25px] bg-[#f9f9f9]">
             <table className="min-w-full bg-white rounded-[15px] overflow-hidden">
-              <thead className="bg-[#000]">
+              <thead className="bg-[#2b3990]">
                 <tr>
                   <th className="px-6 py-3 text-left text-sm font-medium text-gray-100">
                     Order #
@@ -109,9 +111,8 @@ export default function OrdersPage() {
                 {orders.data.map((order, index) => (
                   <tr
                     key={order.id}
-                    className={`border-b ${
-                      index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                    }`}
+                    className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                      }`}
                   >
                     <td className="px-6 py-4 text-sm text-gray-900">
                       {order.order_number}
@@ -154,11 +155,10 @@ export default function OrdersPage() {
               <Link
                 key={index}
                 href={`/dashboard/user/orders?page=${page}`}
-                className={`m-0 w-[30px] h-[30px] flex items-center justify-center rounded-lg ${
-                  isActive
-                    ? "bg-blue-500 text-white"
+                className={`m-0 w-[30px] h-[30px] flex items-center justify-center rounded-lg ${isActive
+                    ? "bg-[#2b3990] text-white"
                     : "bg-white text-gray-700 hover:bg-gray-50"
-                } ${isPrevious || isNext ? "font-semibold" : ""}`}
+                  } ${isPrevious || isNext ? "font-semibold" : ""}`}
               >
                 {isPrevious ? "«" : isNext ? "»" : link.label}
               </Link>

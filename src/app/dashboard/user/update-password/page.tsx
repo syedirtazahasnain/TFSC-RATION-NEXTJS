@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Sidebar from "@/app/_components/sidebar/index";
+import Header from "@/app/_components/header/index";
 import Breadcrumb from "@/app/_components/ui/Breadcrumb";
 
 export default function page() {
@@ -92,7 +93,8 @@ export default function page() {
         <Sidebar />
       </div>
       <div className="w-full mx-auto space-y-4 p-4">
-        <div className="px-6 py-6 bg-[#2b3990] rounded-[20px] xl:rounded-[25px] text-[#fff]">
+        <div><Header /></div>
+        <div className="px-6 py-6 bg-[#f9f9f9] rounded-[20px] xl:rounded-[25px] text-[#2b3990]">
           <h1 className="text-2xl font-bold my-0">Update Password</h1>
           <Breadcrumb
             items={[{ label: "Dashboard" }, { label: "Update User Password" }]}
@@ -127,11 +129,10 @@ export default function page() {
                   name="current_password"
                   value={formData.current_password}
                   onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-lg ${
-                    errors.current_password
+                  className={`w-full px-3 py-2 border rounded-lg ${errors.current_password
                       ? "border-red-500"
                       : "border-gray-300"
-                  }`}
+                    }`}
                 />
                 {errors.current_password && (
                   <div className="text-red-500 text-sm mt-1">
@@ -155,9 +156,8 @@ export default function page() {
                   name="new_password"
                   value={formData.new_password}
                   onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-lg ${
-                    errors.new_password ? "border-red-500" : "border-gray-300"
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-lg ${errors.new_password ? "border-red-500" : "border-gray-300"
+                    }`}
                 />
                 {errors.new_password && (
                   <div className="text-red-500 text-sm mt-1">
@@ -181,18 +181,16 @@ export default function page() {
                   name="new_password_confirmation"
                   value={formData.new_password_confirmation}
                   onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-lg ${
-                    errors.new_password ? "border-red-500" : "border-gray-300"
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-lg ${errors.new_password ? "border-red-500" : "border-gray-300"
+                    }`}
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition ${
-                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                className={`w-full bg-[#2b3990] text-white py-2 rounded-lg hover:bg-[#00aeef] transition ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
               >
                 {isSubmitting ? "Updating..." : "Update Password"}
               </button>

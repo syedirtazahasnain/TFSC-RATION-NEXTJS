@@ -82,7 +82,7 @@ export default function OrdersPage() {
                 </p>
                 <p className="text-lg font-bold">Total: ${order.grand_total}</p>
               </div>
-              <Link href={`/dashboard/user/orders/${order.id}`} className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+              <Link href={`/dashboard/user/orders/${order.id}`} className="bg-[#2b3990] text-white px-4 py-2 rounded-lg hover:bg-[#00aeef]"
               >
                 View Details
               </Link>
@@ -107,7 +107,7 @@ export default function OrdersPage() {
               href={`/orders?page=${page}`}
               className={`px-4 py-2 rounded-lg border ${
                 isActive
-                  ? 'bg-blue-500 text-white border-blue-500'
+                  ? 'bg-[#2b3990] text-white border-blue-500'
                   : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
               } ${
                 (isPrevious || isNext) ? 'font-semibold' : ''

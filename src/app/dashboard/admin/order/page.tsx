@@ -88,7 +88,7 @@ export default function OrdersPage() {
                     ? `/dashboard/admin/orders/${order.id}` 
                     : `/dashboard/user/orders/${order.id}`
                 }
-                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                className="bg-[#2b3990] text-white px-4 py-2 rounded-lg hover:bg-[#00aeef]"
               >
                 View Details
               </Link>
@@ -113,7 +113,7 @@ export default function OrdersPage() {
               href={`/dashboard/admin/order?page=${page}`}
               className={`px-4 py-2 rounded-lg border ${
                 isActive
-                  ? 'bg-blue-500 text-white border-blue-500'
+                  ? 'bg-[#2b3990] text-white border-blue-500'
                   : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
               } ${
                 (isPrevious || isNext) ? 'font-semibold' : ''

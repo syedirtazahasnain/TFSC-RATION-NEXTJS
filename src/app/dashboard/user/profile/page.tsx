@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Sidebar from "@/app/_components/sidebar/index";
 import Breadcrumb from "@/app/_components/ui/Breadcrumb";
 import Image from "next/image";
+import Header from "@/app/_components/header/index";
 
 interface UserData {
   id: number;
@@ -127,9 +128,8 @@ function PasswordUpdateForm() {
             name="current_password"
             value={formData.current_password}
             onChange={handleChange}
-            className={`w-full px-3 py-2 border rounded-lg ${
-              errors.current_password ? "border-red-500" : "border-gray-300"
-            }`}
+            className={`w-full px-3 py-2 border rounded-lg ${errors.current_password ? "border-red-500" : "border-gray-300"
+              }`}
           />
           {errors.current_password && (
             <div className="text-red-500 text-sm mt-1">
@@ -153,9 +153,8 @@ function PasswordUpdateForm() {
             name="new_password"
             value={formData.new_password}
             onChange={handleChange}
-            className={`w-full px-3 py-2 border rounded-lg ${
-              errors.new_password ? "border-red-500" : "border-gray-300"
-            }`}
+            className={`w-full px-3 py-2 border rounded-lg ${errors.new_password ? "border-red-500" : "border-gray-300"
+              }`}
           />
           {errors.new_password && (
             <div className="text-red-500 text-sm mt-1">
@@ -179,18 +178,16 @@ function PasswordUpdateForm() {
             name="new_password_confirmation"
             value={formData.new_password_confirmation}
             onChange={handleChange}
-            className={`w-full px-3 py-2 border rounded-lg ${
-              errors.new_password ? "border-red-500" : "border-gray-300"
-            }`}
+            className={`w-full px-3 py-2 border rounded-lg ${errors.new_password ? "border-red-500" : "border-gray-300"
+              }`}
           />
         </div>
 
         <button
           type="submit"
           disabled={isSubmitting}
-          className={`w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition ${
-            isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-          }`}
+          className={`w-full bg-[#2b3990] text-white py-2 rounded-lg hover:bg-[#00aeef] transition ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+            }`}
         >
           {isSubmitting ? "Updating..." : "Update Password"}
         </button>
@@ -265,14 +262,15 @@ export default function page({ my_role }: UserData) {
         <Sidebar />
       </div>
       <div className="w-full mx-auto space-y-4 p-4">
-      <div className="px-6 py-6 bg-[#2b3990] rounded-[20px] xl:rounded-[25px] text-[#fff]">
+        <div><Header /></div>
+        <div className="px-6 py-6 bg-[#f9f9f9] rounded-[20px] xl:rounded-[25px] text-[#2b3990]">
           <h1 className="text-2xl font-bold my-0">User Profile</h1>
           <Breadcrumb
             items={[{ label: "Dashboard" }, { label: "User Profile" }]}
           />
         </div>
-        <div className="bg-white p-[10px] md:p-[20px] xl:p-[30px] rounded-[20px] shadow-md">
-          <div className="p-5 mb-6 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
+        <div className="bg-[#f9f9f9] p-[10px] md:p-[20px] xl:p-[30px] rounded-[20px]">
+          <div className="p-5 mb-6 rounded-[20px] xl:rounded-[25px] lg:p-6 bg-[#fff]">
             <div>
               <div className="flex flex-col items-center w-full gap-6 xl:flex-row">
                 <div className="w-20 h-20 overflow-hidden border border-gray-200 rounded-full dark:border-gray-800">
@@ -366,7 +364,7 @@ export default function page({ my_role }: UserData) {
             </div>
           </div>
 
-          <div className="p-5 mb-6 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
+          <div className="p-5 mb-6 rounded-[20px] xl:rounded-[25px] lg:p-6 bg-[#fff]">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
               <div>
                 <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">

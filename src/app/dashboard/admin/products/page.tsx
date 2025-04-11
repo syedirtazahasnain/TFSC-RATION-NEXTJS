@@ -115,7 +115,7 @@ export default function ProductsPage() {
               <div className="mt-4 flex justify-end">
                 <Link
                   href={`/dashboard/admin/products/edit/${product.id}`}
-                  className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                  className="bg-[#2b3990] text-white px-4 py-2 rounded-lg hover:bg-[#00aeef]"
                 >
                   Edit
                 </Link>
@@ -142,7 +142,7 @@ export default function ProductsPage() {
               href={`/dashboard/admin/products?page=${page}`}
               className={`px-4 py-2 rounded-lg border ${
                 isActive
-                  ? 'bg-blue-500 text-white border-blue-500'
+                  ? 'bg-[#2b3990] text-white border-blue-500'
                   : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
               }`}
             >
