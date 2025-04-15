@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from "react-toastify";
 
 export default function SignupPage() {
   const [name, setName] = useState<string>('');
@@ -19,6 +20,7 @@ export default function SignupPage() {
 
     // Basic validation
     if (password !== passwordConfirmation) {
+      toast.error('Passwords do not match');
       setError('Passwords do not match');
       setIsLoading(false);
       return;
@@ -41,13 +43,14 @@ export default function SignupPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Registration failed. Please try again.');
+        toast.error(data.message || 'Registration failed. Please try again.');
       }
       localStorage.setItem('token', data.data.token);
       router.push('/product-list'); // Redirect to product list page
       
     } catch (err: any) {
       console.error('Registration error:', err);
+      toast.error(err.message || 'An error occurred during registration. Please try again.');
       setError(err.message || 'An error occurred during registration. Please try again.');
     } finally {
       setIsLoading(false);

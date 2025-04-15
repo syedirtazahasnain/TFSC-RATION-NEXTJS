@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Header from '@/app/_components/Header';
+import { toast } from "react-toastify";
 
 interface Product {
   id: number;
@@ -58,13 +59,20 @@ export default function ProductsPage() {
         });
 
         if (!response.ok) {
-          throw new Error('Failed to fetch products');
+          toast.error('Failed to fetch products');
         }
 
         const data = await response.json();
         setProducts(data.data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load products');
+        if (err instanceof Error) {
+          toast.error(err.message);
+          setError(err.message);
+        } else {
+          toast.error("Failed to load products");
+          setError("Failed to load products");
+        }
       } finally {
         setLoading(false);
       }

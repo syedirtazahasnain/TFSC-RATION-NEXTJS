@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Sidebar from "@/app/_components/sidebar/index";
 import Breadcrumb from "@/app/_components/ui/Breadcrumb";
 import "@/app/extra.css";
+import { toast } from "react-toastify";
 import { AddShoppingCart, Delete, HighlightOff, Close, ArrowForwardIos } from "@mui/icons-material";
 import Header from "@/app/_components/header/index";
 
@@ -72,7 +73,7 @@ export default function ProductListPage() {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to fetch products");
+        toast.error("Failed to fetch products");
       }
 
       const data = await response.json();
@@ -81,6 +82,7 @@ export default function ProductListPage() {
       setTotalPages(data.data.last_page);
       setCurrentPage(data.data.current_page);
     } catch (err) {
+      toast.error("Failed to fetch products. Please try again.");
       setError("Failed to fetch products. Please try again.");
     } finally {
       setLoading(false);
@@ -103,7 +105,7 @@ export default function ProductListPage() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to fetch cart");
+        toast.error("Failed to fetch cart");
       }
 
       const data = await response.json();
@@ -127,6 +129,7 @@ export default function ProductListPage() {
         setLocalQuantities(quantities);
       }
     } catch (err) {
+      toast.error("Error fetching cart:", err);
       console.error("Error fetching cart:", err);
     }
   };
@@ -155,9 +158,9 @@ export default function ProductListPage() {
       });
 
       const data = await response.json();
-
+      
       if (!response.ok) {
-        throw new Error(data.message || "Failed to sync cart with backend");
+        toast.error(data.message || "Failed to sync cart with backend");
       }
 
       // Update cart with backend response
@@ -199,7 +202,8 @@ export default function ProductListPage() {
         }
       }
     } catch (err) {
-      setError((err as Error).message || "Failed to sync cart with backend");
+      toast.error(err.message || "Failed to sync cart with backend");
+      setError(err.message || "Failed to sync cart with backend");
     }
   };
 
@@ -285,7 +289,7 @@ export default function ProductListPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Failed to remove item from cart");
+        toast.error(data.message || "Failed to remove item from cart");
       }
 
       // Update cart with backend response
@@ -293,7 +297,8 @@ export default function ProductListPage() {
         updateCartState(data.data.cart_data);
       }
     } catch (err) {
-      setError((err as Error).message || "Failed to remove item from cart");
+      toast.error(err.message || "Failed to remove item from cart");
+      setError(err.message || "Failed to remove item from cart");
     }
   };
 
@@ -316,16 +321,18 @@ export default function ProductListPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Failed to clear cart");
+        toast.error(data.message || "Failed to clear cart");
       }
 
       // Clear cart state
       setCart([]);
       setCartData(null);
       setLocalQuantities({});
+      toast.success("Cart cleared Successfully!");
       setApiResponse("Cart cleared successfully");
     } catch (err) {
-      setError((err as Error).message || "Failed to clear cart");
+      toast.error(data.message || "Failed to clear cart");
+      setError(err.message || "Failed to clear cart");
     }
   };
 
@@ -350,6 +357,7 @@ export default function ProductListPage() {
       const data = await response.json();
 
       if (response.ok) {
+        toast.success(data.message || "Order placed successfully!");
         setApiResponse(data.message || "Order placed successfully!");
         setCart([]); // Clear the cart after successful submission
         setLocalQuantities({}); // Clear local quantities
@@ -357,10 +365,11 @@ export default function ProductListPage() {
         // router.push(`/orders/${data.data.id}`);
         router.push(`/dashboard/user/orders/${data.data.id}`);
       } else {
-        throw new Error(data.message || "Failed to place order");
+        toast.error(data.message || "Failed to place order");
       }
     } catch (err) {
-      setApiResponse((err as Error).message || "Failed to place order. Please try again.");
+      toast.error(err.message || "Failed to place order. Please try again.");
+      setApiResponse(err.message || "Failed to place order. Please try again.");
     }
   };
 
@@ -382,8 +391,7 @@ export default function ProductListPage() {
         <Sidebar />
       </div>
       <div className="w-full mx-auto space-y-4 p-4">
-        <div><Header /></div>
-        <div className="px-6 py-6 bg-[#f9f9f9] rounded-[20px] xl:rounded-[25px] text-[#2b3990] relative">
+        <div className="px-6 py-6 bg-[#2b3990] rounded-[20px] xl:rounded-[25px] text-[#fff] relative">
           <h1 className="text-2xl font-bold my-0">Order Products</h1>
           <Breadcrumb
             items={[{ label: "Dashboard" }, { label: "Product List" }]}
@@ -429,7 +437,7 @@ export default function ProductListPage() {
                         >
                           <div className="bg-[#f9f9f9] rounded-t-lg overflow-hidden h-[150px] w-full">
                             <img
-                              src={product.image ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${product.image}` : "/images/items/atta.webp"}
+                              src={product.image ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${product.image}` : "/images/items/atta.webp"} 
                               alt=""
                               className="w-full h-full object-cover"
                               onError={(e) => {
@@ -509,7 +517,7 @@ export default function ProductListPage() {
                       key={index + 1}
                       onClick={() => setCurrentPage(index + 1)}
                       className={`mx-1 px-4 py-2 rounded ${currentPage === index + 1
-                        ? "bg-[#2b3990] text-white"
+                        ? "bg-blue-500 text-white"
                         : "bg-white text-blue-500 border border-blue-500"
                         }`}
                     >
@@ -519,7 +527,7 @@ export default function ProductListPage() {
                 </div>
               </div>
 
-              <div className="bg-[#f9f9f9] rounded-[15px] px-6 py-0 relative lg:col-span-2 overflow-y-auto rashnItems">
+              <div className="bg-gray-200 rounded-[15px] px-6 py-0 relative lg:col-span-2 overflow-y-auto rashnItems">
                 <div>
                   <div className="flex justify-between items-center mt-4">
                     <h2 className="text-xl font-bold my-0">Cart Items</h2>
@@ -551,10 +559,10 @@ export default function ProductListPage() {
                               <div className="">
                                 <div className="w-[50px] rounded-lg h-full overflow-hidden"><img
                                   src={
-                                    item.product?.image
-                                      ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${item.product.image}`
+                                    item.product?.image 
+                                      ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${item.product.image}` 
                                       : "/images/items/atta.webp"
-                                  }
+                                  } 
                                   alt={item.product?.name || "Product image"}
                                   className="w-full h-full object-cover"
                                   onError={(e) => {
@@ -644,16 +652,16 @@ export default function ProductListPage() {
                   <li key={item.id || item.product_id} className="mb-2 p-[10px] rounded-[15px] bg-[#fff] relative w-full flex items-center gap-[10px]">
                     <div className="">
                       <div className="w-[50px] rounded-lg h-full overflow-hidden"><img
-                        src={
-                          item.product?.image
-                            ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${item.product.image}`
-                            : "/images/items/atta.webp"
-                        }
-                        alt={item.product?.name || "Product image"}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.currentTarget.src = "/images/items/atta.webp";
-                        }}
+                       src={
+                        item.product?.image 
+                          ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${item.product.image}` 
+                          : "/images/items/atta.webp"
+                      } 
+                      alt={item.product?.name || "Product image"}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = "/images/items/atta.webp";
+                      }}
                       />
                       </div>
                     </div>

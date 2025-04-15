@@ -1,6 +1,6 @@
 // app/orders/page.tsx
 "use client";
-
+import { toast } from "react-toastify";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -50,13 +50,19 @@ export default function OrdersPage() {
         );
 
         if (!response.ok) {
-          throw new Error("Failed to fetch orders");
+          toast.error("Failed to fetch orders");
         }
 
         const data = await response.json();
         setOrders(data.data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load orders");
+        if (err instanceof Error) {
+          toast.error(err.message);
+          setError(err.message);
+        } else {
+          toast.error("Failed to load orders");
+          setError("Failed to load order");
+        }
       } finally {
         setLoading(false);
       }

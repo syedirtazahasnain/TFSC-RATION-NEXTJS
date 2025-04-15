@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import Header from "@/app/_components/header/index";
 import Sidebar from "@/app/_components/sidebar/index";
 import Breadcrumb from "@/app/_components/ui/Breadcrumb";
+import { toast } from "react-toastify";
 
 interface Order {
   id: number;
@@ -54,13 +55,20 @@ export default function OrderDetailsPage() {
         );
 
         if (!response.ok) {
-          throw new Error("Failed to fetch order");
+          toast.error("Failed to fetch order");
         }
 
         const data = await response.json();
         setOrder(data.data);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
+         if (err instanceof Error) {
+            toast.error(err.message);
+            setError(err.message);
+          } else {
+            toast.error("An error occurred");
+            setError("An error occurred");
+          }
       } finally {
         setLoading(false);
       }

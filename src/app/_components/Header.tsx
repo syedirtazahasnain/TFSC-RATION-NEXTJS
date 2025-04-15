@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import UserProfile from "./user/UserProfile";
 import Link from "next/link";
+import { toast } from "react-toastify";
 
 export default function Header() {
   const router = useRouter();
@@ -63,7 +64,7 @@ export default function Header() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Logout failed");
+        toast.error(errorData.message || "Logout failed");
       }
 
       localStorage.removeItem("token");
@@ -72,6 +73,7 @@ export default function Header() {
       router.push("/auth/login");
     } catch (err: any) {
       console.error("Logout error:", err);
+      toast.error(err.message || "Failed to logout. Please try again. ");
       setError(err.message || "Failed to logout. Please try again.");
     } finally {
       setIsLoading(false);
@@ -80,6 +82,7 @@ export default function Header() {
 
   const navigateToAdminRoute = (path: string) => {
     if (!userRole) {
+      toast.error("User role not loaded yet");
       setError("User role not loaded yet");
       return;
     }
@@ -87,6 +90,7 @@ export default function Header() {
     if (userRole === "admin" || userRole === "super_admin") {
       router.push(`/dashboard/admin/${path}`);
     } else {
+      toast.error("You do not have permission to access this page");
       setError("You do not have permission to access this page");
     }
   };
@@ -114,13 +118,14 @@ export default function Header() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to fetch orders");
+        toast.error(errorData.message || "Failed to fetch orders");
       }
 
       const data = await response.json();
       router.push(`/dashboard/admin/order`);
     } catch (err: any) {
       console.error("Fetch orders error:", err);
+      toast.error(err.message || "Failed to fetch orders");
       setError(err.message || "Failed to fetch orders. Please try again.");
     } finally {
       setIsLoading(false);

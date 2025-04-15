@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import UserProfile from ".././user/UserProfile";
 import Link from "next/link";
 import Image from "next/image";
+import { toast } from "react-toastify";
 import {
   Dashboard,
   ShoppingCart,
@@ -72,7 +73,7 @@ export default function index() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Logout failed");
+        toast.error(errorData.message || "Logout failed");
       }
 
       localStorage.removeItem("token");
@@ -81,6 +82,7 @@ export default function index() {
       router.push("/auth/login");
     } catch (err: any) {
       console.error("Logout error:", err);
+      toast.error(err.message || "Failed to logout. Please try again.");
       setError(err.message || "Failed to logout. Please try again.");
     } finally {
       setIsLoading(false);
@@ -89,6 +91,7 @@ export default function index() {
 
   const navigateToAdminRoute = (path: string) => {
     if (!userRole) {
+      toast.error("User role not loaded yet");
       setError("User role not loaded yet");
       return;
     }
@@ -123,7 +126,7 @@ export default function index() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to fetch orders");
+        toast.error(errorData.message || "Failed to fetch orders");
       }
 
       const data = await response.json();

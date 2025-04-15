@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from "react-toastify";
 
 interface UserData {
   id: number;
@@ -66,8 +67,10 @@ function PasswordUpdateForm() {
 
       if (!response.ok) {
         if (data.errors) {
+          toast.error(data.errors || "Failed to update password");
           setErrors(data.errors);
         } else {
+          toast.error(data.errors || "Failed to update password");
           setErrors({ general: [data.message || 'Failed to update password'] });
         }
         return;
@@ -210,7 +213,7 @@ function PasswordUpdateForm() {
 
         if (!response.ok) {
           const data = await response.json();
-          throw new Error(data.message || 'Failed to fetch user details');
+          toast.error(data.message || 'Failed to fetch user details');
         }
 
         const data = await response.json();

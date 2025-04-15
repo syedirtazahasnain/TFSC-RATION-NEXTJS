@@ -45,7 +45,7 @@ export default function ProductFormPage({ productId }: ProductFormProps) {
           }
         );
 
-        if (!response.ok) throw new Error('Failed to fetch product');
+        if (!response.ok) toast.error('Failed to fetch product');
         
         const data = await response.json();
         setProduct(data.data);
@@ -112,7 +112,7 @@ export default function ProductFormPage({ productId }: ProductFormProps) {
         }
       );
 
-      if (!response.ok) throw new Error('Failed to save product');
+      if (!response.ok) toast.error('Failed to save product');
 
       const data = await response.json();
       toast.success(data.message);

@@ -7,6 +7,7 @@ import Sidebar from "@/app/_components/sidebar/index";
 import Breadcrumb from "@/app/_components/ui/Breadcrumb";
 import "@/app/extra.css";
 import { AddShoppingCart, Delete, HighlightOff, Close, ArrowForwardIos } from "@mui/icons-material";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 interface UserData {
   id: number;
@@ -18,7 +19,6 @@ interface UserData {
   updated_at: string;
 }
 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 
 const data = [
@@ -87,7 +87,7 @@ export default function UserDashboard({ my_role }: UserData) {
           return;
         }
 
-        const response = await fetch("http://127.0.0.1:8000/api/user-details", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/user-details`, {
           headers: {
             Authorization: `Bearer ${token}`,
             Accept: "application/json",

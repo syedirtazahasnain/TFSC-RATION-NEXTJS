@@ -6,8 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Order } from "@/types";
 import Header from '@/app/_components/Header';
-
-
+import { toast } from "react-toastify";
 interface PaginatedOrders {
   data: Order[];
   current_page: number;
@@ -45,13 +44,20 @@ export default function OrdersPage() {
         });
 
         if (!response.ok) {
-          throw new Error('Failed to fetch orders');
+          toast.error('Failed to fetch orders');
         }
 
         const data = await response.json();
         setOrders(data.data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load orders');
+        if (err instanceof Error) {
+          toast.error(err.message);
+          setError(err.message);
+        } else {
+          toast.error("Failed to load orders");
+          setError("Failed to load orders");
+        }
       } finally {
         setLoading(false);
       }

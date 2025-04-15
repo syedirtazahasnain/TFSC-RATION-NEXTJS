@@ -6,6 +6,7 @@ import Sidebar from "@/app/_components/sidebar/index";
 import Breadcrumb from "@/app/_components/ui/Breadcrumb";
 import Image from "next/image";
 import Header from "@/app/_components/header/index";
+import { toast } from "react-toastify";
 
 interface UserData {
   id: number;
@@ -73,8 +74,10 @@ function PasswordUpdateForm() {
 
       if (!response.ok) {
         if (data.errors) {
+          toast.error(data.errors);
           setErrors(data.errors);
         } else {
+          toast.error(data.message || "Failed to update password");
           setErrors({ general: [data.message || "Failed to update password"] });
         }
         return;
@@ -221,7 +224,7 @@ export default function page({ my_role }: UserData) {
 
         if (!response.ok) {
           const data = await response.json();
-          throw new Error(data.message || "Failed to fetch user details");
+          toast.error(data.message || "Failed to fetch user details");
         }
 
         const data = await response.json();

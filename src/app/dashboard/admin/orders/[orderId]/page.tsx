@@ -3,6 +3,7 @@
 import { useRouter, useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Header from '@/app/_components/Header';
+import { toast } from "react-toastify";
 
 interface Order {
   id: number;
@@ -52,7 +53,7 @@ export default function OrderDetailsPage() {
         );
 
         if (!response.ok) {
-          throw new Error('Failed to fetch order');
+          toast.error('Failed to fetch order');
         }
 
         const data = await response.json();

@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { toast } from "react-toastify";
 
 interface CartItem {
   product_id: number;
@@ -37,13 +38,19 @@ export default function CartSubmitButton({ cart }: { cart: CartItem[] }) {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Failed to place order");
+        toast.error(data.message || "Failed to place order");
       }
 
       // Success - redirect to order details
       router.push(`/orders/${data.data.id}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to place order");
+      if (err instanceof Error) {
+        toast.error(err.message);
+        setError(err.message);
+      } else {
+        toast.error("Failed to fetch orders");
+        setError("Failed to place order");
+      }
     } finally {
       setIsSubmitting(false);
     }

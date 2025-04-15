@@ -6,8 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Order } from "@/types";
 import Header from '@/app/_components/Header';
-
-
+import { toast } from "react-toastify";
 interface PaginatedOrders {
   data: Order[];
   current_page: number;
@@ -45,7 +44,7 @@ export default function OrdersPage() {
         });
 
         if (!response.ok) {
-          throw new Error('Failed to fetch orders');
+          toast.error('Failed to fetch orders');
         }
 
         const data = await response.json();
