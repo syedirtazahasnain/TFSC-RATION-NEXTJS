@@ -391,28 +391,28 @@ export default function ProductListPage() {
         <Sidebar />
       </div>
       <div className="w-full mx-auto space-y-4 p-4">
-        <div className="px-6 py-6 bg-[#2b3990] rounded-[20px] xl:rounded-[25px] text-[#fff] relative">
-          <h1 className="text-2xl font-bold my-0">Order Products</h1>
-          <Breadcrumb
-            items={[{ label: "Dashboard" }, { label: "Product List" }]}
-          />
-
-          <div
-            className="absolute top-[10px] right-[10px] z-40 bg-[#fff] p-[10px] rounded-[15px] cursor-pointer"
-            onClick={() => setIsCartOpen(!isCartOpen)}
-          >
-            {isCartOpen ? (
-              <AddShoppingCart />
-            ) : (
-              <div className="flex items-center gap-1 relative">
-                <AddShoppingCart className="text-[#000]" />
-                <div className="absolute top-[-12px] left-[-12px] w-[18px] h-[18px] bg-[#c00] rounded-full flex items-center justify-center">
-                  <p className="text-xs my-0 text-[#fff]">{totalQuantity}</p>
-                </div>
+            <div><Header /></div>
+            <div className="px-6 py-6 bg-[#f9f9f9] rounded-[20px] xl:rounded-[25px] text-[#2b3990]">
+              <h1 className="text-2xl font-bold my-0">All Products</h1>
+              <Breadcrumb
+                items={[{ label: "Dashboard" }, { label: "Products" }]}
+              />
+              <div
+          className="absolute top-[10px] right-[10px] z-40 bg-[#fff] p-[10px] rounded-[15px] cursor-pointer"
+          onClick={() => setIsCartOpen(!isCartOpen)}
+        >
+          {isCartOpen ? (
+            <AddShoppingCart />
+          ) : (
+            <div className="flex items-center gap-1 relative">
+              <AddShoppingCart className="text-[#000]" />
+              <div className="absolute top-[-12px] left-[-12px] w-[18px] h-[18px] bg-[#c00] rounded-full flex items-center justify-center">
+                <p className="text-xs my-0 text-[#fff]">{totalQuantity}</p>
               </div>
-            )}
-          </div>
-        </div>
+            </div>
+          )}
+       </div>
+      </div>
         {error && <p className="text-red-500 mb-4">{error}</p>}
         {apiResponse && <p className="text-green-500 mb-4">{apiResponse}</p>}
         {loading ? (
