@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 
 interface ProductFormProps {
   productId?: string;
@@ -14,6 +14,10 @@ interface Product {
   detail: string;
   price: string;
   image?: string | File;
+  measure: string;
+  type: string;
+  brand?: string;
+  status?: string;
 }
 
 export default function ProductFormPage({ productId }: ProductFormProps) {
@@ -22,6 +26,9 @@ export default function ProductFormPage({ productId }: ProductFormProps) {
     name: '',
     detail: '',
     price: '',
+    measure: '',
+    type: '',
+    brand: '',
   });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(!!productId);
@@ -35,7 +42,7 @@ export default function ProductFormPage({ productId }: ProductFormProps) {
 
     const fetchProduct = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/products/${productId}`,
           {
@@ -45,16 +52,20 @@ export default function ProductFormPage({ productId }: ProductFormProps) {
           }
         );
 
-        if (!response.ok) toast.error('Failed to fetch product');
-        
+        if (!response.ok) toast.error("Failed to fetch product");
+
         const data = await response.json();
         setProduct(data.data);
         if (data.data.image) {
-          setImagePreview(`${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${data.data.image}`);
+          setImagePreview(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${data.data.image}`
+          );
         }
       } catch (error) {
-        toast.error(error instanceof Error ? error.message : 'Failed to load product');
-        router.push('/dashboard/admin/products');
+        toast.error(
+          error instanceof Error ? error.message : "Failed to load product"
+        );
+        router.push("/dashboard/admin/products");
       } finally {
         setIsLoading(false);
       }
@@ -63,16 +74,22 @@ export default function ProductFormPage({ productId }: ProductFormProps) {
     fetchProduct();
   }, [productId, router]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setProduct(prev => ({ ...prev, [name]: value }));
+    setProduct((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setProduct(prev => ({ ...prev, image: file }));
-      
+      if (file.size > 2 * 1024 * 1024) { 
+        toast.error("Image must be smaller than 2MB");
+        return;
+      }
+      setProduct((prev) => ({ ...prev, image: file }));
+  
       const reader = new FileReader();
       reader.onload = () => setImagePreview(reader.result as string);
       reader.readAsDataURL(file);
@@ -84,47 +101,59 @@ export default function ProductFormPage({ productId }: ProductFormProps) {
     setIsSubmitting(true);
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        router.push('/auth/login');
+        router.push("/auth/login");
         return;
       }
 
       const formData = new FormData();
-      formData.append('name', product.name);
-      formData.append('detail', product.detail);
-      formData.append('price', product.price);
+      formData.append("name", product.name);
+      formData.append("detail", product.detail);
+      formData.append("price", product.price);
+      formData.append("measure", product.measure);
+      formData.append("type", product.type);
+      if (product.brand) {
+        formData.append('brand', product.brand);
+      }
       if (product.image instanceof File) {
-        formData.append('image', product.image);
+        formData.append("image", product.image);
       }
       if (productId) {
-        formData.append('id', productId);
+        formData.append("id", productId);
       }
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/store-products`,
         {
-          method: 'POST',
+          method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
           },
           body: formData,
+          credentials: "include", 
         }
       );
-
-      if (!response.ok) toast.error('Failed to save product');
+      console.log("Response status:", response.status);
+      console.log("Response headers:", response.headers);
+      // if (!response.ok) toast.error("Failed to save product");
 
       const data = await response.json();
+      console.log("Response data:", data);
+
       toast.success(data.message);
-      router.push('/dashboard/admin/products');
+      router.push("/dashboard/admin/products");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to save product');
+      toast.error(
+        error instanceof Error ? error.message : "Failed to save product"
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  if (isLoading) return <div className="text-center py-8">Loading product...</div>;
+  if (isLoading)
+    return <div className="text-center py-8">Loading product...</div>;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl mx-auto">
@@ -174,6 +203,50 @@ export default function ProductFormPage({ productId }: ProductFormProps) {
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
+          Measure
+        </label>
+        <input
+          type="text"
+          name="measure"
+          value={product.measure}
+          onChange={handleChange}
+          className="w-full px-3 py-2 border rounded-md"
+          required
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Type
+        </label>
+        <select
+          name="type"
+          value={product.type}
+          onChange={handleChange}
+          className="w-full px-3 py-2 border rounded-md"
+          required
+        >
+          <option value="">Select Type</option>
+          <option value="Milk">Milk</option>
+          <option value="Rice">Rice</option>
+        </select>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Brand (optional)
+        </label>
+        <input
+          type="text"
+          name="brand"
+          value={product.brand}
+          onChange={handleChange}
+          className="w-full px-3 py-2 border rounded-md"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
           Product Image
         </label>
         <input
@@ -184,9 +257,9 @@ export default function ProductFormPage({ productId }: ProductFormProps) {
         />
         {imagePreview && (
           <div className="mt-2">
-            <img 
-              src={imagePreview} 
-              alt="Preview" 
+            <img
+              src={imagePreview}
+              alt="Preview"
               className="h-40 object-contain border rounded"
             />
           </div>
@@ -196,7 +269,7 @@ export default function ProductFormPage({ productId }: ProductFormProps) {
       <div className="flex justify-end space-x-4 pt-4">
         <button
           type="button"
-          onClick={() => router.push('/dashboard/admin/products')}
+          onClick={() => router.push("/dashboard/admin/products")}
           className="px-4 py-2 border rounded-md bg-[#f9f9f9] hover:bg-gray-200"
         >
           Cancel
@@ -206,7 +279,7 @@ export default function ProductFormPage({ productId }: ProductFormProps) {
           disabled={isSubmitting}
           className="px-4 py-2 border rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
         >
-          {isSubmitting ? 'Saving...' : 'Save Product'}
+          {isSubmitting ? "Saving..." : "Save Product"}
         </button>
       </div>
     </form>
