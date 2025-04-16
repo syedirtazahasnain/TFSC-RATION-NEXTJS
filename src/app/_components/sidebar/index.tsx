@@ -2,20 +2,18 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import UserProfile from ".././user/UserProfile";
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from "react-toastify";
 import {
   Dashboard,
-  ShoppingCart,
   AccountCircle,
   Password,
   AddShoppingCart,
   Assessment,
 } from "@mui/icons-material";
 
-export default function index() {
+export default function Index() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -88,7 +86,7 @@ export default function index() {
       setIsLoading(false);
     }
   };
-
+  
   const navigateToAdminRoute = (path: string) => {
     if (!userRole) {
       toast.error("User role not loaded yet");
@@ -160,32 +158,32 @@ export default function index() {
           <li className="relative">
             {userRole === "user" && (
               <>
-                <button
-                  onClick={() => router.push("/dashboard/user")}
+                <Link
+                  href="/dashboard/user"
                   className="inline-flex items-center w-full text-sm text-gray-800 transition-colors duration-150 hover:text-gray-800 px-6"
                 >
                   <Dashboard className="w-5 h-5" />
                   <span className="ml-4">Dashboard</span>
-                </button>
+                </Link>
                 <div className="py-2 mt-4">
                   <p className="text-sm text-gray-800 transition-colors font-semibold">
                     <span className="ml-3">Orders & More</span>
                   </p>
                 </div>
-                <button
-                  onClick={() => router.push("/dashboard/user/orders")}
+                <Link
+                  href="/dashboard/user/orders"
                   className="inline-flex items-center w-full text-sm text-gray-800 transition-colors duration-150 hover:text-gray-800 px-6"
                 >
                   <Assessment className="w-5 h-5" />
                   <span className="ml-4">Orders</span>
-                </button>
-                <button
-                  onClick={() => router.push("/dashboard/user/product-list")}
+                </Link>
+                <Link
+                  href="/dashboard/user/product-list"
                   className="inline-flex items-center w-full text-sm text-gray-800 transition-colors duration-150 hover:text-gray-800 px-6"
                 >
                   <AddShoppingCart className="w-5 h-5" />
                   <span className="ml-4">Order Now</span>
-                </button>
+                </Link>
               </>
             )}
           </li>
@@ -196,20 +194,20 @@ export default function index() {
                   <span className="ml-3">Profile & More</span>
                 </p>
               </div>
-              <button
-                onClick={() => router.push("/dashboard/user/profile")}
+              <Link
+                href="/dashboard/user/profile"
                 className="inline-flex items-center w-full text-sm text-gray-800 transition-colors duration-150 hover:text-gray-800 px-6"
               >
                 <AccountCircle className="w-5 h-5" />
                 <span className="ml-4">Profile</span>
-              </button>
-              <button
-                onClick={() => router.push("/dashboard/user/update-password")}
+              </Link>
+              <Link
+                href="/dashboard/user/update-password"
                 className="inline-flex items-center w-full text-sm text-gray-800 transition-colors duration-150 hover:text-gray-800 px-6"
               >
                 <Password className="w-5 h-5" />
                 <span className="ml-4">Change Password</span>
-              </button>
+              </Link>
             </>
           </li>
         </ul>
