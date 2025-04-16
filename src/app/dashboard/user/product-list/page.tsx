@@ -6,8 +6,15 @@ import Sidebar from "@/app/_components/sidebar/index";
 import Breadcrumb from "@/app/_components/ui/Breadcrumb";
 import "@/app/extra.css";
 import { toast } from "react-toastify";
-import { AddShoppingCart, Delete, HighlightOff, Close, ArrowForwardIos } from "@mui/icons-material";
+import {
+  AddShoppingCart,
+  Delete,
+  HighlightOff,
+  Close,
+  ArrowForwardIos,
+} from "@mui/icons-material";
 import Header from "@/app/_components/header/index";
+import { Edit, Save } from "@mui/icons-material";
 
 interface CartItem {
   id?: number;
@@ -48,6 +55,8 @@ export default function ProductListPage() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [apiResponse, setApiResponse] = useState<string>("");
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editedQuantity, setEditedQuantity] = useState<number>(1);
   const [localQuantities, setLocalQuantities] = useState<{
     [key: number]: number;
   }>({});
@@ -98,11 +107,14 @@ export default function ProductListPage() {
         return;
       }
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/cart`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/cart`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         toast.error("Failed to fetch cart");
@@ -143,49 +155,50 @@ export default function ProductListPage() {
         return;
       }
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/cart/add`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          products: cartItems.map((item) => ({
-            product_id: item.product_id,
-            quantity: item.quantity,
-          })),
-        }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/cart/add`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            products: cartItems.map((item) => ({
+              product_id: item.product_id,
+              quantity: item.quantity,
+              id: item.id, // Include the item ID for updates
+            })),
+          }),
+        }
+      );
 
       const data = await response.json();
-      
+
       if (!response.ok) {
         toast.error(data.message || "Failed to sync cart with backend");
       }
 
       // Update cart with backend response
       if (data.data && data.data.cart_data) {
-        // The response structure is different for add/update vs get cart
-        // For add/update, cart_data is an array, not an object with items
         const updatedCart = Array.isArray(data.data.cart_data)
           ? data.data.cart_data.map((item: any) => ({
-            id: item.id,
-            product_id: item.product_id,
-            quantity: parseInt(item.quantity),
-            unit_price: parseFloat(item.unit_price),
-            total: parseFloat(item.total),
-            // Product info might not be included in the response
-            product:
-              allProducts.find((p) => p.id === item.product_id) || undefined,
-          }))
+              id: item.id,
+              product_id: item.product_id,
+              quantity: parseInt(item.quantity),
+              unit_price: parseFloat(item.unit_price),
+              total: parseFloat(item.total),
+              product:
+                allProducts.find((p) => p.id === item.product_id) || undefined,
+            }))
           : data.data.cart_data.items.map((item: any) => ({
-            id: item.id,
-            product_id: item.product_id,
-            quantity: parseInt(item.quantity),
-            unit_price: parseFloat(item.unit_price),
-            total: parseFloat(item.total),
-            product: item.product,
-          }));
+              id: item.id,
+              product_id: item.product_id,
+              quantity: parseInt(item.quantity),
+              unit_price: parseFloat(item.unit_price),
+              total: parseFloat(item.total),
+              product: item.product,
+            }));
 
         setCart(updatedCart);
 
@@ -196,7 +209,6 @@ export default function ProductListPage() {
         });
         setLocalQuantities(quantities);
 
-        // If we have the full cart data (from get cart), set it
         if (data.data.cart_data.payable_amount !== undefined) {
           setCartData(data.data.cart_data);
         }
@@ -229,33 +241,38 @@ export default function ProductListPage() {
   };
 
   // Add product to cart
-  const addToCart = async (productId: number, quantity: number) => {
+  const addToCart = async (
+    productId: number,
+    quantity: number,
+    itemId?: number
+  ) => {
     if (quantity <= 0) {
       alert("Quantity must be greater than 0.");
       return;
     }
 
-    // Use the current local quantity if available
-    const finalQuantity = localQuantities[productId] || quantity;
-
-    const existingProduct = cart.find((item) => item.product_id === productId);
+    // Optimistically update local state first
+    updateLocalQuantity(productId, quantity);
 
     let updatedCart;
-    if (existingProduct) {
-      // Update quantity if product already exists in cart
+    if (itemId) {
       updatedCart = cart.map((item) =>
-        item.product_id === productId
-          ? { ...item, quantity: finalQuantity }
-          : item
+        item.id === itemId ? { ...item, quantity: quantity } : item
       );
     } else {
-      // Add new product to cart
-      updatedCart = [
-        ...cart,
-        { product_id: productId, quantity: finalQuantity },
-      ];
+      const existingProduct = cart.find(
+        (item) => item.product_id === productId
+      );
+      if (existingProduct) {
+        updatedCart = cart.map((item) =>
+          item.product_id === productId ? { ...item, quantity: quantity } : item
+        );
+      } else {
+        updatedCart = [...cart, { product_id: productId, quantity: quantity }];
+      }
     }
 
+    setCart(updatedCart);
     await syncCartWithBackend(updatedCart);
   };
 
@@ -311,12 +328,15 @@ export default function ProductListPage() {
         return;
       }
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/cart/clear`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/cart/clear`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       const data = await response.json();
 
@@ -345,14 +365,17 @@ export default function ProductListPage() {
         return;
       }
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/orders/place`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ products: cart }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/orders/place`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ products: cart }),
+        }
+      );
 
       const data = await response.json();
 
@@ -391,28 +414,28 @@ export default function ProductListPage() {
         <Sidebar />
       </div>
       <div className="w-full mx-auto space-y-4 p-4">
-            <div><Header /></div>
-            <div className="px-6 py-6 bg-[#f9f9f9] rounded-[20px] xl:rounded-[25px] text-[#2b3990]">
-              <h1 className="text-2xl font-bold my-0">All Products</h1>
-              <Breadcrumb
-                items={[{ label: "Dashboard" }, { label: "Products" }]}
-              />
-              <div
-          className="absolute top-[10px] right-[10px] z-40 bg-[#fff] p-[10px] rounded-[15px] cursor-pointer"
-          onClick={() => setIsCartOpen(!isCartOpen)}
-        >
-          {isCartOpen ? (
-            <AddShoppingCart />
-          ) : (
-            <div className="flex items-center gap-1 relative">
-              <AddShoppingCart className="text-[#000]" />
-              <div className="absolute top-[-12px] left-[-12px] w-[18px] h-[18px] bg-[#c00] rounded-full flex items-center justify-center">
-                <p className="text-xs my-0 text-[#fff]">{totalQuantity}</p>
+        <div>
+          <Header />
+        </div>
+        <div className="px-6 py-6 bg-[#f9f9f9] rounded-[20px] xl:rounded-[25px] text-[#2b3990]">
+          <h1 className="text-2xl font-bold my-0">All Products</h1>
+          <Breadcrumb items={[{ label: "Dashboard" }, { label: "Products" }]} />
+          <div
+            className="absolute top-[10px] right-[10px] z-40 bg-[#fff] p-[10px] rounded-[15px] cursor-pointer"
+            onClick={() => setIsCartOpen(!isCartOpen)}
+          >
+            {isCartOpen ? (
+              <AddShoppingCart />
+            ) : (
+              <div className="flex items-center gap-1 relative">
+                <AddShoppingCart className="text-[#000]" />
+                <div className="absolute top-[-12px] left-[-12px] w-[18px] h-[18px] bg-[#c00] rounded-full flex items-center justify-center">
+                  <p className="text-xs my-0 text-[#fff]">{totalQuantity}</p>
+                </div>
               </div>
-            </div>
-          )}
-       </div>
-      </div>
+            )}
+          </div>
+        </div>
         {error && <p className="text-red-500 mb-4">{error}</p>}
         {apiResponse && <p className="text-green-500 mb-4">{apiResponse}</p>}
         {loading ? (
@@ -420,7 +443,6 @@ export default function ProductListPage() {
         ) : (
           <>
             <div className="grid grid-cols-1 lg:grid-cols-7 gap-[10px] xl:gap-[15px] relative h-[75vh] overflow-hidden">
-
               <div className="lg:col-span-5 overflow-y-auto rashnItems">
                 <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-[10px] xl:gap-[15px]">
                   {Array.isArray(products) &&
@@ -437,7 +459,11 @@ export default function ProductListPage() {
                         >
                           <div className="bg-[#f9f9f9] rounded-t-lg overflow-hidden h-[150px] w-full">
                             <img
-                              src={product.image ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${product.image}` : "/images/items/atta.webp"} 
+                              src={
+                                product.image
+                                  ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${product.image}`
+                                  : "/images/items/atta.webp"
+                              }
                               alt=""
                               className="w-full h-full object-cover"
                               onError={(e) => {
@@ -466,7 +492,10 @@ export default function ProductListPage() {
                                 <button
                                   onClick={() =>
                                     quantity > 1 &&
-                                    updateLocalQuantity(product.id, quantity - 1)
+                                    updateLocalQuantity(
+                                      product.id,
+                                      quantity - 1
+                                    )
                                   }
                                   className="flex items-center justify-center text-[12px] absolute top-1/2 -translate-y-1/2 left-[0px] w-[18px] h-[18px] rounded-md bg-[#000] text-white hover:bg-[#00aeef] duration-200 transition-all ease-in-out"
                                 >
@@ -488,7 +517,10 @@ export default function ProductListPage() {
 
                                 <button
                                   onClick={() =>
-                                    updateLocalQuantity(product.id, quantity + 1)
+                                    updateLocalQuantity(
+                                      product.id,
+                                      quantity + 1
+                                    )
                                   }
                                   className="flex items-center justify-center text-[12px] absolute top-1/2 -translate-y-1/2 right-[10px] w-[18px] h-[18px] rounded-md bg-[#000] text-white hover:bg-[#00aeef] duration-200 transition-all ease-in-out"
                                 >
@@ -498,7 +530,9 @@ export default function ProductListPage() {
 
                               <div className="flex justify-end">
                                 <button
-                                  onClick={() => addToCart(product.id, quantity)}
+                                  onClick={() =>
+                                    addToCart(product.id, quantity)
+                                  }
                                   className="bg-blue-400 text-white px-3 py-1 rounded-xl hover:bg-blue-700"
                                 >
                                   <AddShoppingCart className="w-3 h-3" />
@@ -516,10 +550,11 @@ export default function ProductListPage() {
                     <button
                       key={index + 1}
                       onClick={() => setCurrentPage(index + 1)}
-                      className={`mx-1 px-4 py-2 rounded ${currentPage === index + 1
-                        ? "bg-blue-500 text-white"
-                        : "bg-white text-blue-500 border border-blue-500"
-                        }`}
+                      className={`mx-1 px-4 py-2 rounded ${
+                        currentPage === index + 1
+                          ? "bg-blue-500 text-white"
+                          : "bg-white text-blue-500 border border-blue-500"
+                      }`}
                     >
                       {index + 1}
                     </button>
@@ -532,7 +567,9 @@ export default function ProductListPage() {
                   <div className="flex justify-between items-center mt-4">
                     <h2 className="text-xl font-bold my-0">Cart Items</h2>
                     <Delete
-                      onClick={clearCart} className="text-[#c00] cursor-pointer w-3 h-3" />
+                      onClick={clearCart}
+                      className="text-[#c00] cursor-pointer w-3 h-3"
+                    />
                   </div>
                   {cart.length === 0 ? (
                     <p>Your cart is empty.</p>
@@ -540,40 +577,75 @@ export default function ProductListPage() {
                     <>
                       <div className="flex justify-end my-2">
                         <div className="text-right">
-                          <p className="font-semibold text-xl"><span className="text-sm font-normal pr-[10px]">Total Price </span> {totalPrice.toFixed(0)} <span className="text-xs pl-[2px]">Rs </span>
+                          <p className="font-semibold text-xl">
+                            <span className="text-sm font-normal pr-[10px]">
+                              Total Price{" "}
+                            </span>{" "}
+                            {totalPrice.toFixed(0)}{" "}
+                            <span className="text-xs pl-[2px]">Rs </span>
                           </p>
                           <div className="flex justify-end">
-                            <p className="font-semibold text-xs uppercase py-[1px] px-[10px] rounded-[5px] text-[#fff] bg-[#2b3990]">Items: {totalQuantity}</p>
+                            <p className="font-semibold text-xs uppercase py-[1px] px-[10px] rounded-[5px] text-[#fff] bg-[#2b3990]">
+                              Items: {totalQuantity}
+                            </p>
                           </div>
                         </div>
                       </div>
 
                       <ul className="overflow-y-auto">
                         {cart.map((item) => {
-                          console.log("Cart Item:", item);
                           const product =
                             item.product ||
                             allProducts.find((p) => p.id === item.product_id);
                           return (
-                            <li key={item.id || item.product_id} className="mb-2 p-[10px] rounded-[15px] bg-[#fff] relative w-full flex items-center gap-[10px]">
+                            <li
+                              key={item.id || item.product_id}
+                              className="mb-2 p-[10px] rounded-[15px] bg-[#fff] relative w-full flex items-center gap-[10px]"
+                            >
                               <div className="">
-                                <div className="w-[50px] rounded-lg h-full overflow-hidden"><img
-                                  src={
-                                    item.product?.image 
-                                      ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${item.product.image}` 
-                                      : "/images/items/atta.webp"
-                                  } 
-                                  alt={item.product?.name || "Product image"}
-                                  className="w-full h-full object-cover"
-                                  onError={(e) => {
-                                    e.currentTarget.src = "/images/items/atta.webp";
-                                  }}
-                                />
+                                <div className="w-[50px] rounded-lg h-full overflow-hidden">
+                                  <img
+                                    src={
+                                      item.product?.image
+                                        ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${item.product.image}`
+                                        : "/images/items/atta.webp"
+                                    }
+                                    alt={item.product?.name || "Product image"}
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                      e.currentTarget.src =
+                                        "/images/items/atta.webp";
+                                    }}
+                                  />
                                 </div>
                               </div>
                               <div className="w-full">
                                 <div>
-                                  <h3 className="font-semibold capitalize">{product?.name} <span className="text-sm font-normal pl-[15px] lowercase">x {item.quantity}</span></h3>
+                                  <h3 className="font-semibold capitalize">
+                                    {product?.name}{" "}
+                                    {editingId === item.id ? (
+                                      <input
+                                        type="number"
+                                        min="1"
+                                        value={editedQuantity}
+                                        onChange={(e) => {
+                                          const value = parseInt(
+                                            e.target.value
+                                          );
+                                          if (!isNaN(value)) {
+                                            setEditedQuantity(
+                                              Math.max(value, 1)
+                                            );
+                                          }
+                                        }}
+                                        className="text-sm font-normal pl-[15px] lowercase w-16 border rounded"
+                                      />
+                                    ) : (
+                                      <span className="text-sm font-normal pl-[15px] lowercase">
+                                        x {item.quantity}
+                                      </span>
+                                    )}
+                                  </h3>
                                   <div className="pt-[4px] flex justify-between items-center">
                                     <p className="font-semibold">
                                       {item.total}
@@ -582,16 +654,67 @@ export default function ProductListPage() {
                                       </span>
                                     </p>
                                     <p className="my-0 text-sm px-[10px] bg-[#2b3990] rounded-[5px] text-[#fff]">
-                                      {item.unit_price} <span className="text-xs pl-[3px] font-semibold">Per - {item.product?.measure ?? "Unit"}</span>
+                                      {item.unit_price}{" "}
+                                      <span className="text-xs pl-[3px] font-semibold">
+                                        Per - {item.product?.measure ?? "Unit"}
+                                      </span>
                                     </p>
                                   </div>
                                 </div>
-                                <button
-                                  onClick={() => removeFromCart(item.id!)}
-                                  className="text-[#c00] hover:text-[#000] absolute top-[5px] right-[5px] cursor-pointer duration-200 ease-in-out transition-all w-[18px] h-[18px] flex items-center justify-center overflow-hidden"
-                                >
-                                  <Close className="p-1" />
-                                </button>
+                                <div className="absolute top-[5px] right-[5px] flex items-center gap-1">
+                                  <button
+                                    onClick={async () => {
+                                      if (editingId === item.id) {
+                                        const newQuantity = Math.max(
+                                          editedQuantity,
+                                          1
+                                        );
+                                        try {
+                                          await addToCart(
+                                            item.product_id,
+                                            newQuantity,
+                                            item.id
+                                          );
+                                          setEditingId(null);
+                                        } catch (error) {
+                                          updateLocalQuantity(
+                                            item.product_id,
+                                            item.quantity
+                                          );
+                                          setCart((prevCart) =>
+                                            prevCart.map((cartItem) =>
+                                              cartItem.id === item.id
+                                                ? {
+                                                    ...cartItem,
+                                                    quantity: item.quantity,
+                                                  }
+                                                : cartItem
+                                            )
+                                          );
+                                          toast.error(
+                                            "Failed to update quantity"
+                                          );
+                                        }
+                                      } else {
+                                        setEditingId(item.id!);
+                                        setEditedQuantity(item.quantity);
+                                      }
+                                    }}
+                                    className="text-[#2b3990] hover:text-[#00aeef] cursor-pointer duration-200 ease-in-out transition-all w-[18px] h-[18px] flex items-center justify-center overflow-hidden"
+                                  >
+                                    {editingId === item.id ? (
+                                      <Save className="p-1" />
+                                    ) : (
+                                      <Edit className="p-1" />
+                                    )}
+                                  </button>
+                                  <button
+                                    onClick={() => removeFromCart(item.id!)}
+                                    className="text-[#c00] hover:text-[#000] cursor-pointer duration-200 ease-in-out transition-all w-[18px] h-[18px] flex items-center justify-center overflow-hidden"
+                                  >
+                                    <Close className="p-1" />
+                                  </button>
+                                </div>
                               </div>
                             </li>
                           );
@@ -610,15 +733,15 @@ export default function ProductListPage() {
                 </div>
               </div>
             </div>
-
           </>
         )}
       </div>
 
       {/* Cart */}
       <div
-        className={`w-[30%] xl:w-[25%] 2xl:w-[20%] h-screen z-50 fixed top-0 right-0 bg-gray-200 p-6 overflow-y-auto transition-transform duration-300 ${isCartOpen ? "translate-x-0" : "translate-x-[120%]"
-          }`}
+        className={`w-[30%] xl:w-[25%] 2xl:w-[20%] h-screen z-50 fixed top-0 right-0 bg-gray-200 p-6 overflow-y-auto transition-transform duration-300 ${
+          isCartOpen ? "translate-x-0" : "translate-x-[120%]"
+        }`}
       >
         {/* Absolute Close */}
         <div className="absolute top-[5px] left-0 w-[30px] h-[30px] bg-[#2b3990] flex items-center justify-center cursor-pointer duration-300 ease-in-out transition-all hover:bg-[#00aeef] rounded-r-[10px]">
@@ -635,10 +758,17 @@ export default function ProductListPage() {
           <>
             <div className="flex justify-end my-2">
               <div className="text-right">
-                <p className="font-semibold text-xl"><span className="text-sm font-normal pr-[10px]">Total Price </span> {totalPrice.toFixed(0)} <span className="text-xs pl-[2px]">Rs </span>
+                <p className="font-semibold text-xl">
+                  <span className="text-sm font-normal pr-[10px]">
+                    Total Price{" "}
+                  </span>{" "}
+                  {totalPrice.toFixed(0)}{" "}
+                  <span className="text-xs pl-[2px]">Rs </span>
                 </p>
                 <div className="flex justify-end">
-                  <p className="font-semibold text-xs uppercase py-[1px] px-[10px] rounded-[5px] text-[#fff] bg-[#2b3990]">Items: {totalQuantity}</p>
+                  <p className="font-semibold text-xs uppercase py-[1px] px-[10px] rounded-[5px] text-[#fff] bg-[#2b3990]">
+                    Items: {totalQuantity}
+                  </p>
                 </div>
               </div>
             </div>
@@ -649,25 +779,34 @@ export default function ProductListPage() {
                   item.product ||
                   allProducts.find((p) => p.id === item.product_id);
                 return (
-                  <li key={item.id || item.product_id} className="mb-2 p-[10px] rounded-[15px] bg-[#fff] relative w-full flex items-center gap-[10px]">
+                  <li
+                    key={item.id || item.product_id}
+                    className="mb-2 p-[10px] rounded-[15px] bg-[#fff] relative w-full flex items-center gap-[10px]"
+                  >
                     <div className="">
-                      <div className="w-[50px] rounded-lg h-full overflow-hidden"><img
-                       src={
-                        item.product?.image 
-                          ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${item.product.image}` 
-                          : "/images/items/atta.webp"
-                      } 
-                      alt={item.product?.name || "Product image"}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.currentTarget.src = "/images/items/atta.webp";
-                      }}
-                      />
+                      <div className="w-[50px] rounded-lg h-full overflow-hidden">
+                        <img
+                          src={
+                            item.product?.image
+                              ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${item.product.image}`
+                              : "/images/items/atta.webp"
+                          }
+                          alt={item.product?.name || "Product image"}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.src = "/images/items/atta.webp";
+                          }}
+                        />
                       </div>
                     </div>
                     <div className="w-full">
                       <div>
-                        <h3 className="font-semibold capitalize">{product?.name} <span className="text-sm font-normal pl-[15px] lowercase">x {item.quantity}</span></h3>
+                        <h3 className="font-semibold capitalize">
+                          {product?.name}{" "}
+                          <span className="text-sm font-normal pl-[15px] lowercase">
+                            x {item.quantity}
+                          </span>
+                        </h3>
                         <div className="pt-[4px] flex justify-between items-center">
                           <p className="font-semibold">
                             {item.total}
@@ -676,7 +815,10 @@ export default function ProductListPage() {
                             </span>
                           </p>
                           <p className="my-0 text-sm px-[10px] bg-[#2b3990] rounded-[5px] text-[#fff]">
-                            {item.unit_price} <span className="text-xs pl-[3px] font-semibold">Per - {item.product?.measure ?? "Unit"}</span>
+                            {item.unit_price}{" "}
+                            <span className="text-xs pl-[3px] font-semibold">
+                              Per - {item.product?.measure ?? "Unit"}
+                            </span>
                           </p>
                         </div>
                       </div>
