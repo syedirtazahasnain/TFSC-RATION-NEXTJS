@@ -141,7 +141,7 @@ export default function ProductListPage() {
         setLocalQuantities(quantities);
       }
     } catch (err) {
-      toast.error("Error fetching cart:", err);
+      toast.error(`Error fetching cart: ${err instanceof Error ? err.message : String(err)}`);
       console.error("Error fetching cart:", err);
     }
   };
@@ -214,9 +214,13 @@ export default function ProductListPage() {
         }
       }
     } catch (err) {
-      toast.error(err.message || "Failed to sync cart with backend");
-      setError(err.message || "Failed to sync cart with backend");
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to sync cart with backend";
+
+      toast.error(errorMessage);
+      setError(errorMessage);
     }
+
   };
 
   // Update cart state from backend response
@@ -313,9 +317,14 @@ export default function ProductListPage() {
       if (data.data && data.data.cart_data) {
         updateCartState(data.data.cart_data);
       }
-    } catch (err) {
-      toast.error(err.message || "Failed to remove item from cart");
-      setError(err.message || "Failed to remove item from cart");
+    }
+    catch (err) {
+      const errorMessage = err instanceof Error
+        ? err.message
+        : "Failed to remove item from cart";
+
+      toast.error(errorMessage);
+      setError(errorMessage);
     }
   };
 
@@ -351,8 +360,12 @@ export default function ProductListPage() {
       toast.success("Cart cleared Successfully!");
       setApiResponse("Cart cleared successfully");
     } catch (err) {
-      toast.error(data.message || "Failed to clear cart");
-      setError(err.message || "Failed to clear cart");
+      const errorMessage = err instanceof Error
+        ? err.message
+        : "Failed to clear cart";
+
+      toast.error(errorMessage);
+      setError(errorMessage);
     }
   };
 
@@ -391,8 +404,12 @@ export default function ProductListPage() {
         toast.error(data.message || "Failed to place order");
       }
     } catch (err) {
-      toast.error(err.message || "Failed to place order. Please try again.");
-      setApiResponse(err.message || "Failed to place order. Please try again.");
+      const errorMessage = err instanceof Error
+        ? err.message
+        : "Failed to place order. Please try again.";
+
+      toast.error(errorMessage);
+      setApiResponse(errorMessage);
     }
   };
 

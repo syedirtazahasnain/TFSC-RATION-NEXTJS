@@ -75,21 +75,25 @@ export default function ProductFormPage({ productId }: ProductFormProps) {
   }, [productId, router]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setProduct((prev) => ({ ...prev, [name]: value }));
+    setProduct((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
+
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 2 * 1024 * 1024) { 
+      if (file.size > 2 * 1024 * 1024) {
         toast.error("Image must be smaller than 2MB");
         return;
       }
       setProduct((prev) => ({ ...prev, image: file }));
-  
+
       const reader = new FileReader();
       reader.onload = () => setImagePreview(reader.result as string);
       reader.readAsDataURL(file);
@@ -131,7 +135,7 @@ export default function ProductFormPage({ productId }: ProductFormProps) {
             Authorization: `Bearer ${token}`,
           },
           body: formData,
-          credentials: "include", 
+          credentials: "include",
         }
       );
       console.log("Response status:", response.status);
@@ -156,116 +160,111 @@ export default function ProductFormPage({ productId }: ProductFormProps) {
     return <div className="text-center py-8">Loading product...</div>;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl mx-auto">
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Product Name
-        </label>
-        <input
-          type="text"
-          name="name"
-          value={product.name}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border rounded-md"
-          required
-        />
+    <form onSubmit={handleSubmit}>
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[10px] xl:gap-[20px]">
+        <div>
+          <label className="block text-xs font-semibold text-gray-700 mb-1">
+            Product Name
+          </label>
+          <input
+            type="text"
+            name="name"
+            value={product.name}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border rounded-md"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-gray-700 mb-1">
+            Description
+          </label>
+          <textarea
+            name="detail"
+            value={product.detail}
+            onChange={handleChange}
+            rows={4}
+            className="w-full px-3 py-2 border rounded-md"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-gray-700 mb-1">
+            Price
+          </label>
+          <input
+            type="number"
+            name="price"
+            value={product.price}
+            onChange={handleChange}
+            min="0"
+            step="0.01"
+            className="w-full px-3 py-2 border rounded-md"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-gray-700 mb-1">
+            Measure
+          </label>
+          <input
+            type="text"
+            name="measure"
+            value={product.measure}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border rounded-md"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-gray-700 mb-1">
+            Type
+          </label>
+          <select
+            name="type"
+            value={product.type}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border rounded-md"
+            required
+          >
+            <option value="">Select Type</option>
+            <option value="Milk">Milk</option>
+            <option value="Rice">Rice</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-gray-700 mb-1">
+            Brand (optional)
+          </label>
+          <input
+            type="text"
+            name="brand"
+            value={product.brand}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border rounded-md"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-gray-700 mb-1">
+            Product Image
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="w-full px-3 py-2 border rounded-md"
+          />
+          {imagePreview && (
+            <div className="mt-2">
+              <img
+                src={imagePreview}
+                alt="Preview"
+                className="h-40 object-contain border rounded"
+              />
+            </div>
+          )}
+        </div>
       </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Description
-        </label>
-        <textarea
-          name="detail"
-          value={product.detail}
-          onChange={handleChange}
-          rows={4}
-          className="w-full px-3 py-2 border rounded-md"
-          required
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Price
-        </label>
-        <input
-          type="number"
-          name="price"
-          value={product.price}
-          onChange={handleChange}
-          min="0"
-          step="0.01"
-          className="w-full px-3 py-2 border rounded-md"
-          required
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Measure
-        </label>
-        <input
-          type="text"
-          name="measure"
-          value={product.measure}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border rounded-md"
-          required
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Type
-        </label>
-        <select
-          name="type"
-          value={product.type}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border rounded-md"
-          required
-        >
-          <option value="">Select Type</option>
-          <option value="Milk">Milk</option>
-          <option value="Rice">Rice</option>
-        </select>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Brand (optional)
-        </label>
-        <input
-          type="text"
-          name="brand"
-          value={product.brand}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border rounded-md"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Product Image
-        </label>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImageChange}
-          className="w-full px-3 py-2 border rounded-md"
-        />
-        {imagePreview && (
-          <div className="mt-2">
-            <img
-              src={imagePreview}
-              alt="Preview"
-              className="h-40 object-contain border rounded"
-            />
-          </div>
-        )}
-      </div>
-
       <div className="flex justify-end space-x-4 pt-4">
         <button
           type="button"

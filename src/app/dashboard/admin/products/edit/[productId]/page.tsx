@@ -2,7 +2,9 @@
 'use client';
 
 import { useRouter, useParams } from 'next/navigation';
-import Header from '@/app/_components/Header';
+import Header from "@/app/_components/header/index";
+import Sidebar from "@/app/_components/sidebar/index";
+import Breadcrumb from "@/app/_components/ui/Breadcrumb";
 import ProductFormPage from '@/app/_components/ProductFormPage';
 
 export default function ProductEditPage() {
@@ -11,10 +13,25 @@ export default function ProductEditPage() {
   const productId = params.productId as string;
 
   return (
-    <div className="container mx-auto p-4">
-      <Header />
-      <h1 className="text-2xl font-bold mb-6">Edit Product</h1>
-      <ProductFormPage productId={productId} />
+    <div className="min-h-screen flex gap-[20px] px-[20px] xl:px-[30px]">
+      <div className="w-[15%] relative">
+        <Sidebar />
+      </div>
+      <div className="w-full mx-auto space-y-4 p-4">
+        <div><Header /></div>
+        <div className="px-6 py-6 bg-[#f9f9f9] rounded-[20px] xl:rounded-[25px] text-[#2b3990]">
+          <h1 className="text-2xl font-bold my-0">Edit Product</h1>
+          <Breadcrumb
+            items={[{ label: "Dashboard" }, { label: "Edit Product" }]}
+          />
+        </div>
+
+        <div className="overflow-x-auto mb-8">
+          <div className="p-[25px] rounded-[20px] xl:rounded-[25px] bg-[#f9f9f9]">
+            <ProductFormPage productId={productId} />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

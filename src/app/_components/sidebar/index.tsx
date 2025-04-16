@@ -11,6 +11,9 @@ import {
   Password,
   AddShoppingCart,
   Assessment,
+  Category,
+  ProductionQuantityLimits,
+  ShoppingCartCheckout,
 } from "@mui/icons-material";
 
 export default function Index() {
@@ -86,7 +89,7 @@ export default function Index() {
       setIsLoading(false);
     }
   };
-  
+
   const navigateToAdminRoute = (path: string) => {
     if (!userRole) {
       toast.error("User role not loaded yet");
@@ -138,20 +141,22 @@ export default function Index() {
   };
 
   return (
-    <aside className="z-20 hidden w-[15%] overflow-y-auto bg-[#f9f9f9] md:block flex-shrink-0 scrollbar-hide h-screen fixed top-0 left-0">
-      <div className="px-4 py-6 text-gray-500">
+    <aside className={`z-20 hidden w-[15%] overflow-y-auto ${userRole === 'admin' || userRole === "super_admin" ? 'bg-[#2b3990] text-[#fff]' : 'bg-[#f9f9f9] text-[#000]'
+      }  md:block flex-shrink-0 scrollbar-hide h-screen fixed top-0 left-0`}>
+      <div className="px-4 py-6">
         <div className="overflow-hidden flex items-center justify-center">
           <Image
-            src="/images/logo/logo-dark.webp"
+            src={userRole === 'admin' || userRole === "super_admin" ? '/images/logo/logo-light.webp' : '/images/logo/logo-dark.webp'}
             alt="Company Logo"
             width={200}
             height={50}
             className=""
           />
+
         </div>
         <ul className="mt-4">
           <li className="py-2">
-            <p className="text-sm font-semibold text-gray-800 transition-colors">
+            <p className="text-sm font-semibold transition-all">
               <span className="ml-3">Main</span>
             </p>
           </li>
@@ -160,26 +165,26 @@ export default function Index() {
               <>
                 <Link
                   href="/dashboard/user"
-                  className="inline-flex items-center w-full text-sm text-gray-800 transition-colors duration-150 hover:text-gray-800 px-6"
+                  className="inline-flex items-center w-full text-sm transition-all duration-300 px-6 hover:ml-2 ease-in-out"
                 >
                   <Dashboard className="w-5 h-5" />
                   <span className="ml-4">Dashboard</span>
                 </Link>
                 <div className="py-2 mt-4">
-                  <p className="text-sm text-gray-800 transition-colors font-semibold">
+                  <p className="text-sm transition-all font-semibold">
                     <span className="ml-3">Orders & More</span>
                   </p>
                 </div>
                 <Link
                   href="/dashboard/user/orders"
-                  className="inline-flex items-center w-full text-sm text-gray-800 transition-colors duration-150 hover:text-gray-800 px-6"
+                  className="inline-flex items-center w-full text-sm transition-all duration-300 px-6 hover:ml-2 ease-in-out"
                 >
                   <Assessment className="w-5 h-5" />
                   <span className="ml-4">Orders</span>
                 </Link>
                 <Link
                   href="/dashboard/user/product-list"
-                  className="inline-flex items-center w-full text-sm text-gray-800 transition-colors duration-150 hover:text-gray-800 px-6"
+                  className="inline-flex items-center w-full text-sm transition-all duration-300 px-6 hover:ml-2 ease-in-out"
                 >
                   <AddShoppingCart className="w-5 h-5" />
                   <span className="ml-4">Order Now</span>
@@ -187,23 +192,62 @@ export default function Index() {
               </>
             )}
           </li>
+          <li className="relative">
+            {userRole && (userRole === "admin" || userRole === "super_admin") && (
+              <>
+                <button
+                  onClick={() => router.push("/dashboard/admin")}
+                  className="inline-flex items-center w-full text-sm transition-all duration-300 px-6 hover:ml-2 ease-in-out"
+                >
+                  <Dashboard className="w-5 h-5" />
+                  <span className="ml-4">Dashboard</span>
+                </button>
+                <div className="py-2 mt-4">
+                  <p className="text-sm transition-all font-semibold">
+                    <span className="ml-3">Orders & More</span>
+                  </p>
+                </div>
+                <button
+                  onClick={fetchAllOrders}
+                  className="inline-flex items-center w-full text-sm transition-all duration-300 px-6 hover:ml-2 ease-in-out"
+                >
+                  <Assessment className="w-5 h-5" />
+                  <span className="ml-4">All Orders</span>
+                </button>
+                <button
+                  onClick={() => router.push("/dashboard/admin/products/add")}
+                  className="inline-flex items-center w-full text-sm transition-all duration-300 px-6 hover:ml-2 ease-in-out"
+                >
+                  <ShoppingCartCheckout className="w-5 h-5" />
+                  <span className="ml-4">Create Product</span>
+                </button>
+                <button
+                  onClick={() => router.push("/dashboard/admin/products")}
+                  className="inline-flex items-center w-full text-sm transition-all duration-300 px-6 hover:ml-2 ease-in-out"
+                >
+                  <Category className="w-5 h-5" />
+                  <span className="ml-4">Products</span>
+                </button>
+              </>
+            )}
+          </li>
           <li>
             <>
               <div className="py-2 mt-4">
-                <p className="text-sm text-gray-800 transition-colors font-semibold">
+                <p className="text-sm transition-all font-semibold">
                   <span className="ml-3">Profile & More</span>
                 </p>
               </div>
               <Link
                 href="/dashboard/user/profile"
-                className="inline-flex items-center w-full text-sm text-gray-800 transition-colors duration-150 hover:text-gray-800 px-6"
+                className="inline-flex items-center w-full text-sm transition-all duration-300 px-6 hover:ml-2 ease-in-out"
               >
                 <AccountCircle className="w-5 h-5" />
                 <span className="ml-4">Profile</span>
               </Link>
               <Link
                 href="/dashboard/user/update-password"
-                className="inline-flex items-center w-full text-sm text-gray-800 transition-colors duration-150 hover:text-gray-800 px-6"
+                className="inline-flex items-center w-full text-sm transition-all duration-300 px-6 hover:ml-2 ease-in-out"
               >
                 <Password className="w-5 h-5" />
                 <span className="ml-4">Change Password</span>
