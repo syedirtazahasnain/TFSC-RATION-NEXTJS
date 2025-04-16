@@ -129,7 +129,7 @@ export default function ProductListPage() {
         setLocalQuantities(quantities);
       }
     } catch (err) {
-      toast.error("Error fetching cart:", err);
+      toast.error(`Error fetching cart: ${err instanceof Error ? err.message : String(err)}`);
       console.error("Error fetching cart:", err);
     }
   };
@@ -158,7 +158,7 @@ export default function ProductListPage() {
       });
 
       const data = await response.json();
-      
+
       if (!response.ok) {
         toast.error(data.message || "Failed to sync cart with backend");
       }
@@ -202,9 +202,13 @@ export default function ProductListPage() {
         }
       }
     } catch (err) {
-      toast.error(err.message || "Failed to sync cart with backend");
-      setError(err.message || "Failed to sync cart with backend");
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to sync cart with backend";
+
+      toast.error(errorMessage);
+      setError(errorMessage);
     }
+
   };
 
   // Update cart state from backend response
@@ -296,9 +300,14 @@ export default function ProductListPage() {
       if (data.data && data.data.cart_data) {
         updateCartState(data.data.cart_data);
       }
-    } catch (err) {
-      toast.error(err.message || "Failed to remove item from cart");
-      setError(err.message || "Failed to remove item from cart");
+    }
+    catch (err) {
+      const errorMessage = err instanceof Error
+        ? err.message
+        : "Failed to remove item from cart";
+
+      toast.error(errorMessage);
+      setError(errorMessage);
     }
   };
 
@@ -331,8 +340,12 @@ export default function ProductListPage() {
       toast.success("Cart cleared Successfully!");
       setApiResponse("Cart cleared successfully");
     } catch (err) {
-      toast.error(data.message || "Failed to clear cart");
-      setError(err.message || "Failed to clear cart");
+      const errorMessage = err instanceof Error
+        ? err.message
+        : "Failed to clear cart";
+
+      toast.error(errorMessage);
+      setError(errorMessage);
     }
   };
 
@@ -368,8 +381,12 @@ export default function ProductListPage() {
         toast.error(data.message || "Failed to place order");
       }
     } catch (err) {
-      toast.error(err.message || "Failed to place order. Please try again.");
-      setApiResponse(err.message || "Failed to place order. Please try again.");
+      const errorMessage = err instanceof Error
+        ? err.message
+        : "Failed to place order. Please try again.";
+
+      toast.error(errorMessage);
+      setApiResponse(errorMessage);
     }
   };
 
@@ -391,28 +408,28 @@ export default function ProductListPage() {
         <Sidebar />
       </div>
       <div className="w-full mx-auto space-y-4 p-4">
-            <div><Header /></div>
-            <div className="px-6 py-6 bg-[#f9f9f9] rounded-[20px] xl:rounded-[25px] text-[#2b3990]">
-              <h1 className="text-2xl font-bold my-0">All Products</h1>
-              <Breadcrumb
-                items={[{ label: "Dashboard" }, { label: "Products" }]}
-              />
-              <div
-          className="absolute top-[10px] right-[10px] z-40 bg-[#fff] p-[10px] rounded-[15px] cursor-pointer"
-          onClick={() => setIsCartOpen(!isCartOpen)}
-        >
-          {isCartOpen ? (
-            <AddShoppingCart />
-          ) : (
-            <div className="flex items-center gap-1 relative">
-              <AddShoppingCart className="text-[#000]" />
-              <div className="absolute top-[-12px] left-[-12px] w-[18px] h-[18px] bg-[#c00] rounded-full flex items-center justify-center">
-                <p className="text-xs my-0 text-[#fff]">{totalQuantity}</p>
+        <div><Header /></div>
+        <div className="relative px-6 py-6 bg-[#f9f9f9] rounded-[20px] xl:rounded-[25px] text-[#2b3990]">
+          <h1 className="text-2xl font-bold my-0">All Products</h1>
+          <Breadcrumb
+            items={[{ label: "Dashboard" }, { label: "Products" }]}
+          />
+          <div
+            className="absolute top-[10px] right-[10px] z-40 bg-[#fff] p-[10px] rounded-[15px] cursor-pointer"
+            onClick={() => setIsCartOpen(!isCartOpen)}
+          >
+            {isCartOpen ? (
+              <AddShoppingCart />
+            ) : (
+              <div className="flex items-center gap-1 relative">
+                <AddShoppingCart className="text-[#000]" />
+                <div className="absolute top-[-12px] left-[-12px] w-[18px] h-[18px] bg-[#c00] rounded-full flex items-center justify-center">
+                  <p className="text-xs my-0 text-[#fff]">{totalQuantity}</p>
+                </div>
               </div>
-            </div>
-          )}
-       </div>
-      </div>
+            )}
+          </div>
+        </div>
         {error && <p className="text-red-500 mb-4">{error}</p>}
         {apiResponse && <p className="text-green-500 mb-4">{apiResponse}</p>}
         {loading ? (
@@ -437,7 +454,7 @@ export default function ProductListPage() {
                         >
                           <div className="bg-[#f9f9f9] rounded-t-lg overflow-hidden h-[150px] w-full">
                             <img
-                              src={product.image ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${product.image}` : "/images/items/atta.webp"} 
+                              src={product.image ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${product.image}` : "/images/items/atta.webp"}
                               alt=""
                               className="w-full h-full object-cover"
                               onError={(e) => {
@@ -559,10 +576,10 @@ export default function ProductListPage() {
                               <div className="">
                                 <div className="w-[50px] rounded-lg h-full overflow-hidden"><img
                                   src={
-                                    item.product?.image 
-                                      ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${item.product.image}` 
+                                    item.product?.image
+                                      ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${item.product.image}`
                                       : "/images/items/atta.webp"
-                                  } 
+                                  }
                                   alt={item.product?.name || "Product image"}
                                   className="w-full h-full object-cover"
                                   onError={(e) => {
@@ -652,16 +669,16 @@ export default function ProductListPage() {
                   <li key={item.id || item.product_id} className="mb-2 p-[10px] rounded-[15px] bg-[#fff] relative w-full flex items-center gap-[10px]">
                     <div className="">
                       <div className="w-[50px] rounded-lg h-full overflow-hidden"><img
-                       src={
-                        item.product?.image 
-                          ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${item.product.image}` 
-                          : "/images/items/atta.webp"
-                      } 
-                      alt={item.product?.name || "Product image"}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.currentTarget.src = "/images/items/atta.webp";
-                      }}
+                        src={
+                          item.product?.image
+                            ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${item.product.image}`
+                            : "/images/items/atta.webp"
+                        }
+                        alt={item.product?.name || "Product image"}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = "/images/items/atta.webp";
+                        }}
                       />
                       </div>
                     </div>
