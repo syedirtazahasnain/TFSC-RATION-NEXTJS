@@ -42,7 +42,7 @@ export default function Page() {
                     />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[10px] xl:gap-[15px]">
-                    {Array.from({ length: 20 }).map((_, index) => (
+                    {Array.from({ length: 40 }).map((_, index) => (
                         <div
                             key={index}
                             className="rounded-[20px] overflow-hidden bg-[#f9f9f9] p-[10px] md:p-[15px] xl:p-[20px] relative"

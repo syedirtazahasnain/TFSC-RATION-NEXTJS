@@ -49,6 +49,7 @@ export default function ProductsPage() {
   const searchParams = useSearchParams();
   const currentPage = searchParams.get('page') || '1';
   const [isOpen, setIsOpen] = useState(false);
+  const [enabled, setEnabled] = useState(false);
 
   const [price, setPrice] = useState('');
 
@@ -167,24 +168,41 @@ export default function ProductsPage() {
                     </p>
                     <button className='text-xs relative group' onClick={() => setIsOpen(true)}>
                       <Create sx={{ fontSize: 15 }} />
-                      <span className="absolute top-[-20px] left-[0px] my-0 px-[5px] py-[2px] text-[10px] text-white bg-[#2b3990] rounded opacity-0 group-hover:opacity-100 transition text-nowrap">
+                      <span className="absolute top-[-20px] left-[0px] my-0 px-[5px] py-[2px] text-[10px] text-white bg-[#c00] rounded opacity-0 group-hover:opacity-100 transition text-nowrap">
                         Edit Price
                       </span>
                     </button>
                   </div>
                 </div>
-                <div className="mx-4 mb-2 flex justify-end">
-                  <Link
-                    href={`/dashboard/admin/products/edit/${product.id}`}
-                    className="text-[#2b3990] hover:text-[#00aeef] relative group"
-                  >
-                    <DriveFileRenameOutline />
-
-                    {/* Tooltip */}
-                    <span className="absolute top-[-15px] right-[-5px] my-0 px-[5px] py-[2px] text-[10px] text-white bg-[#2b3990] rounded opacity-0 group-hover:opacity-100 transition text-nowrap">
-                      Edit Product
+                <div className="mx-4 mb-2 flex justify-between items-center">
+                  <div className='group relative'> 
+                    <button
+                      onClick={() => setEnabled(!enabled)}
+                      className={`w-8 h-4 flex items-center rounded-full p-1 transition duration-300 ease-in-out ${enabled ? 'bg-[#2b3990]' : 'bg-gray-300'
+                        }`}
+                    >
+                      <div
+                        className={`bg-white w-2.5 h-2.5 rounded-full shadow-md transform duration-300 ease-in-out ${enabled ? 'translate-x-4' : 'translate-x-0'
+                          }`}
+                      />
+                    </button>
+                    <span className="absolute top-[-20px] left-[0px] my-0 px-[5px] py-[2px] text-[10px] text-white bg-[#c00] rounded opacity-0 group-hover:opacity-100 transition text-nowrap">
+                      Hide/Show Product
                     </span>
-                  </Link>
+                  </div>
+                  <div>
+                    <Link
+                      href={`/dashboard/admin/products/edit/${product.id}`}
+                      className="text-[#2b3990] hover:text-[#00aeef] relative group"
+                    >
+                      <DriveFileRenameOutline />
+
+                      {/* Tooltip */}
+                      <span className="absolute top-[-15px] right-[-5px] my-0 px-[5px] py-[2px] text-[10px] text-white bg-[#c00] rounded opacity-0 group-hover:opacity-100 transition text-nowrap">
+                        Edit Product
+                      </span>
+                    </Link>
+                  </div>
 
                 </div>
               </div>
