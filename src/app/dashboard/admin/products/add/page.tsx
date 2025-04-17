@@ -1,8 +1,8 @@
 'use client';
 
 import ProductFormPage from '@/app/_components/ProductFormPage';
-import Header from "@/app/_components/header/index";
-import Sidebar from "@/app/_components/sidebar/index";
+import Header from "@/app/_components/adminheader/index";
+import Sidebar from "@/app/_components/adminsidebar/index";
 import Breadcrumb from "@/app/_components/ui/Breadcrumb";
 
 export default function AddProductPage() {

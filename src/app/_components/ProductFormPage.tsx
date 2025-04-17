@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
+import Loader from "@/app/_components/loader/index";
 
 interface ProductFormProps {
   productId?: string;
@@ -156,8 +157,11 @@ export default function ProductFormPage({ productId }: ProductFormProps) {
     }
   };
 
-  if (isLoading)
-    return <div className="text-center py-8">Loading product...</div>;
+  if (isLoading) {
+    return (
+      <Loader />
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit}>

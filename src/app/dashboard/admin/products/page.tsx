@@ -4,11 +4,14 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import Header from "@/app/_components/header/index";
-import Sidebar from "@/app/_components/sidebar/index";
+import Header from "@/app/_components/adminheader/index";
+import Sidebar from "@/app/_components/adminsidebar/index";
 import Breadcrumb from "@/app/_components/ui/Breadcrumb";
-import { DriveFileRenameOutline } from "@mui/icons-material";
+import { DriveFileRenameOutline, Create } from "@mui/icons-material";
 import { toast } from "react-toastify";
+import { Dialog } from '@headlessui/react';
+import ErrorMessage from "@/app/_components/error/index";
+import Loader from "@/app/_components/loader/index";
 
 interface Product {
   id: number;
@@ -45,7 +48,14 @@ export default function ProductsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentPage = searchParams.get('page') || '1';
+  const [isOpen, setIsOpen] = useState(false);
 
+  const [price, setPrice] = useState('');
+
+  const handleSave = () => {
+    console.log('New price:', price);
+    setIsOpen(false);
+  };
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -84,9 +94,22 @@ export default function ProductsPage() {
     fetchProducts();
   }, [currentPage, router]);
 
-  if (loading) return <div className="container mx-auto p-4">Loading...</div>;
-  if (error) return <div className="container mx-auto p-4 text-red-500">{error}</div>;
-  if (!products?.data?.length) return <div className="container mx-auto p-4">No products found</div>;
+
+  if (loading) {
+    return (
+      <Loader />
+    );
+  }
+
+  if (error) {
+    return (
+      <ErrorMessage error={error} />
+    );
+  }
+
+  if (!products?.data?.length) {
+    return <ErrorMessage error="No products found" />;
+  }
 
   return (
     <div className="min-h-screen flex gap-[20px] px-[20px] xl:px-[30px]">
@@ -113,9 +136,9 @@ export default function ProductsPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-[10px] xl:gap-[15px] mb-8">
           {products.data.map((product) => (
-            <div key={product.id} className="bg-white rounded-[20px] overflow-hidden border-[1px] border-[#2b3990] border-opacity-40">
+            <div key={product.id} className="bg-white rounded-[20px] border-[1px] border-[#2b3990] border-opacity-40 overflow-hidden">
               <div className="flex flex-col h-full">
-                <div className="bg-[#f9f9f9] rounded-t-lg overflow-hidden h-[150px] w-full">
+                <div className="bg-[#f9f9f9] overflow-hidden h-[150px] w-full">
                   <img
                     src={product.image ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${product.image}` : "/images/items/atta.webp"}
                     alt=""
@@ -135,25 +158,73 @@ export default function ProductsPage() {
                   <div className="flex items-center justify-end">
                     <p className="my-0 text-sm font-semibold">1 kg</p>
                   </div>
-                  <p className="text-xl font-semibold">
-                    {product.price}{" "}
-                    <span className="pl-[2px] text-sm font-normal">
-                      Rs
-                    </span>
-                  </p>
+                  <div className='relative flex items-center gap-[10px]'>
+                    <p className="text-xl font-semibold">
+                      {product.price}{" "}
+                      <span className="pl-[2px] text-sm font-normal">
+                        Rs
+                      </span>
+                    </p>
+                    <button className='text-xs relative group' onClick={() => setIsOpen(true)}>
+                      <Create sx={{ fontSize: 15 }} />
+                      <span className="absolute top-[-20px] left-[0px] my-0 px-[5px] py-[2px] text-[10px] text-white bg-[#2b3990] rounded opacity-0 group-hover:opacity-100 transition text-nowrap">
+                        Edit Price
+                      </span>
+                    </button>
+                  </div>
                 </div>
                 <div className="mx-4 mb-2 flex justify-end">
                   <Link
                     href={`/dashboard/admin/products/edit/${product.id}`}
-                    className="text-[#2b3990] hover:text-[#00aeef]"
+                    className="text-[#2b3990] hover:text-[#00aeef] relative group"
                   >
                     <DriveFileRenameOutline />
+
+                    {/* Tooltip */}
+                    <span className="absolute top-[-15px] right-[-5px] my-0 px-[5px] py-[2px] text-[10px] text-white bg-[#2b3990] rounded opacity-0 group-hover:opacity-100 transition text-nowrap">
+                      Edit Product
+                    </span>
                   </Link>
+
                 </div>
               </div>
             </div>
           ))}
         </div>
+
+
+        <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-50">
+          {/* Overlay */}
+          <div className="fixed inset-0 bg-black bg-opacity-40" aria-hidden="true"></div>
+
+          {/* Dialog content wrapper */}
+          <div className="fixed inset-0 flex items-center justify-center p-4 z-50">
+            <Dialog.Panel className="bg-white rounded-xl max-w-sm w-full p-6 space-y-4">
+              <Dialog.Title className="text-lg font-semibold text-[#2b3990]">Update Price</Dialog.Title>
+              <input
+                type="text"
+                className="w-full border border-gray-300 rounded px-3 py-2"
+                placeholder="Enter new price"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+              />
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="px-4 py-2 text-sm rounded-[10px] hover:text-[#fff] bg-gray-200 hover:bg-gray-800"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSave}
+                  className="px-4 py-2 text-sm rounded-[10px] bg-[#2b3990] text-white hover:bg-[#00aeef]"
+                >
+                  Save
+                </button>
+              </div>
+            </Dialog.Panel>
+          </div>
+        </Dialog>
 
         {/* Pagination Controls */}
         <div className="flex justify-center gap-2">
