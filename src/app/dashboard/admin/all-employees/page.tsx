@@ -53,6 +53,8 @@ export default function Page() {
         email: "",
         status: "",
     });
+    const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
     const searchParams = useSearchParams();
     const currentPage = searchParams.get('page') || '1';
@@ -95,6 +97,14 @@ export default function Page() {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
+        // Clear validation error when user types
+        if (validationErrors[name]) {
+            setValidationErrors(prev => {
+                const newErrors = {...prev};
+                delete newErrors[name];
+                return newErrors;
+            });
+        }
     };
 
     const handleEdit = (user: User) => {
@@ -104,6 +114,7 @@ export default function Page() {
             email: user.email,
             status: user.status,
         });
+        setValidationErrors({});
         setIsOpen(true);
     };
 
@@ -117,10 +128,13 @@ export default function Page() {
                 return;
             }
 
+            setIsSubmitting(true);
+            setValidationErrors({});
+
             const response = await fetch(
-                `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/users/${selectedUser.id}`,
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/users-update/${selectedUser.id}`,
                 {
-                    method: 'PUT',
+                    method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         Authorization: `Bearer ${token}`,
@@ -129,11 +143,18 @@ export default function Page() {
                 }
             );
 
+            const data = await response.json();
+
             if (!response.ok) {
-                throw new Error('Failed to update user');
+                if (response.status === 403 && data.errors) {
+                    setValidationErrors(data.errors);
+                    toast.error("Please fix the validation errors");
+                    return;
+                }
+                throw new Error(data.message || 'Failed to update user');
             }
 
-            toast.success('User updated successfully');
+            toast.success(data.message || 'User updated successfully');
             setIsOpen(false);
 
             // Refresh the user list
@@ -149,6 +170,8 @@ export default function Page() {
             setUsers(updatedData.data);
         } catch (err) {
             toast.error(err instanceof Error ? err.message : 'Failed to update user');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -230,7 +253,6 @@ export default function Page() {
                     ))}
                 </div>
 
-                {/* Pagination - Updated to match your preferred method */}
                 {users && users.links.length > 0 && (
                     <div className="flex justify-center gap-2 mt-6">
                         {users.links.map((link, index) => {
@@ -259,8 +281,10 @@ export default function Page() {
                 )}
             </div>
 
-            {/* Modal Dialog */}
-            <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-50">
+            <Dialog open={isOpen} onClose={() => {
+                setIsOpen(false);
+                setValidationErrors({});
+            }} className="relative z-50">
                 <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
                 <div className="fixed inset-0 flex items-center justify-center p-4">
                     <Dialog.Panel className="w-full max-w-md bg-white rounded-lg p-6 shadow-lg">
@@ -269,47 +293,83 @@ export default function Page() {
                         </Dialog.Title>
 
                         <div className="space-y-4">
-                            <input
-                                type="text"
-                                name="name"
-                                value={formData.name}
-                                onChange={handleChange}
-                                placeholder="Full Name"
-                                className="w-full border rounded px-3 py-2"
-                            />
-                            <input
-                                type="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                placeholder="Email"
-                                className="w-full border rounded px-3 py-2"
-                            />
-                            <select
-                                name="status"
-                                value={formData.status}
-                                onChange={handleChange}
-                                className="w-full border rounded px-3 py-2"
-                            >
-                                <option value="Permanent">Permanent</option>
-                                <option value="Probation">Probation</option>
-                                <option value="Contract">Contract</option>
-                                <option value="Internship">Internship</option>
-                            </select>
+                            <div>
+                                <input
+                                    type="text"
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    placeholder="Full Name"
+                                    className={`w-full border rounded px-3 py-2 ${
+                                        validationErrors.name ? 'border-red-500' : ''
+                                    }`}
+                                />
+                                {validationErrors.name && (
+                                    <p className="mt-1 text-sm text-red-500">{validationErrors.name[0]}</p>
+                                )}
+                            </div>
+                            
+                            <div>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    placeholder="Email"
+                                    className={`w-full border rounded px-3 py-2 ${
+                                        validationErrors.email ? 'border-red-500' : ''
+                                    }`}
+                                />
+                                {validationErrors.email && (
+                                    <p className="mt-1 text-sm text-red-500">{validationErrors.email[0]}</p>
+                                )}
+                            </div>
+                            
+                            <div>
+                                <select
+                                    name="status"
+                                    value={formData.status}
+                                    onChange={handleChange}
+                                    className={`w-full border rounded px-3 py-2 ${
+                                        validationErrors.status ? 'border-red-500' : ''
+                                    }`}
+                                >
+                                    <option value="">Select Status</option>
+                                    <option value="Permanent">Permanent</option>
+                                    <option value="Probation">Probation</option>
+                                    <option value="Contract">Contract</option>
+                                    <option value="Internship">Internship</option>
+                                </select>
+                                {validationErrors.status && (
+                                    <p className="mt-1 text-sm text-red-500">{validationErrors.status[0]}</p>
+                                )}
+                            </div>
                         </div>
 
                         <div className="mt-6 flex justify-end gap-2">
                             <button
-                                onClick={() => setIsOpen(false)}
+                                onClick={() => {
+                                    setIsOpen(false);
+                                    setValidationErrors({});
+                                }}
                                 className="px-4 py-2 text-sm rounded-[10px] hover:text-[#fff] bg-gray-200 hover:bg-gray-800"
+                                disabled={isSubmitting}
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleSave}
-                                className="px-4 py-2 text-sm rounded-[10px] bg-[#2b3990] text-white hover:bg-[#00aeef]"
+                                className="px-4 py-2 text-sm rounded-[10px] bg-[#2b3990] text-white hover:bg-[#00aeef] flex items-center justify-center gap-2"
+                                disabled={isSubmitting}
                             >
-                                Save
+                                {isSubmitting ? (
+                                    <>
+                                        <Loader size={20} color="white" />
+                                        Saving...
+                                    </>
+                                ) : (
+                                    "Save"
+                                )}
                             </button>
                         </div>
                     </Dialog.Panel>
