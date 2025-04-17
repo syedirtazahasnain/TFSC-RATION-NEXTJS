@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Header from "@/app/_components/header/index";
-import Sidebar from "@/app/_components/sidebar/index";
+import Header from "@/app/_components/adminheader/index";
+import Sidebar from "@/app/_components/adminsidebar/index";
 import Breadcrumb from "@/app/_components/ui/Breadcrumb";
 import "@/app/extra.css";
 import {
@@ -22,56 +22,128 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  PieChart,
+  Pie,
 } from "recharts";
+import {
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  Radar,
+} from "recharts";
+
+const data01 = [
+  {
+    name: "Jan",
+    Rashan: 3000,
+    Cash: 1398,
+  },
+  {
+    name: "Feb",
+    Rashan: 2000,
+    Cash: 9800,
+  },
+  {
+    name: "Mar",
+    Rashan: 2780,
+    Cash: 3908,
+  },
+  {
+    name: "Apr",
+    Rashan: 1890,
+    Cash: 4800,
+  },
+  {
+    name: "May",
+    Rashan: 2390,
+    Cash: 3800,
+  },
+  {
+    name: "Jun",
+    Rashan: 10490,
+    Cash: 2300,
+  },
+  {
+    name: "Jul",
+    Rashan: 3490,
+    Cash: 4300,
+  },
+  {
+    name: "Aug",
+    Rashan: 490,
+    Cash: 5300,
+  },
+  {
+    name: "Sep",
+    Rashan: 3490,
+    Cash: 4300,
+  },
+  {
+    name: "Oct",
+    Rashan: 7490,
+    Cash: 6300,
+  },
+  {
+    name: "Nov",
+    Rashan: 3490,
+    Cash: 4300,
+  },
+  {
+    name: "Dec",
+    Rashan: 13490,
+    Cash: 100,
+  },
+];
 
 const data = [
   {
     name: "Jan",
-    uv: 0,
+    Orders: 0,
   },
   {
     name: "Feb",
-    uv: 500,
+    Orders: 500,
   },
   {
     name: "Mar",
-    uv: 1000,
+    Orders: 1000,
   },
   {
     name: "Apr",
-    uv: 1580,
+    Orders: 1580,
   },
   {
     name: "May",
-    uv: 1190,
+    Orders: 1190,
   },
   {
     name: "Jun",
-    uv: 950,
+    Orders: 950,
   },
   {
     name: "Jul",
-    uv: 1490,
+    Orders: 1490,
   },
   {
     name: "Aug",
-    uv: 2090,
+    Orders: 2090,
   },
   {
     name: "Sep",
-    uv: 1090,
+    Orders: 1090,
   },
   {
     name: "Oct",
-    uv: 3490,
+    Orders: 3490,
   },
   {
     name: "Nov",
-    uv: 2490,
+    Orders: 2490,
   },
   {
     name: "Dec",
-    uv: 90,
+    Orders: 90,
   },
 ];
 
@@ -132,25 +204,71 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-[10px] lg:gap-[15px] xl:gap-[20px]">
-          <div className="bg-[#00aeef] bg-opacity-10 rounded-[15px] xl:rounded-[20px] p-[10px] lg:p-[15px] xl:p-[20px]">
-            <div className="">
-              <p className="my-0 text-[24px] font-semibold">
-                11421310 <span className="text-sm ml-[2px]">Rs</span>
-              </p>
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-[10px] lg:gap-[15px] xl:gap-[20px]">
+          <div className="bg-[#f9f9f9] rounded-[15px] xl:rounded-[20px] p-[10px] lg:p-[15px] xl:p-[20px]">
+            <div className="pb-[10px] border-b-[1px]">
+              <p className="my-0 text-[18px] font-semibold">Top Month</p>
               <p className="text-[12px] my-0">
-                Company Contribution This Month
+                Month with the highest rashan amount.
               </p>
             </div>
+            <div className="py-[10px] flex items-center justify-between gap-[10px]">
+              <p className="text-[12px] my-0 opacity-60">Employee Name</p>
+              <p className="text-[12px] my-0 opacity-60">Amount</p>
+            </div>
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
+              <div
+                key={item}
+                className="flex items-center justify-between gap-[10px] py-[2px]"
+              >
+                <p className="text-[14px] my-0">January</p>
+                <p className="text-[14px] my-0">
+                  2445000 <span className="text-[10px]">Rs</span>
+                </p>
+              </div>
+            ))}
           </div>
-          <div className="bg-[#79f123] bg-opacity-10 rounded-[15px] xl:rounded-[20px] p-[10px] lg:p-[15px] xl:p-[20px]">
-            <div className="">
-              <p className="my-0 text-[24px] font-semibold">
-                10421310 <span className="text-sm ml-[2px]">Rs</span>
-              </p>
+          <div className="bg-[#f9f9f9] rounded-[15px] xl:rounded-[20px] p-[10px] lg:p-[15px] xl:p-[20px]">
+            <div className="pb-[10px] border-b-[1px]">
+              <p className="my-0 text-[18px] font-semibold">Top Users</p>
               <p className="text-[12px] my-0">
-                Employees Contribution This Month
+                Employee with the highest rashan amount.
               </p>
+            </div>
+            <div className="py-[10px] flex items-center justify-between gap-[10px]">
+              <p className="text-[12px] my-0 opacity-60">Employee Name</p>
+              <p className="text-[12px] my-0 opacity-60">Amount</p>
+            </div>
+            {[9, 10, 11, 12, 13, 14, 15, 16].map((item) => (
+              <div className="flex items-center justify-between gap-[10px] py-[2px]">
+                <p className="text-[14px] my-0">Gohar Ali</p>
+                <p className="text-[14px] my-0">
+                  24450 <span className="text-[10px]">Rs</span>
+                </p>
+              </div>
+            ))}
+          </div>
+          <div className="bg-[#f9f9f9] rounded-[15px] xl:rounded-[20px] p-[10px] lg:p-[15px] xl:p-[20px] lg:col-span-2">
+            <div className="pb-[10px] border-b-[1px]">
+              <p className="my-0 text-[18px] font-semibold">
+                Users Rashan/Cash
+              </p>
+            </div>
+            <div className="w-full h-[250px] mt-[20px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart
+                  data={data01}
+                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis className="text-xs" dataKey="name" />
+                  <YAxis className="text-xs" />
+                  <Tooltip />
+                  <Legend />
+                  <Line type="monotone" dataKey="Rashan" stroke="#00aeef" />
+                  <Line type="monotone" dataKey="Cash" stroke="#2b3990" />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </div>
@@ -161,6 +279,7 @@ export default function AdminDashboard() {
               <p className="text-[12px] my-0">
                 Amount of rashan purchased per month.
               </p>
+              <p className="text-[12px] my-0">No of rashan order per month.</p>
             </div>
             <div className="w-full h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
@@ -179,7 +298,7 @@ export default function AdminDashboard() {
                   <XAxis className="text-xs" dataKey="name" />
                   <YAxis className="text-xs" />
                   <Tooltip />
-                  <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
+                  <Line type="monotone" dataKey="Orders" stroke="#82ca9d" />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -220,26 +339,24 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {[1, 2, 3, 4, 5].map((item) => (
-                    <tr key={item} className="border-b">
-                      {" "}
-                      {/* Added key prop here */}
+                  {[1, 2, 3, 4, 5, 6, 7].map((item) => (
+                    <tr className="border-b">
                       <td className="py-2 px-5">
-                        <p className="font-semibold text-md">{1000 + item}</p>
+                        <p className="font-semibold text-sm">{1000 + item}</p>
                       </td>
                       <td className="py-2 px-2">
-                        <p className="text-md">0179</p>
+                        <p className="text-sm">0179</p>
                       </td>
                       <td className="py-2 px-2">
-                        <p className="text-md">Gohar Ali Jafri</p>
+                        <p className="text-sm">Gohar Ali Jafri</p>
                       </td>
                       <td className="py-2 px-2">
-                        <p className="text-md">
+                        <p className="text-sm">
                           14470 <span className="text-sm ml-[2px]">Rs</span>
                         </p>
                       </td>
                       <td className="py-2 px-2">
-                        <p className="text-md">
+                        <p className="text-sm">
                           10000 <span className="text-sm ml-[2px]">Rs</span>
                         </p>
                       </td>

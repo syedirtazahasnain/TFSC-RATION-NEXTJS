@@ -32,11 +32,11 @@ export default function SignupPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          name, 
-          email, 
+        body: JSON.stringify({
+          name,
+          email,
           password,
-          password_confirmation: passwordConfirmation 
+          password_confirmation: passwordConfirmation
         }),
       });
 
@@ -47,7 +47,7 @@ export default function SignupPage() {
       }
       localStorage.setItem('token', data.data.token);
       router.push('/product-list'); // Redirect to product list page
-      
+
     } catch (err: any) {
       console.error('Registration error:', err);
       toast.error(err.message || 'An error occurred during registration. Please try again.');
@@ -122,8 +122,8 @@ export default function SignupPage() {
               minLength={8}
             />
           </div>
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={isLoading}
             className={`w-full bg-[#2b3990] text-white py-2 rounded-lg hover:bg-[#00aeef] transition-colors
               ${isLoading ? 'opacity-75 cursor-not-allowed' : ''}`}
