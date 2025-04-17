@@ -39,7 +39,7 @@ export default function Page() {
         throw new Error("Authentication token not found");
       }
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/employees/import`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/product/import`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -80,7 +80,7 @@ export default function Page() {
           <Header />
         </div>
         <div className="px-6 py-6 bg-[#f9f9f9] rounded-[20px] xl:rounded-[25px] text-[#2b3990]">
-          <h1 className="text-2xl font-bold my-0">Import Employees</h1>
+          <h1 className="text-2xl font-bold my-0">Import Products</h1>
           <Breadcrumb
             items={[{ label: "Dashboard" }, { label: "Import" }]}
           />

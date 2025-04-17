@@ -218,6 +218,13 @@ export default function Index() {
                 <ImportExport className="w-5 h-5" />
                 <span className="ml-4">Import Data</span>
               </Link>
+              <Link
+                href="/dashboard/admin/import-products"
+                className="inline-flex items-center w-full text-sm transition-all duration-300 px-6 hover:ml-2 ease-in-out"
+              >
+                <ImportExport className="w-5 h-5" />
+                <span className="ml-4">Import Products</span>
+              </Link>
             </>
           </li>
           <li>
