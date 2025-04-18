@@ -21,6 +21,10 @@ interface Product {
   status?: string;
 }
 
+interface ValidationErrors {
+  [key: string]: string[];
+}
+
 export default function ProductFormPage({ productId }: ProductFormProps) {
   const router = useRouter();
   const [product, setProduct] = useState<Product>({
@@ -34,6 +38,7 @@ export default function ProductFormPage({ productId }: ProductFormProps) {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(!!productId);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<ValidationErrors>({});
 
   useEffect(() => {
     if (!productId) {
@@ -53,7 +58,9 @@ export default function ProductFormPage({ productId }: ProductFormProps) {
           }
         );
 
-        if (!response.ok) toast.error("Failed to fetch product");
+        if (!response.ok) {
+          throw new Error("Failed to fetch product");
+        }
 
         const data = await response.json();
         setProduct(data.data);
@@ -83,8 +90,15 @@ export default function ProductFormPage({ productId }: ProductFormProps) {
       ...prev,
       [name]: value,
     }));
+    // Clear error when field is changed
+    if (errors[name]) {
+      setErrors(prev => {
+        const newErrors = {...prev};
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
   };
-
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -104,6 +118,7 @@ export default function ProductFormPage({ productId }: ProductFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setErrors({});
 
     try {
       const token = localStorage.getItem("token");
@@ -113,17 +128,20 @@ export default function ProductFormPage({ productId }: ProductFormProps) {
       }
 
       const formData = new FormData();
-      formData.append("name", product.name);
-      formData.append("detail", product.detail);
-      formData.append("price", product.price);
-      formData.append("measure", product.measure);
-      formData.append("type", product.type);
+      formData.append("name", product.name.trim());
+      formData.append("detail", product.detail.trim());
+      formData.append("price", product.price.trim());
+      formData.append("measure", product.measure.trim());
+      formData.append("type", product.type.trim());
+      
       if (product.brand) {
-        formData.append('brand', product.brand);
+        formData.append('brand', product.brand.trim());
       }
+      
       if (product.image instanceof File) {
         formData.append("image", product.image);
       }
+      
       if (productId) {
         formData.append("id", productId);
       }
@@ -136,17 +154,22 @@ export default function ProductFormPage({ productId }: ProductFormProps) {
             Authorization: `Bearer ${token}`,
           },
           body: formData,
-          credentials: "include",
         }
       );
-      console.log("Response status:", response.status);
-      console.log("Response headers:", response.headers);
-      // if (!response.ok) toast.error("Failed to save product");
 
       const data = await response.json();
-      console.log("Response data:", data);
 
-      toast.success(data.message);
+      if (!response.ok) {
+        if (response.status === 403 && data.errors) {
+          // Handle validation errors
+          setErrors(data.errors);
+          toast.error("Please fix the validation errors");
+          return;
+        }
+        throw new Error(data.message || "Failed to save product");
+      }
+
+      toast.success(data.message || "Product saved successfully");
       router.push("/dashboard/admin/products");
     } catch (error) {
       toast.error(
@@ -158,9 +181,7 @@ export default function ProductFormPage({ productId }: ProductFormProps) {
   };
 
   if (isLoading) {
-    return (
-      <Loader />
-    );
+    return <Loader />;
   }
 
   return (
@@ -168,33 +189,39 @@ export default function ProductFormPage({ productId }: ProductFormProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[10px] xl:gap-[20px]">
         <div>
           <label className="block text-xs font-semibold text-gray-700 mb-1">
-            Product Name
+            Product Name *
           </label>
           <input
             type="text"
             name="name"
             value={product.name}
             onChange={handleChange}
-            className="w-full px-3 py-2 border rounded-md"
+            className={`w-full px-3 py-2 border rounded-md ${errors.name ? 'border-red-500' : ''}`}
             required
           />
+          {errors.name && (
+            <p className="text-red-500 text-xs mt-1">{errors.name[0]}</p>
+          )}
         </div>
         <div>
           <label className="block text-xs font-semibold text-gray-700 mb-1">
-            Description
+            Description *
           </label>
           <textarea
             name="detail"
             value={product.detail}
             onChange={handleChange}
             rows={4}
-            className="w-full px-3 py-2 border rounded-md"
+            className={`w-full px-3 py-2 border rounded-md ${errors.detail ? 'border-red-500' : ''}`}
             required
           />
+          {errors.detail && (
+            <p className="text-red-500 text-xs mt-1">{errors.detail[0]}</p>
+          )}
         </div>
         <div>
           <label className="block text-xs font-semibold text-gray-700 mb-1">
-            Price
+            Price *
           </label>
           <input
             type="number"
@@ -203,38 +230,47 @@ export default function ProductFormPage({ productId }: ProductFormProps) {
             onChange={handleChange}
             min="0"
             step="0.01"
-            className="w-full px-3 py-2 border rounded-md"
+            className={`w-full px-3 py-2 border rounded-md ${errors.price ? 'border-red-500' : ''}`}
             required
           />
+          {errors.price && (
+            <p className="text-red-500 text-xs mt-1">{errors.price[0]}</p>
+          )}
         </div>
         <div>
           <label className="block text-xs font-semibold text-gray-700 mb-1">
-            Measure
+            Measure *
           </label>
           <input
             type="text"
             name="measure"
             value={product.measure}
             onChange={handleChange}
-            className="w-full px-3 py-2 border rounded-md"
+            className={`w-full px-3 py-2 border rounded-md ${errors.measure ? 'border-red-500' : ''}`}
             required
           />
+          {errors.measure && (
+            <p className="text-red-500 text-xs mt-1">{errors.measure[0]}</p>
+          )}
         </div>
         <div>
           <label className="block text-xs font-semibold text-gray-700 mb-1">
-            Type
+            Type *
           </label>
           <select
             name="type"
             value={product.type}
             onChange={handleChange}
-            className="w-full px-3 py-2 border rounded-md"
+            className={`w-full px-3 py-2 border rounded-md ${errors.type ? 'border-red-500' : ''}`}
             required
           >
             <option value="">Select Type</option>
             <option value="Milk">Milk</option>
             <option value="Rice">Rice</option>
           </select>
+          {errors.type && (
+            <p className="text-red-500 text-xs mt-1">{errors.type[0]}</p>
+          )}
         </div>
         <div>
           <label className="block text-xs font-semibold text-gray-700 mb-1">
@@ -243,7 +279,7 @@ export default function ProductFormPage({ productId }: ProductFormProps) {
           <input
             type="text"
             name="brand"
-            value={product.brand}
+            value={product.brand || ''}
             onChange={handleChange}
             className="w-full px-3 py-2 border rounded-md"
           />

@@ -493,7 +493,7 @@ export default function ProductListPage() {
                               <h2 className="text-xl font-semibold my-0 capitalize">
                                 {product.name}
                               </h2>
-                              <p className="my-0 text-xs">Flour</p>
+                              <p className="my-0 text-xs">{product.type}</p>
                             </div>
                             <div className="flex items-center justify-end">
                               <p className="my-0 text-sm font-semibold">1 kg</p>
