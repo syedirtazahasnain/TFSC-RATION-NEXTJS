@@ -27,12 +27,20 @@ export default function ErrorMessage({ error }: ErrorMessageProps) {
                 <p className="text-sm text-gray-700 mb-4">
                     {error || "An unexpected error occurred. Please try again later."}
                 </p>
-                <button
-                    onClick={() => location.reload()}
-                    className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
-                >
-                    Retry
-                </button>
+                <div className="flex items-center justify-center gap-[10px]">
+                    <button
+                        onClick={() => location.reload()}
+                        className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+                    >
+                        Retry
+                    </button>
+                    <button
+                        onClick={() => window.history.back()}
+                        className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+                    >
+                        Go Back
+                    </button>
+                </div>
             </div>
         </div>
     );

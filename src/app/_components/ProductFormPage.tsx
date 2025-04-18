@@ -265,8 +265,14 @@ export default function ProductFormPage({ productId }: ProductFormProps) {
             required
           >
             <option value="">Select Type</option>
-            <option value="Milk">Milk</option>
+            <option value="Flour">Flour</option>
             <option value="Rice">Rice</option>
+            <option value="Milk">Milk</option>
+            <option value="Oil">Oil</option>
+            <option value="Tea">Tea</option>
+            <option value="Surf">Surf</option>
+            <option value="Pulses">Pulses</option>
+            <option value="Spices">Spices</option>
           </select>
           {errors.type && (
             <p className="text-red-500 text-xs mt-1">{errors.type[0]}</p>

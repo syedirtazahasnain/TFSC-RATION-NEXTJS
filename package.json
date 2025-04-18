@@ -24,7 +24,8 @@
     "react-toastify": "^11.0.5",
     "recharts": "^2.15.2",
     "sweetalert2": "^11.19.1",
-    "sweetalert2-react-content": "^5.1.0"
+    "sweetalert2-react-content": "^5.1.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

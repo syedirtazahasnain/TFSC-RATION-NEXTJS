@@ -10,6 +10,9 @@ import Header from "@/app/_components/header/index";
 import Breadcrumb from "@/app/_components/ui/Breadcrumb";
 import { Visibility } from "@mui/icons-material";
 
+import ErrorMessage from "@/app/_components/error/index";
+import Loader from "@/app/_components/loader/index";
+
 interface PaginatedOrders {
   data: Order[];
   current_page: number;
@@ -71,11 +74,22 @@ export default function OrdersPage() {
     fetchOrders();
   }, [currentPage, router]);
 
-  if (loading) return <div className="container mx-auto p-4">Loading...</div>;
-  if (error)
-    return <div className="container mx-auto p-4 text-red-500">{error}</div>;
-  if (!orders?.data.length)
-    return <div className="container mx-auto p-4">No orders found</div>;
+
+    if (loading) {
+      return (
+        <Loader />
+      );
+    }
+  
+    if (error) {
+      return (
+        <ErrorMessage error={error} />
+      );
+    }
+  
+    if (!orders?.data.length) {
+      return <ErrorMessage error="No orders found" />;
+    }
 
   return (
     <div className="min-h-screen flex gap-[20px] px-[20px] xl:px-[30px]">
