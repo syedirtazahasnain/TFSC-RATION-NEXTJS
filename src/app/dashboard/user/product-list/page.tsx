@@ -18,15 +18,35 @@ import { Edit, Save } from "@mui/icons-material";
 
 interface CartItem {
   id?: number;
+  cart_id?: number;
   product_id: number;
-  quantity: number;
-  unit_price?: number;
-  total?: number;
+  quantity: number | string;
+  unit_price: number | string;
+  total: number | string;
+  created_at?: string;
+  updated_at?: string;
+  deleted_at?: string | null;
   product?: {
     id: number;
     name: string;
     detail: string;
     price: string;
+    image?: string;
+    measure?: string;
+  };
+}
+
+interface CartResponse {
+  success: boolean;
+  status_code: number;
+  message: string;
+  data?: {
+    cart_data: CartItem[] | { items: CartItem[] }; 
+    payable_amount: number;
+  };
+  errors?: {
+    cart_data: CartItem[] | { items: CartItem[] }; 
+    payable_amount: number;
   };
 }
 
@@ -115,33 +135,57 @@ export default function ProductListPage() {
           },
         }
       );
+      const data: CartResponse = await response.json();
 
       if (!response.ok) {
-        toast.error("Failed to fetch cart");
+        toast.error(data.message || "Failed to fetch cart");
+        return;
       }
+      if (data.data?.cart_data) {
+        const cartItemsArray = Array.isArray(data.data.cart_data)
+          ? data.data.cart_data
+          : data.data.cart_data.items;
 
-      const data = await response.json();
-      if (data.data && data.data.cart_data) {
-        setCartData(data.data.cart_data);
-        const cartItems = data.data.cart_data.items.map((item: any) => ({
+        const cartItems = cartItemsArray.map((item) => ({
           id: item.id,
+          cart_id: item.cart_id,
           product_id: item.product_id,
-          quantity: parseInt(item.quantity),
-          unit_price: parseFloat(item.unit_price),
-          total: parseFloat(item.total),
+          quantity:
+            typeof item.quantity === "string"
+              ? parseInt(item.quantity)
+              : item.quantity,
+          unit_price:
+            typeof item.unit_price === "string"
+              ? parseFloat(item.unit_price)
+              : item.unit_price,
+          total:
+            typeof item.total === "string"
+              ? parseFloat(item.total)
+              : item.total,
           product: item.product,
         }));
+
         setCart(cartItems);
+        setCartData({
+          id: 0, 
+          user_id: 0, 
+          items: cartItems,
+          payable_amount: data.data.payable_amount,
+        });
 
         // Initialize local quantities
         const quantities: { [key: number]: number } = {};
         cartItems.forEach((item: CartItem) => {
-          quantities[item.product_id] = item.quantity;
+          quantities[item.product_id] = item.quantity as number;
         });
         setLocalQuantities(quantities);
       }
     } catch (err) {
-      toast.error(`Error fetching cart: ${err instanceof Error ? err.message : String(err)}`);
+      toast.error(
+        `Error fetching cart: ${
+          err instanceof Error ? err.message : String(err)
+        }`
+      );
       console.error("Error fetching cart:", err);
     }
   };
@@ -167,66 +211,106 @@ export default function ProductListPage() {
             products: cartItems.map((item) => ({
               product_id: item.product_id,
               quantity: item.quantity,
-              id: item.id, // Include the item ID for updates
+              id: item.id,
             })),
           }),
         }
       );
 
-      const data = await response.json();
+      const data: CartResponse = await response.json();
 
       if (!response.ok) {
+        if (data.errors?.cart_data) {
+          const errorCartItemsArray = Array.isArray(data.errors.cart_data)
+            ? data.errors.cart_data
+            : data.errors.cart_data.items;
+
+          const errorCartItems = errorCartItemsArray.map((item) => ({
+            id: item.id,
+            product_id: item.product_id,
+            quantity:
+              typeof item.quantity === "string"
+                ? parseInt(item.quantity)
+                : item.quantity,
+            unit_price:
+              typeof item.unit_price === "string"
+                ? parseFloat(item.unit_price)
+                : item.unit_price,
+            total:
+              typeof item.total === "string"
+                ? parseFloat(item.total)
+                : item.total,
+            product:
+              allProducts.find((p) => p.id === item.product_id) || undefined,
+          }));
+
+          setCart(errorCartItems);
+          setCartData({
+            id: 0,
+            user_id: 0,
+            items: errorCartItems,
+            payable_amount: data.errors.payable_amount,
+          });
+        }
         toast.error(data.message || "Failed to sync cart with backend");
+        return;
       }
 
-      // Update cart with backend response
-      if (data.data && data.data.cart_data) {
-        const updatedCart = Array.isArray(data.data.cart_data)
-          ? data.data.cart_data.map((item: any) => ({
-              id: item.id,
-              product_id: item.product_id,
-              quantity: parseInt(item.quantity),
-              unit_price: parseFloat(item.unit_price),
-              total: parseFloat(item.total),
-              product:
-                allProducts.find((p) => p.id === item.product_id) || undefined,
-            }))
-          : data.data.cart_data.items.map((item: any) => ({
-              id: item.id,
-              product_id: item.product_id,
-              quantity: parseInt(item.quantity),
-              unit_price: parseFloat(item.unit_price),
-              total: parseFloat(item.total),
-              product: item.product,
-            }));
+      if (data.data?.cart_data) {
+        // Handle both array and object formats for success response
+        const updatedCartArray = Array.isArray(data.data.cart_data)
+          ? data.data.cart_data
+          : data.data.cart_data.items;
+
+        const updatedCart = updatedCartArray.map((item) => ({
+          id: item.id,
+          product_id: item.product_id,
+          quantity:
+            typeof item.quantity === "string"
+              ? parseInt(item.quantity)
+              : item.quantity,
+          unit_price:
+            typeof item.unit_price === "string"
+              ? parseFloat(item.unit_price)
+              : item.unit_price,
+          total:
+            typeof item.total === "string"
+              ? parseFloat(item.total)
+              : item.total,
+          product:
+            allProducts.find((p) => p.id === item.product_id) || undefined,
+        }));
 
         setCart(updatedCart);
+        setCartData({
+          id: 0, 
+          user_id: 0,
+          items: updatedCart,
+          payable_amount: data.data.payable_amount,
+        });
 
-        // Update local quantities
         const quantities: { [key: number]: number } = {};
         updatedCart.forEach((item: CartItem) => {
-          quantities[item.product_id] = item.quantity;
+          quantities[item.product_id] = item.quantity as number;
         });
         setLocalQuantities(quantities);
-
-        if (data.data.cart_data.payable_amount !== undefined) {
-          setCartData(data.data.cart_data);
-        }
       }
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to sync cart with backend";
-
       toast.error(errorMessage);
       setError(errorMessage);
     }
-
   };
 
   // Update cart state from backend response
   const updateCartState = (cartData: any) => {
     setCartData(cartData);
-    const cartItems = cartData.items.map((item: any) => ({
+    const cartItemsArray = Array.isArray(cartData.items)
+      ? cartData.items
+      : cartData.items.items;
+
+    const cartItems = cartItemsArray.map((item: any) => ({
       id: item.id,
       product_id: item.product_id,
       quantity: parseInt(item.quantity),
@@ -317,11 +401,9 @@ export default function ProductListPage() {
       if (data.data && data.data.cart_data) {
         updateCartState(data.data.cart_data);
       }
-    }
-    catch (err) {
-      const errorMessage = err instanceof Error
-        ? err.message
-        : "Failed to remove item from cart";
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to remove item from cart";
 
       toast.error(errorMessage);
       setError(errorMessage);
@@ -360,9 +442,8 @@ export default function ProductListPage() {
       toast.success("Cart cleared Successfully!");
       setApiResponse("Cart cleared successfully");
     } catch (err) {
-      const errorMessage = err instanceof Error
-        ? err.message
-        : "Failed to clear cart";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to clear cart";
 
       toast.error(errorMessage);
       setError(errorMessage);
@@ -404,9 +485,10 @@ export default function ProductListPage() {
         toast.error(data.message || "Failed to place order");
       }
     } catch (err) {
-      const errorMessage = err instanceof Error
-        ? err.message
-        : "Failed to place order. Please try again.";
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Failed to place order. Please try again.";
 
       toast.error(errorMessage);
       setApiResponse(errorMessage);
@@ -598,17 +680,26 @@ export default function ProductListPage() {
                             <span className="text-sm font-normal pr-[10px]">
                               Total Price{" "}
                             </span>{" "}
-                            {totalPrice.toFixed(0)}{" "}
+                            {cartData?.payable_amount
+                              ? cartData.payable_amount.toFixed(0)
+                              : totalPrice.toFixed(0)}{" "}
                             <span className="text-xs pl-[2px]">Rs </span>
                           </p>
                           <div className="flex justify-end">
                             <p className="font-semibold text-xs uppercase py-[1px] px-[10px] rounded-[5px] text-[#fff] bg-[#2b3990]">
-                              Items: {totalQuantity}
+                              Items:{" "}
+                              {cart.reduce(
+                                (sum, item) =>
+                                  sum +
+                                  (typeof item.quantity === "string"
+                                    ? parseInt(item.quantity)
+                                    : item.quantity),
+                                0
+                              )}
                             </p>
                           </div>
                         </div>
                       </div>
-
                       <ul className="overflow-y-auto">
                         {cart.map((item) => {
                           const product =
@@ -864,4 +955,3 @@ export default function ProductListPage() {
     </div>
   );
 }
-

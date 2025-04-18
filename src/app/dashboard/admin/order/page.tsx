@@ -119,6 +119,9 @@ export default function OrdersPage() {
                     Date
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium text-gray-100">
+                    Discount
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-100">
                     Total
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium text-gray-100">
@@ -141,6 +144,9 @@ export default function OrdersPage() {
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-900">
                       {order.created_at}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900 font-semibold">
+                      ${order.discount}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-900 font-semibold">
                       ${order.grand_total}
