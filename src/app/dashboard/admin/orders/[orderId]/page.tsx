@@ -112,6 +112,9 @@ export default function OrderDetailsPage() {
               <p className="rounded-full bg-green-100 px-3 py-0.5 text-xs capitalize">
                 {order.status}
               </p>
+              <p className="rounded-full bg-green-100 px-3 py-0.5 text-xs capitalize">
+                Emp-Id - {order.user.emp_id}
+              </p>
             </div>
 
             <div className="flex items-center gap-3">
