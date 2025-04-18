@@ -173,9 +173,9 @@ export default function OrderDetailsPage() {
                       <div className="flex items-center">
                         <div className="flex items-center gap-3">
                           <div className="h-[50px] w-[50px] overflow-hidden rounded-full">
-                          <img src={item.product.image ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${item.product.image}`: "/images/items/atta.webp"} alt="Product"
+                          <img src={item.product.image ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${item.product.image}`: "/images/items/product-default.png"} alt="Product"
                           onError={(e) => {
-                            e.currentTarget.src = "/images/items/atta.webp";
+                            e.currentTarget.src = "/images/items/product-default.png";
                           }}
                            />
                           </div>

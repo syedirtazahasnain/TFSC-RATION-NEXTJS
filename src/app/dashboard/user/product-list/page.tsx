@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Sidebar from "@/app/_components/sidebar/index";
 import Breadcrumb from "@/app/_components/ui/Breadcrumb";
+import LoaderNew from "@/app/_components/loader/newindex";
 import "@/app/extra.css";
 import { toast } from "react-toastify";
 import {
@@ -183,22 +184,22 @@ export default function ProductListPage() {
       if (data.data && data.data.cart_data) {
         const updatedCart = Array.isArray(data.data.cart_data)
           ? data.data.cart_data.map((item: any) => ({
-              id: item.id,
-              product_id: item.product_id,
-              quantity: parseInt(item.quantity),
-              unit_price: parseFloat(item.unit_price),
-              total: parseFloat(item.total),
-              product:
-                allProducts.find((p) => p.id === item.product_id) || undefined,
-            }))
+            id: item.id,
+            product_id: item.product_id,
+            quantity: parseInt(item.quantity),
+            unit_price: parseFloat(item.unit_price),
+            total: parseFloat(item.total),
+            product:
+              allProducts.find((p) => p.id === item.product_id) || undefined,
+          }))
           : data.data.cart_data.items.map((item: any) => ({
-              id: item.id,
-              product_id: item.product_id,
-              quantity: parseInt(item.quantity),
-              unit_price: parseFloat(item.unit_price),
-              total: parseFloat(item.total),
-              product: item.product,
-            }));
+            id: item.id,
+            product_id: item.product_id,
+            quantity: parseInt(item.quantity),
+            unit_price: parseFloat(item.unit_price),
+            total: parseFloat(item.total),
+            product: item.product,
+          }));
 
         setCart(updatedCart);
 
@@ -434,7 +435,7 @@ export default function ProductListPage() {
         <div>
           <Header />
         </div>
-        <div className="px-6 py-6 bg-[#f9f9f9] rounded-[20px] xl:rounded-[25px] text-[#2b3990]">
+        <div className="px-6 py-6 bg-[#f9f9f9] rounded-[20px] xl:rounded-[25px] text-[#2b3990] relative">
           <h1 className="text-2xl font-bold my-0">All Products</h1>
           <Breadcrumb items={[{ label: "Dashboard" }, { label: "Products" }]} />
           <div
@@ -453,10 +454,8 @@ export default function ProductListPage() {
             )}
           </div>
         </div>
-        {error && <p className="text-red-500 mb-4">{error}</p>}
-        {apiResponse && <p className="text-green-500 mb-4">{apiResponse}</p>}
         {loading ? (
-          <p>Loading...</p>
+          <LoaderNew />
         ) : (
           <>
             <div className="grid grid-cols-1 lg:grid-cols-7 gap-[10px] xl:gap-[15px] relative h-[75vh] overflow-hidden">
@@ -472,88 +471,89 @@ export default function ProductListPage() {
                       return (
                         <div
                           key={product.id}
-                          className="bg-white rounded-[20px] overflow-hidden border-[1px] border-[#2b3990] border-opacity-40"
+                          className="bg-white rounded-[20px] overflow-hidden border-[1px] border-[#2b3990] border-opacity-40 relative"
                         >
-                          <div className="bg-[#f9f9f9] rounded-t-lg overflow-hidden h-[150px] w-full">
+                          <div className="bg-[#f9f9f9] rounded-t-lg overflow-hidden w-full">
                             <img
                               src={
                                 product.image
                                   ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${product.image}`
-                                  : "/images/items/atta.webp"
+                                  : "/images/items/product-default.png"
                               }
                               alt=""
                               className="w-full h-full object-cover"
                               onError={(e) => {
-                                e.currentTarget.src = "/images/items/atta.webp";
+                                e.currentTarget.src = "/images/items/product-default.png";
                               }}
                             />
                           </div>
-                          <div className="py-2 px-3">
-                            <div className="flex items-center justify-between">
-                              <h2 className="text-xl font-semibold my-0 capitalize">
+                          <div className="pt-2 pb-14 2xl:pb-10 px-3">
+                            <div className="">
+                              <h2 className="text-sm font-semibold my-0 capitalize">
                                 {product.name}
                               </h2>
-                              <p className="my-0 text-xs">{product.type}</p>
+                              <p className="my-0 text-xs text-right">{product.type}</p>
                             </div>
-                            <div className="flex items-center justify-end">
+                            <div className="flex items-center justify-between">
+                              <p className="text-xl font-semibold">
+                                {product.price}{" "}
+                                <span className="pl-[2px] text-sm font-normal">
+                                  Rs
+                                </span>
+                              </p>
                               <p className="my-0 text-sm font-semibold">1 kg</p>
                             </div>
-                            <p className="text-xl font-semibold">
-                              {product.price}{" "}
-                              <span className="pl-[2px] text-sm font-normal">
-                                Rs
-                              </span>
-                            </p>
-                            <div className="grid grid-cols-2 gap-[5px] mt-4">
-                              <div className="flex items-center justify-center w-[90px] h-8 px-1 relative">
-                                <button
-                                  onClick={() =>
-                                    quantity > 1 &&
-                                    updateLocalQuantity(
-                                      product.id,
-                                      quantity - 1
-                                    )
-                                  }
-                                  className="flex items-center justify-center text-[12px] absolute top-1/2 -translate-y-1/2 left-[0px] w-[18px] h-[18px] rounded-md bg-[#000] text-white hover:bg-[#00aeef] duration-200 transition-all ease-in-out"
-                                >
-                                  -
-                                </button>
-
-                                <input
-                                  type="number"
-                                  min="1"
-                                  value={quantity}
-                                  onChange={(e) => {
-                                    const value = parseInt(e.target.value);
-                                    if (!isNaN(value) && value > 0) {
-                                      updateLocalQuantity(product.id, value);
-                                    }
-                                  }}
-                                  className="w-14 ml-[5px] text-center text-xl outline-none border-none bg-transparent"
-                                />
-
-                                <button
-                                  onClick={() =>
-                                    updateLocalQuantity(
-                                      product.id,
-                                      quantity + 1
-                                    )
-                                  }
-                                  className="flex items-center justify-center text-[12px] absolute top-1/2 -translate-y-1/2 right-[10px] w-[18px] h-[18px] rounded-md bg-[#000] text-white hover:bg-[#00aeef] duration-200 transition-all ease-in-out"
-                                >
-                                  +
-                                </button>
-                              </div>
-
-                              <div className="flex justify-end">
-                                <button
-                                  onClick={() =>
-                                    addToCart(product.id, quantity)
-                                  }
-                                  className="bg-blue-400 text-white px-3 py-1 rounded-xl hover:bg-blue-700"
-                                >
-                                  <AddShoppingCart className="w-3 h-3" />
-                                </button>
+                            <div className="absolute bottom-2 left-2">
+                              <div className="grid grid-cols-2 gap-[10px]">
+                                <div className="gap-[5px] items-center relative">
+                                  <input
+                                    type="number"
+                                    min="1"
+                                    value={quantity}
+                                    onChange={(e) => {
+                                      const value = parseInt(e.target.value);
+                                      if (!isNaN(value) && value > 0) {
+                                        updateLocalQuantity(product.id, value);
+                                      }
+                                    }}
+                                    className="w-full px-[10px] my-0 text-left text-xl outline-none bg-transparent text-nowrap"
+                                  />
+                                  <div className="flex gap-[2px] absolute right-0 top-1/2 -translate-y-1/2">
+                                    <button
+                                      onClick={() =>
+                                        quantity > 1 &&
+                                        updateLocalQuantity(
+                                          product.id,
+                                          quantity - 1
+                                        )
+                                      } className="w-[20px] h-[20px] flex items-center justify-center rounded bg-[#c00] bg-opacity-10 hover:bg-opacity-30">
+                                      <p className="text-lg text-[#000] m-0 pt-[1px]">
+                                        -
+                                      </p>
+                                    </button>
+                                    <button
+                                      onClick={() =>
+                                        updateLocalQuantity(
+                                          product.id,
+                                          quantity + 1
+                                        )
+                                      } className="w-[20px] h-[20px] flex items-center justify-center rounded bg-[#c00] bg-opacity-10 hover:bg-opacity-30">
+                                      <p className="text-lg text-[#000] m-0 pt-[1px]">
+                                        +
+                                      </p>
+                                    </button>
+                                  </div>
+                                </div>
+                                <div className="w-full pr-[5px]">
+                                  <button
+                                    onClick={() =>
+                                      addToCart(product.id, quantity)
+                                    } className="py-[5px] bg-[#2b3990] text-[10px] rounded-[5px] text-[#fff] font-semibold w-full">
+                                    <div className="flex items-center justify-center">
+                                      <p className="text-center my-0">Add To Cart</p>
+                                    </div>
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -567,11 +567,10 @@ export default function ProductListPage() {
                     <button
                       key={index + 1}
                       onClick={() => setCurrentPage(index + 1)}
-                      className={`mx-1 px-4 py-2 rounded ${
-                        currentPage === index + 1
-                          ? "bg-blue-500 text-white"
-                          : "bg-white text-blue-500 border border-blue-500"
-                      }`}
+                      className={`mx-1 px-4 py-2 rounded ${currentPage === index + 1
+                        ? "bg-blue-500 text-white"
+                        : "bg-white text-blue-500 border border-blue-500"
+                        }`}
                     >
                       {index + 1}
                     </button>
@@ -579,7 +578,7 @@ export default function ProductListPage() {
                 </div>
               </div>
 
-              <div className="bg-gray-200 rounded-[15px] px-6 py-0 relative lg:col-span-2 overflow-y-auto rashnItems">
+              <div className="bg-[#f9f9f9] rounded-[15px] px-6 py-0 relative lg:col-span-2 overflow-y-auto rashnItems">
                 <div>
                   <div className="flex justify-between items-center mt-4">
                     <h2 className="text-xl font-bold my-0">Cart Items</h2>
@@ -592,8 +591,11 @@ export default function ProductListPage() {
                     <p>Your cart is empty.</p>
                   ) : (
                     <>
-                      <div className="flex justify-end my-2">
-                        <div className="text-right">
+                      <div className="my-2">
+                        <div className="flex justify-between items-center gap-[5px] text-right">
+                          <p className="font-semibold text-xs uppercase py-[1px] px-[10px] rounded-[5px] text-[#fff] bg-[#2b3990]">
+                            Items: {totalQuantity}
+                          </p>
                           <p className="font-semibold text-xl">
                             <span className="text-sm font-normal pr-[10px]">
                               Total Price{" "}
@@ -601,11 +603,6 @@ export default function ProductListPage() {
                             {totalPrice.toFixed(0)}{" "}
                             <span className="text-xs pl-[2px]">Rs </span>
                           </p>
-                          <div className="flex justify-end">
-                            <p className="font-semibold text-xs uppercase py-[1px] px-[10px] rounded-[5px] text-[#fff] bg-[#2b3990]">
-                              Items: {totalQuantity}
-                            </p>
-                          </div>
                         </div>
                       </div>
 
@@ -625,20 +622,20 @@ export default function ProductListPage() {
                                     src={
                                       item.product?.image
                                         ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${item.product.image}`
-                                        : "/images/items/atta.webp"
+                                        : "/images/items/product-default.png"
                                     }
                                     alt={item.product?.name || "Product image"}
                                     className="w-full h-full object-cover"
                                     onError={(e) => {
                                       e.currentTarget.src =
-                                        "/images/items/atta.webp";
+                                        "/images/items/product-default.png";
                                     }}
                                   />
                                 </div>
                               </div>
                               <div className="w-full">
                                 <div>
-                                  <h3 className="font-semibold capitalize">
+                                  <div className="flex items-center gap-[15px] font-semibold capitalize">
                                     {product?.name}{" "}
                                     {editingId === item.id ? (
                                       <input
@@ -658,11 +655,25 @@ export default function ProductListPage() {
                                         className="text-sm font-normal pl-[15px] lowercase w-16 border rounded"
                                       />
                                     ) : (
-                                      <span className="text-sm font-normal pl-[15px] lowercase">
-                                        x {item.quantity}
-                                      </span>
+                                      <>
+                                        <div className="flex gap-[5px] items-center">
+                                          <button className="w-[15px] h-[15px] bg-[#c00] flex items-center justify-center rounded">
+                                            <p className="text-md text-[#fff] m-0 pt-[1px]">
+                                              -
+                                            </p>
+                                          </button>
+                                          <p className="text-lg font-normal lowercase">
+                                            {item.quantity}
+                                          </p>
+                                          <button className="w-[15px] h-[15px] bg-[#c00] flex items-center justify-center rounded">
+                                            <p className="text-md text-[#fff] m-0 pt-[1px]">
+                                              +
+                                            </p>
+                                          </button>
+                                        </div>
+                                      </>
                                     )}
-                                  </h3>
+                                  </div>
                                   <div className="pt-[4px] flex justify-between items-center">
                                     <p className="font-semibold">
                                       {item.total}
@@ -702,9 +713,9 @@ export default function ProductListPage() {
                                             prevCart.map((cartItem) =>
                                               cartItem.id === item.id
                                                 ? {
-                                                    ...cartItem,
-                                                    quantity: item.quantity,
-                                                  }
+                                                  ...cartItem,
+                                                  quantity: item.quantity,
+                                                }
                                                 : cartItem
                                             )
                                           );
@@ -749,114 +760,6 @@ export default function ProductListPage() {
                   )}
                 </div>
               </div>
-            </div>
-          </>
-        )}
-      </div>
-
-      {/* Cart */}
-      <div
-        className={`w-[30%] xl:w-[25%] 2xl:w-[20%] h-screen z-50 fixed top-0 right-0 bg-gray-200 p-6 overflow-y-auto transition-transform duration-300 ${
-          isCartOpen ? "translate-x-0" : "translate-x-[120%]"
-        }`}
-      >
-        {/* Absolute Close */}
-        <div className="absolute top-[5px] left-0 w-[30px] h-[30px] bg-[#2b3990] flex items-center justify-center cursor-pointer duration-300 ease-in-out transition-all hover:bg-[#00aeef] rounded-r-[10px]">
-          <ArrowForwardIos
-            className="text-[#fff] p-[3px] my-0"
-            onClick={() => setIsCartOpen(!isCartOpen)}
-          />
-        </div>
-
-        <h2 className="text-xl font-bold my-4">Cart Items</h2>
-        {cart.length === 0 ? (
-          <p>Your cart is empty.</p>
-        ) : (
-          <>
-            <div className="flex justify-end my-2">
-              <div className="text-right">
-                <p className="font-semibold text-xl">
-                  <span className="text-sm font-normal pr-[10px]">
-                    Total Price{" "}
-                  </span>{" "}
-                  {totalPrice.toFixed(0)}{" "}
-                  <span className="text-xs pl-[2px]">Rs </span>
-                </p>
-                <div className="flex justify-end">
-                  <p className="font-semibold text-xs uppercase py-[1px] px-[10px] rounded-[5px] text-[#fff] bg-[#2b3990]">
-                    Items: {totalQuantity}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <ul className="overflow-y-auto">
-              {cart.map((item) => {
-                const product =
-                  item.product ||
-                  allProducts.find((p) => p.id === item.product_id);
-                return (
-                  <li
-                    key={item.id || item.product_id}
-                    className="mb-2 p-[10px] rounded-[15px] bg-[#fff] relative w-full flex items-center gap-[10px]"
-                  >
-                    <div className="">
-                      <div className="w-[50px] rounded-lg h-full overflow-hidden">
-                        <img
-                          src={
-                            item.product?.image
-                              ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${item.product.image}`
-                              : "/images/items/atta.webp"
-                          }
-                          alt={item.product?.name || "Product image"}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.currentTarget.src = "/images/items/atta.webp";
-                          }}
-                        />
-                      </div>
-                    </div>
-                    <div className="w-full">
-                      <div>
-                        <h3 className="font-semibold capitalize">
-                          {product?.name}{" "}
-                          <span className="text-sm font-normal pl-[15px] lowercase">
-                            x {item.quantity}
-                          </span>
-                        </h3>
-                        <div className="pt-[4px] flex justify-between items-center">
-                          <p className="font-semibold">
-                            {item.total}
-                            <span className="pl-[4px] text-xs font-normal">
-                              Rs
-                            </span>
-                          </p>
-                          <p className="my-0 text-sm px-[10px] bg-[#2b3990] rounded-[5px] text-[#fff]">
-                            {item.unit_price}{" "}
-                            <span className="text-xs pl-[3px] font-semibold">
-                              Per - {item.product?.measure ?? "Unit"}
-                            </span>
-                          </p>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => removeFromCart(item.id!)}
-                        className="text-[#c00] hover:text-[#000] absolute top-[5px] right-[5px] cursor-pointer duration-200 ease-in-out transition-all w-[18px] h-[18px] flex items-center justify-center overflow-hidden"
-                      >
-                        <Close className="p-1" />
-                      </button>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-            <div className="flex justify-end mb-4">
-              <button
-                onClick={submitCart}
-                className="bg-green-400 text-white px-8 py-2 rounded-[10px] hover:bg-green-700 text-sm uppercase font-semibold"
-              >
-                Submit
-              </button>
             </div>
           </>
         )}

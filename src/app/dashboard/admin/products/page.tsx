@@ -95,7 +95,7 @@ export default function ProductsPage() {
       }
 
       const newStatus = currentStatus === 1 ? 9 : 1;
-      
+
       // First get the full product details
       const productResponse = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/products/${productId}`,
@@ -122,14 +122,14 @@ export default function ProductsPage() {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ 
+          body: JSON.stringify({
             id: productId,
             name: product.name,
             detail: product.detail,
             price: product.price,
             measure: product.measure,
             type: product.type,
-            status: newStatus 
+            status: newStatus
           }),
         }
       );
@@ -144,7 +144,7 @@ export default function ProductsPage() {
         if (!prev) return null;
         return {
           ...prev,
-          data: prev.data.map(product => 
+          data: prev.data.map(product =>
             product.id === productId ? { ...product, status: newStatus } : product
           )
         };
@@ -205,7 +205,7 @@ export default function ProductsPage() {
         if (!prev) return null;
         return {
           ...prev,
-          data: prev.data.map(product => 
+          data: prev.data.map(product =>
             product.id === currentProduct.id ? { ...product, price } : product
           )
         };
@@ -245,26 +245,26 @@ export default function ProductsPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-[10px] xl:gap-[15px] mb-8">
           {products.data.map((product) => (
-            <div key={product.id} className="bg-white rounded-[20px] border-[1px] border-[#2b3990] border-opacity-40 overflow-hidden">
+            <div key={product.id} className="bg-white rounded-[20px] border-[1px] border-[#2b3990] border-opacity-40 overflow-hidden relative">
               <div className="flex flex-col h-full">
-                <div className="bg-[#f9f9f9] overflow-hidden h-[150px] w-full">
+                <div className="bg-[#f9f9f9] overflow-hidden w-full">
                   <img
-                    src={product.image ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${product.image}` : "/images/items/atta.webp"}
+                    src={product.image ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${product.image}` : "/images/items/product-default.png"}
                     alt=""
                     className="w-full h-full object-cover"
                     onError={(e) => {
-                      e.currentTarget.src = "/images/items/atta.webp";
+                      e.currentTarget.src = "/images/items/product-default.png";
                     }}
                   />
                 </div>
-                <div className="py-2 px-3">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold my-0 capitalize">
+                <div className="pt-2 pb-10 px-3">
+                  <div className="">
+                    <h2 className="text-sm font-semibold my-0 capitalize">
                       {product.name}
                     </h2>
-                    <p className="my-0 text-xs">{product.type}</p>
                   </div>
-                  <div className="flex items-center justify-end">
+                  <div className="flex items-center justify-between">
+                    <p className="my-0 text-xs">{product.type}</p>
                     <p className="my-0 text-sm font-semibold">{product.measure}</p>
                   </div>
                   <div className='relative flex items-center gap-[10px]'>
@@ -274,8 +274,8 @@ export default function ProductsPage() {
                         Rs
                       </span>
                     </p>
-                    <button 
-                      className='text-xs relative group' 
+                    <button
+                      className='text-xs relative group'
                       onClick={() => {
                         setCurrentProduct(product);
                         setPrice(product.price);
@@ -289,34 +289,34 @@ export default function ProductsPage() {
                     </button>
                   </div>
                 </div>
-                <div className="mx-4 mb-2 flex justify-between items-center">
-                  <div className='group relative'> 
-                    <button
-                      onClick={() => toggleProductStatus(product.id, product.status)}
-                      className={`w-8 h-4 flex items-center rounded-full p-1 transition duration-300 ease-in-out ${
-                        product.status === 1 ? 'bg-[#2b3990]' : 'bg-gray-300'
-                      }`}
-                    >
-                      <div
-                        className={`bg-white w-2.5 h-2.5 rounded-full shadow-md transform duration-300 ease-in-out ${
-                          product.status === 1 ? 'translate-x-4' : 'translate-x-0'
-                        }`}
-                      />
-                    </button>
-                    <span className="absolute top-[-20px] left-[0px] my-0 px-[5px] py-[2px] text-[10px] text-white bg-[#c00] rounded opacity-0 group-hover:opacity-100 transition text-nowrap">
-                      {product.status === 1 ? 'Disable Product' : 'Enable Product'}
-                    </span>
-                  </div>
-                  <div>
-                    <Link
-                      href={`/dashboard/admin/products/edit/${product.id}`}
-                      className="text-[#2b3990] hover:text-[#00aeef] relative group"
-                    >
-                      <DriveFileRenameOutline />
-                      <span className="absolute top-[-15px] right-[-5px] my-0 px-[5px] py-[2px] text-[10px] text-white bg-[#c00] rounded opacity-0 group-hover:opacity-100 transition text-nowrap">
-                        Edit Product
+                <div className="w-full absolute bottom-2 left-2">
+                  <div className="flex justify-between items-center">
+                    <div className='group relative'>
+                      <button
+                        onClick={() => toggleProductStatus(product.id, product.status)}
+                        className={`w-8 h-4 flex items-center rounded-full p-1 transition duration-300 ease-in-out ${product.status === 1 ? 'bg-[#2b3990]' : 'bg-gray-300'
+                          }`}
+                      >
+                        <div
+                          className={`bg-white w-2.5 h-2.5 rounded-full shadow-md transform duration-300 ease-in-out ${product.status === 1 ? 'translate-x-4' : 'translate-x-0'
+                            }`}
+                        />
+                      </button>
+                      <span className="absolute top-[-20px] left-[0px] my-0 px-[5px] py-[2px] text-[10px] text-white bg-[#c00] rounded opacity-0 group-hover:opacity-100 transition text-nowrap">
+                        {product.status === 1 ? 'Disable Product' : 'Enable Product'}
                       </span>
-                    </Link>
+                    </div>
+                    <div className="mr-[15px]">
+                      <Link
+                        href={`/dashboard/admin/products/edit/${product.id}`}
+                        className="text-[#2b3990] hover:text-[#00aeef] relative group"
+                      >
+                        <DriveFileRenameOutline />
+                        <span className="absolute top-[-15px] right-[-5px] my-0 px-[5px] py-[2px] text-[10px] text-white bg-[#c00] rounded opacity-0 group-hover:opacity-100 transition text-nowrap">
+                          Edit Product
+                        </span>
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -373,11 +373,10 @@ export default function ProductsPage() {
               <Link
                 key={index}
                 href={`/dashboard/admin/products?page=${page}`}
-                className={`px-4 py-2 rounded-lg border ${
-                  isActive
-                    ? 'bg-[#2b3990] text-white border-blue-500'
-                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                }`}
+                className={`px-4 py-2 rounded-lg border ${isActive
+                  ? 'bg-[#2b3990] text-white border-blue-500'
+                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                  }`}
               >
                 {label}
               </Link>
