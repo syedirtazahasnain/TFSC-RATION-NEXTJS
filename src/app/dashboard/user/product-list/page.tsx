@@ -6,6 +6,8 @@ import Sidebar from "@/app/_components/sidebar/index";
 import Breadcrumb from "@/app/_components/ui/Breadcrumb";
 import "@/app/extra.css";
 import { toast } from "react-toastify";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 import {
   AddShoppingCart,
   Delete,
@@ -81,6 +83,7 @@ export default function ProductListPage() {
     [key: number]: number;
   }>({});
   const router = useRouter();
+  const MySwal = withReactContent(Swal);
 
   // Fetch products from the backend
   const fetchProducts = async (page: number) => {
@@ -450,8 +453,21 @@ export default function ProductListPage() {
     }
   };
 
-  // Submit cart to place order
   const submitCart = async () => {
+    const result = await MySwal.fire({
+      title: "Are you sure?",
+      text: "Once the order is placed, it cannot be reverted!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, place order!",
+      cancelButtonText: "Cancel"
+    });
+  
+    if (!result.isConfirmed) {
+      return;
+    }
     try {
       const token = localStorage.getItem("token");
       if (!token) {

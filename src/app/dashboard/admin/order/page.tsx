@@ -113,6 +113,9 @@ export default function OrdersPage() {
                     Order #
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium text-gray-100">
+                    Emp Id
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-100">
                     Status
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium text-gray-100">
@@ -138,6 +141,9 @@ export default function OrdersPage() {
                   >
                     <td className="px-6 py-4 text-sm text-gray-900">
                       {order.order_number}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      {order.user.emp_id}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-900 capitalize">
                       {order.status}
