@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Sidebar from "@/app/_components/adminsidebar/index";
 import Header from "@/app/_components/adminheader/index";
 import Breadcrumb from "@/app/_components/ui/Breadcrumb";
+import { Input } from "@heroui/react";
+import Swal from 'sweetalert2'
 
 export default function page() {
   const router = useRouter();
@@ -70,6 +72,12 @@ export default function page() {
       }
 
       // Success case
+      Swal.fire({
+        title: 'Success!',
+        text: data.message,
+        icon: 'success',
+        confirmButtonText: 'Ok'
+      });
       setSuccessMessage(data.message);
       localStorage.setItem("token", data.data.token);
       setFormData({
@@ -101,13 +109,13 @@ export default function page() {
           />
         </div>
 
-        <div className="flex w-full bg-[#f9f9f9] rounded-[20px] xl:rounded-[25px]">
+        <div className="flex w-full">
           <div className="w-full xl:w-1/2 rounded-[20px] p-[10px] md:p-[20px] xl:p-[30px]">
-            {successMessage && (
+            {/* {successMessage && (
               <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-[10px]">
                 {successMessage}
               </div>
-            )}
+            )} */}
 
             {errors.general && (
               <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-[10px]">
@@ -117,22 +125,19 @@ export default function page() {
 
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
-                <label
-                  htmlFor="current_password"
-                  className="block text-sm font-medium mb-2"
-                >
-                  Current Password
-                </label>
-                <input
+                <Input
                   type="password"
-                  id="current_password"
                   name="current_password"
+                  className="w-full"
+                  id="current_password"
+                  label="Current Password"
                   value={formData.current_password}
                   onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-lg ${errors.current_password
-                      ? "border-red-500"
-                      : "border-gray-300"
-                    }`}
+                  accept="image/*"
+                  classNames={{
+                    inputWrapper: "",
+                  }}
+                  isRequired
                 />
                 {errors.current_password && (
                   <div className="text-red-500 text-sm mt-1">
@@ -142,22 +147,20 @@ export default function page() {
                   </div>
                 )}
               </div>
-
               <div className="mb-4">
-                <label
-                  htmlFor="new_password"
-                  className="block text-sm font-medium mb-2"
-                >
-                  New Password
-                </label>
-                <input
+                <Input
                   type="password"
-                  id="new_password"
                   name="new_password"
+                  className="w-full"
+                  id="new_password"
+                  label="New Password"
                   value={formData.new_password}
                   onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-lg ${errors.new_password ? "border-red-500" : "border-gray-300"
-                    }`}
+                  accept="image/*"
+                  classNames={{
+                    inputWrapper: "",
+                  }}
+                  isRequired
                 />
                 {errors.new_password && (
                   <div className="text-red-500 text-sm mt-1">
@@ -167,33 +170,40 @@ export default function page() {
                   </div>
                 )}
               </div>
-
-              <div className="mb-6">
-                <label
-                  htmlFor="new_password_confirmation"
-                  className="block text-sm font-medium mb-2"
-                >
-                  Confirm New Password
-                </label>
-                <input
+              <div className="mb-4">
+                <Input
                   type="password"
-                  id="new_password_confirmation"
                   name="new_password_confirmation"
+                  className="w-full"
+                  id="new_password_confirmation"
+                  label="Re-type New Password"
                   value={formData.new_password_confirmation}
                   onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-lg ${errors.new_password ? "border-red-500" : "border-gray-300"
-                    }`}
+                  accept="image/*"
+                  classNames={{
+                    inputWrapper: "",
+                  }}
+                  isRequired
                 />
+                {errors.new_password_confirmation && (
+                  <div className="text-red-500 text-sm mt-1">
+                    {errors.new_password_confirmation.map((msg, i) => (
+                      <p key={i}>{msg}</p>
+                    ))}
+                  </div>
+                )}
               </div>
 
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className={`w-full bg-[#2b3990] text-white py-2 rounded-lg hover:bg-[#00aeef] transition ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
-              >
-                {isSubmitting ? "Updating..." : "Update Password"}
-              </button>
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className={`px-[15px] bg-[#2b3990] text-white py-2 rounded-lg hover:bg-[#00aeef] transition ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                >
+                  {isSubmitting ? "Updating..." : "Update Password"}
+                </button>
+              </div>
             </form>
           </div>
         </div>

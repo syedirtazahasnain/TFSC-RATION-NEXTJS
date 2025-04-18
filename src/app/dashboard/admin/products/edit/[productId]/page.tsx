@@ -27,7 +27,10 @@ export default function ProductEditPage() {
         </div>
 
         <div className="overflow-x-auto mb-8">
-          <div className="p-[25px] rounded-[20px] xl:rounded-[25px] bg-[#f9f9f9]">
+          <div className='mb-[15px] px-[20px]'>
+            <p className='text-lg font-semibold my-0'>Product Details</p>
+          </div>
+          <div className="px-[20px]">
             <ProductFormPage productId={productId} />
           </div>
         </div>

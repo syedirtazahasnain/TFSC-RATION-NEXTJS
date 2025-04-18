@@ -4,10 +4,21 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import Loader from "@/app/_components/loader/index";
-
+import { Input, Select, SelectItem, Textarea } from "@heroui/react";
 interface ProductFormProps {
   productId?: string;
 }
+
+export const types = [
+  { key: "Flour", label: "Flour" },
+  { key: "Rice", label: "Rice" },
+  { key: "Milk", label: "Milk" },
+  { key: "Oil", label: "Oil" },
+  { key: "Tea", label: "Tea" },
+  { key: "Surf", label: "Surf" },
+  { key: "Pulses", label: "Pulses" },
+  { key: "Spices", label: "Spices" },
+];
 
 interface Product {
   id?: number;
@@ -93,7 +104,7 @@ export default function ProductFormPage({ productId }: ProductFormProps) {
     // Clear error when field is changed
     if (errors[name]) {
       setErrors(prev => {
-        const newErrors = {...prev};
+        const newErrors = { ...prev };
         delete newErrors[name];
         return newErrors;
       });
@@ -133,15 +144,15 @@ export default function ProductFormPage({ productId }: ProductFormProps) {
       formData.append("price", product.price.trim());
       formData.append("measure", product.measure.trim());
       formData.append("type", product.type.trim());
-      
+
       if (product.brand) {
         formData.append('brand', product.brand.trim());
       }
-      
+
       if (product.image instanceof File) {
         formData.append("image", product.image);
       }
-      
+
       if (productId) {
         formData.append("id", productId);
       }
@@ -188,117 +199,90 @@ export default function ProductFormPage({ productId }: ProductFormProps) {
     <form onSubmit={handleSubmit}>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[10px] xl:gap-[20px]">
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1">
-            Product Name *
-          </label>
-          <input
-            type="text"
+          <Input
             name="name"
+            type="text"
+            className="w-full"
+            label="Product Name"
             value={product.name}
             onChange={handleChange}
-            className={`w-full px-3 py-2 border rounded-md ${errors.name ? 'border-red-500' : ''}`}
-            required
+            classNames={{
+              inputWrapper: "",
+            }}
+            isRequired
           />
-          {errors.name && (
-            <p className="text-red-500 text-xs mt-1">{errors.name[0]}</p>
-          )}
         </div>
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1">
-            Description *
-          </label>
-          <textarea
-            name="detail"
-            value={product.detail}
-            onChange={handleChange}
-            rows={4}
-            className={`w-full px-3 py-2 border rounded-md ${errors.detail ? 'border-red-500' : ''}`}
-            required
-          />
-          {errors.detail && (
-            <p className="text-red-500 text-xs mt-1">{errors.detail[0]}</p>
-          )}
-        </div>
-        <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1">
-            Price *
-          </label>
-          <input
-            type="number"
+          <Input
             name="price"
+            type="number"
+            className="w-full"
+            label="Product Price"
             value={product.price}
             onChange={handleChange}
-            min="0"
-            step="0.01"
-            className={`w-full px-3 py-2 border rounded-md ${errors.price ? 'border-red-500' : ''}`}
-            required
+            classNames={{
+              inputWrapper: "",
+            }}
+            isRequired
           />
-          {errors.price && (
-            <p className="text-red-500 text-xs mt-1">{errors.price[0]}</p>
-          )}
         </div>
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1">
-            Measure *
-          </label>
-          <input
-            type="text"
+          <Input
             name="measure"
+            type="text"
+            className="w-full"
+            label="Measure"
             value={product.measure}
             onChange={handleChange}
-            className={`w-full px-3 py-2 border rounded-md ${errors.measure ? 'border-red-500' : ''}`}
-            required
+            classNames={{
+              inputWrapper: "",
+            }}
+            isRequired
           />
-          {errors.measure && (
-            <p className="text-red-500 text-xs mt-1">{errors.measure[0]}</p>
-          )}
         </div>
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1">
-            Type *
-          </label>
-          <select
+          <Select
             name="type"
-            value={product.type}
+            className="w-full"
+            label="Product Type"
+            defaultSelectedKeys={[product.type]}
             onChange={handleChange}
-            className={`w-full px-3 py-2 border rounded-md ${errors.type ? 'border-red-500' : ''}`}
-            required
+            isRequired
           >
-            <option value="">Select Type</option>
-            <option value="Flour">Flour</option>
-            <option value="Rice">Rice</option>
-            <option value="Milk">Milk</option>
-            <option value="Oil">Oil</option>
-            <option value="Tea">Tea</option>
-            <option value="Surf">Surf</option>
-            <option value="Pulses">Pulses</option>
-            <option value="Spices">Spices</option>
-          </select>
-          {errors.type && (
-            <p className="text-red-500 text-xs mt-1">{errors.type[0]}</p>
-          )}
+            {types.map((type) => (
+              <SelectItem key={type.key}>
+                {type.label}
+              </SelectItem>
+            ))}
+          </Select>
+
         </div>
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1">
-            Brand (optional)
-          </label>
-          <input
-            type="text"
+          <Input
             name="brand"
-            value={product.brand || ''}
+            type="text"
+            className="w-full"
+            label="Brand (Optional)"
+            value={product.brand}
             onChange={handleChange}
-            className="w-full px-3 py-2 border rounded-md"
+            classNames={{
+              inputWrapper: "",
+            }}
           />
         </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-[10px] xl:gap-[20px] mt-[10px] xl:mt-[20px]">
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1">
-            Product Image
-          </label>
-          <input
+          <Input
+            name="file"
             type="file"
-            accept="image/*"
+            className="w-full"
+            label="Product Image"
             onChange={handleImageChange}
-            className="w-full px-3 py-2 border rounded-md"
+            accept="image/*"
+            classNames={{
+              inputWrapper: "",
+            }}
           />
           {imagePreview && (
             <div className="mt-2">
@@ -310,19 +294,32 @@ export default function ProductFormPage({ productId }: ProductFormProps) {
             </div>
           )}
         </div>
+        <div>
+          <Textarea
+            name="detail"
+            className="w-full"
+            label="Product Image"
+            value={product.detail}
+            onChange={handleChange}
+            accept="image/*"
+            classNames={{
+              inputWrapper: "",
+            }}
+          />
+        </div>
       </div>
-      <div className="flex justify-end space-x-4 pt-4">
+      <div className="flex justify-start space-x-2 pt-4">
         <button
           type="button"
           onClick={() => router.push("/dashboard/admin/products")}
-          className="px-4 py-2 border rounded-md bg-[#f9f9f9] hover:bg-gray-200"
+          className="px-4 py-2 border rounded-[12px] bg-[#fff] hover:bg-gray-900 hover:text-[#fff]"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={isSubmitting}
-          className="px-4 py-2 border rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+          className="px-4 py-2 border rounded-[12px] bg-[#2b3990] text-white hover:bg-[#00aeef] disabled:opacity-50"
         >
           {isSubmitting ? "Saving..." : "Save Product"}
         </button>

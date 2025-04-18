@@ -101,6 +101,8 @@ export default function UserDashboard({ my_role }: UserData) {
 
         const data = await response.json();
         setUser(data.data);
+        console.log(data.data);
+      
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
@@ -147,9 +149,12 @@ export default function UserDashboard({ my_role }: UserData) {
                 <img src="/images/logo/irtaza.webp" alt="user" />
               </div>
               <div className="order-3 xl:order-2">
-                <h4 className="mb-2 text-lg font-semibold text-center text-gray-800 dark:text-white/90 xl:text-left">
+                <h4 className="my-0 text-lg font-semibold text-center text-gray-800 dark:text-white/90 xl:text-left">
                   {user.name}
                 </h4>
+                <p className="text-sm text-gray-500 dark:text-gray-400 my-0">
+                  <b>Emp ID - </b> {user.emp_id}
+                </p>
                 <div className="flex flex-col items-center gap-1 text-center xl:flex-row xl:gap-3 xl:text-left">
                   <p className="text-sm text-gray-500 dark:text-gray-400">
                     {user.email}

@@ -10,11 +10,13 @@ import Header from "@/app/_components/adminheader/index";
 
 import ErrorMessage from "@/app/_components/error/index";
 import Loader from "@/app/_components/loader/index";
+import Datepicker from "@/app/_components/datepicker/index";
+import { DateRangePicker, Input } from "@heroui/react";
 
 // import Header from "@/app/_components/Header";
 import Sidebar from "@/app/_components/adminsidebar/index";
 import Breadcrumb from "@/app/_components/ui/Breadcrumb";
-import { Visibility } from "@mui/icons-material";
+import { Visibility, Search } from "@mui/icons-material";
 interface PaginatedOrders {
   data: Order[];
   current_page: number;
@@ -106,6 +108,23 @@ export default function OrdersPage() {
 
         <div className="overflow-x-auto mb-8">
           <div className="p-[25px] rounded-[20px] xl:rounded-[25px] bg-[#f9f9f9]">
+            <div className='flex justify-between items-center mb-4'>
+              <div>
+                <p className='my-0 font-semibold text-lg my-0'>Recent Orders</p>
+              </div>
+              <div className='flex items-center gap-2'>
+                <Input type="text" placeholder="Search here ..."
+                  className="max-w-xs"
+                  classNames={{
+                    inputWrapper: "bg-white border-2"
+                  }} />
+                <DateRangePicker
+                  className="max-w-xs"
+                  classNames={{
+                    inputWrapper: "bg-white border-2"
+                  }} visibleMonths={2} />
+              </div>
+            </div>
             <table className="min-w-full bg-white rounded-[15px] overflow-hidden">
               <thead className="bg-[#2b3990]">
                 <tr>

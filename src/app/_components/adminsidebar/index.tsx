@@ -216,7 +216,7 @@ export default function Index() {
                 className="inline-flex items-center w-full text-sm transition-all duration-300 px-6 hover:ml-2 ease-in-out"
               >
                 <ImportExport className="w-5 h-5" />
-                <span className="ml-4">Import Data</span>
+                <span className="ml-4">Import Employee</span>
               </Link>
               <Link
                 href="/dashboard/admin/import-products"
