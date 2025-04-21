@@ -67,6 +67,7 @@ interface Product {
   type: string;
   detail: string;
   price: number;
+  measure: string;
 }
 
 export default function ProductListPage() {
@@ -620,11 +621,12 @@ export default function ProductListPage() {
                                   Rs
                                 </span>
                               </p>
-                              <p className="my-0 text-sm font-semibold">1 kg</p>
+                              <p className="my-0 text-sm font-semibold">{product?.measure ?? "Unit"}</p>
                             </div>
                             <div className="absolute bottom-2 left-2">
                               <div className="grid grid-cols-2 gap-[10px]">
-                                <div className="gap-[5px] items-center relative">
+                                <div className="flex items-center relative">
+                                  <p className="text-sm ml-[3px] my-0">x</p>
                                   <input
                                     type="number"
                                     min="1"
@@ -635,7 +637,7 @@ export default function ProductListPage() {
                                         updateLocalQuantity(product.id, value);
                                       }
                                     }}
-                                    className="w-full px-[10px] my-0 text-left text-xl outline-none bg-transparent text-nowrap"
+                                    className="w-full pl-[3px] pr-[10px] my-0 text-left text-lg outline-none bg-transparent text-nowrap"
                                   />
                                   <div className="flex gap-[2px] absolute right-0 top-1/2 -translate-y-1/2">
                                     <button
@@ -750,7 +752,7 @@ export default function ProductListPage() {
                               className="mb-2 p-[10px] rounded-[15px] bg-[#fff] relative w-full flex items-center gap-[10px]"
                             >
                               <div className="">
-                                <div className="w-[50px] rounded-lg h-full overflow-hidden">
+                                <div className="w-[45px] rounded-lg h-full overflow-hidden">
                                   <img
                                     src={
                                       item.product?.image
@@ -769,9 +771,9 @@ export default function ProductListPage() {
                               <div className="w-full">
                                 <div>
                                   <div className="flex items-center gap-[15px] font-semibold capitalize">
-                                    <div className="flex items-center gap-[15px] font-semibold capitalize">
-                                      {product?.name}{" "}
-                                      <span className="text-sm font-normal lowercase"> x {item.quantity}</span>
+                                    <div className="flex items-center gap-[15px] capitalize text-xs">
+                                      <span className="font-normal">{product?.name}{" "}</span>
+                                      <span className="text-[15px] font-semibold lowercase"> x {item.quantity}</span>
                                     </div>
                                   </div>
                                   <div className="pt-[4px] flex justify-between items-center">
@@ -819,7 +821,7 @@ export default function ProductListPage() {
 
                                           // Recalculate total based on updated cart
                                           const newTotal = updatedCart.reduce((total, cartItem) => {
-                                            const price = cartItem.product?.price || cartItem.price || 0;
+                                            const price = cartItem.product?.price || 0;
                                             return total + price * cartItem.quantity;
                                           }, 0);
 
@@ -843,8 +845,7 @@ export default function ProductListPage() {
                                     </div>
                                     <p className="my-0 text-sm px-[10px] bg-[#2b3990] rounded-[5px] text-[#fff]">
                                       {item.unit_price}{" "}
-                                      <span className="text-xs pl-[3px] font-semibold">
-                                        Per - {item.product?.measure ?? "Unit"}
+                                      <span className="text-xs pl-[3px] font-semibold"> {item.product?.measure ?? "Unit"}
                                       </span>
                                     </p>
                                   </div>
