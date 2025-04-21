@@ -11,8 +11,10 @@ interface Order {
   id: number;
   order_number: string;
   status: string;
+  discount: string;
   grand_total: string;
   created_at: string;
+  is_editable: number;
   items: {
     id: number;
     product_id: number;
@@ -24,6 +26,11 @@ interface Order {
       name: string;
       detail: string;
       price: string;
+      type: string;
+      brand: string;
+      measure: string;
+      image: string | null;
+      status: number;
     };
   }[];
 }
@@ -123,6 +130,66 @@ export default function OrderDetailsPage() {
               </p>
             </div>
           </div>
+          <div className="flex items-center gap-3">
+            <div className="flex flex-col">
+              <p className="rounded-full px-3 py-0.5 text-xs capitalize">
+                <span className="pr-[10px]">Order Date:</span>
+                <span className="text-sm font-semibold">
+                  {order.created_at}
+                </span>
+              </p>
+              <button
+                className={`mt-1 px-3 py-1 text-xs rounded ${
+                  order.is_editable === 1
+                    ? "bg-blue-500 text-white hover:bg-blue-600"
+                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                }`}
+                disabled={order.is_editable !== 1}
+                onClick={async () => {
+                  try {
+                    const token = localStorage.getItem("token");
+                    if (!token) {
+                      toast.error("Unauthorized! Please login again.");
+                      router.push("/auth/login");
+                      return;
+                    }
+                
+                    const response = await fetch(
+                      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/orders/edit-last-order`,
+                      {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                          Authorization: `Bearer ${token}`,
+                        },
+                      }
+                    );
+                
+                    const data = await response.json();
+                
+                    if (response.ok && data.success) {
+                      toast.success("Order is now editable!");
+                      router.push("/dashboard/user/product-list");
+                    } else {
+                      toast.error(data.message || "Something went wrong.");
+                    }
+                  } catch (error) {
+                    toast.error(
+                      error instanceof Error ? error.message : "Failed to update order."
+                    );
+                  }
+                }}
+              >
+                Edit Order
+            </button>
+            </div>
+            <p className="rounded-full px-3 py-0.5 text-xs capitalize">
+              <span className="pr-[10px]">Grand Total:</span>
+              <span className="text-lg text-red-600 font-semibold">
+                {order.grand_total}
+              </span>
+            </p>
+          </div>    
 
           <div className="w-full overflow-x-auto">
             <table className="min-w-full">
