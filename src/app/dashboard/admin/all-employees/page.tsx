@@ -7,7 +7,7 @@ import Sidebar from "@/app/_components/adminsidebar/index";
 import Header from "@/app/_components/adminheader/index";
 import Breadcrumb from "@/app/_components/ui/Breadcrumb";
 import { Dialog } from "@headlessui/react";
-import { DriveFileRenameOutline } from "@mui/icons-material";
+import { Input, DateRangePicker } from "@heroui/react";
 import { toast } from "react-toastify";
 import Loader from "@/app/_components/loader/index";
 
@@ -214,6 +214,29 @@ export default function Page() {
                         items={[{ label: "Dashboard" }, { label: "Employees" }]}
                     />
                 </div>
+
+                <div>
+                    <div className='flex gap-2'>
+                        <Input type="text"
+                            className="max-w-xs"
+                            label="Search Employee ID"
+                            classNames={{
+                                inputWrapper: "bg-white border-2 text-xs"
+                            }} />
+                        <Input type="text"
+                            className="max-w-xs"
+                            label="Search Employee Name"
+                            classNames={{
+                                inputWrapper: "bg-white border-2 text-xs"
+                            }} />
+                        <div className='shadow-sm border-[2px] rounded-[10px] flex items-center justify-center hover:bg-[#2b3990] hover:text-[#fff] transition-all duration-300 ease-in-out hover:border-[#2b3990]'>
+                            <button className="text-xs uppercase px-4 rounded-[10px] flex items-center gap-2">
+                                Search
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[10px] xl:gap-[15px]">
                     {users?.data.map((user) => (
                         <div
@@ -268,8 +291,8 @@ export default function Page() {
                                     key={index}
                                     href={`/dashboard/admin/all-employees?page=${page}`}
                                     className={`px-4 py-2 rounded-lg border ${isActive
-                                            ? 'bg-[#2b3990] text-white border-blue-500'
-                                            : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                                        ? 'bg-[#2b3990] text-white border-blue-500'
+                                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
                                         } ${(isPrevious || isNext) ? 'font-semibold' : ''}`}
                                 >
                                     {isPrevious ? '«' : isNext ? '»' : link.label}
@@ -360,8 +383,7 @@ export default function Page() {
                             >
                                 {isSubmitting ? (
                                     <>
-                                        <Loader size={20} color="white" />
-                                        Saving...
+                                        <Loader />
                                     </>
                                 ) : (
                                     "Save"

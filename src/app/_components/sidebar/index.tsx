@@ -225,7 +225,7 @@ export default function Index() {
                 className="inline-flex items-center w-full text-sm transition-all duration-300 px-6 hover:ml-2 ease-in-out"
               >
                 <Policy className="w-5 h-5" />
-                <span className="ml-4">Rashan Policy</span>
+                <span className="ml-4">Ration Policy</span>
               </Link>
             </>
           </li>

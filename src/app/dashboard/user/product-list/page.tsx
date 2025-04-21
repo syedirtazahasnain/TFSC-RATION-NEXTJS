@@ -769,43 +769,10 @@ export default function ProductListPage() {
                               <div className="w-full">
                                 <div>
                                   <div className="flex items-center gap-[15px] font-semibold capitalize">
-                                    {product?.name}{" "}
-                                    {editingId === item.id ? (
-                                      <input
-                                        type="number"
-                                        min="1"
-                                        value={editedQuantity}
-                                        onChange={(e) => {
-                                          const value = parseInt(
-                                            e.target.value
-                                          );
-                                          if (!isNaN(value)) {
-                                            setEditedQuantity(
-                                              Math.max(value, 1)
-                                            );
-                                          }
-                                        }}
-                                        className="text-sm font-normal pl-[15px] lowercase w-16 border rounded"
-                                      />
-                                    ) : (
-                                      <>
-                                        {/* <div className="flex gap-[5px] items-center">
-                                          <button className="w-[15px] h-[15px] bg-[#c00] flex items-center justify-center rounded">
-                                            <p className="text-md text-[#fff] m-0 pt-[1px]">
-                                              -
-                                            </p>
-                                          </button>
-                                          <p className="text-lg font-normal lowercase">
-                                            {item.quantity}
-                                          </p>
-                                          <button className="w-[15px] h-[15px] bg-[#c00] flex items-center justify-center rounded">
-                                            <p className="text-md text-[#fff] m-0 pt-[1px]">
-                                              +
-                                            </p>
-                                          </button>
-                                        </div> */}
-                                      </>
-                                    )}
+                                    <div className="flex items-center gap-[15px] font-semibold capitalize">
+                                      {product?.name}{" "}
+                                      <span className="text-sm font-normal lowercase"> x {item.quantity}</span>
+                                    </div>
                                   </div>
                                   <div className="pt-[4px] flex justify-between items-center">
                                     <p className="font-semibold">
@@ -814,6 +781,66 @@ export default function ProductListPage() {
                                         Rs
                                       </span>
                                     </p>
+
+                                    <div className="flex gap-[5px] items-center">
+                                      {/* Minus Button */}
+                                      <button
+                                        onClick={async () => {
+                                          const newQty = Math.max(item.quantity - 1, 1);
+                                          try {
+                                            await addToCart(item.product_id, newQty, item.id);
+                                            setCart((prevCart) =>
+                                              prevCart.map((cartItem) =>
+                                                cartItem.id === item.id
+                                                  ? { ...cartItem, quantity: newQty }
+                                                  : cartItem
+                                              )
+                                            );
+                                          } catch (error) {
+                                            toast.error("Failed to update quantity");
+                                          }
+                                        }}
+                                        className="w-[15px] h-[15px] bg-[#c00] flex items-center justify-center rounded"
+                                      >
+                                        <p className="text-xs text-[#fff] m-0 pt-[1px]">-</p>
+                                      </button>
+
+                                      {/* Plus Button */}
+                                      <button
+                                        onClick={async () => {
+                                          const newQty = item.quantity + 1;
+
+                                          // Create a temporary cart with the updated quantity
+                                          const updatedCart = cart.map((cartItem) =>
+                                            cartItem.id === item.id
+                                              ? { ...cartItem, quantity: newQty }
+                                              : cartItem
+                                          );
+
+                                          // Recalculate total based on updated cart
+                                          const newTotal = updatedCart.reduce((total, cartItem) => {
+                                            const price = cartItem.product?.price || cartItem.price || 0;
+                                            return total + price * cartItem.quantity;
+                                          }, 0);
+
+                                          if (newTotal > 25000) {
+                                            toast.error("Total amount cannot exceed 25,000");
+                                            return;
+                                          }
+
+                                          try {
+                                            await addToCart(item.product_id, newQty, item.id);
+                                            setCart(updatedCart);
+                                          } catch (error) {
+                                            toast.error("Failed to update quantity");
+                                          }
+                                        }}
+                                        className="w-[15px] h-[15px] bg-[#c00] flex items-center justify-center rounded"
+                                      >
+                                        <p className="text-xs text-[#fff] m-0 pt-[1px]">+</p>
+                                      </button>
+
+                                    </div>
                                     <p className="my-0 text-sm px-[10px] bg-[#2b3990] rounded-[5px] text-[#fff]">
                                       {item.unit_price}{" "}
                                       <span className="text-xs pl-[3px] font-semibold">
@@ -823,52 +850,6 @@ export default function ProductListPage() {
                                   </div>
                                 </div>
                                 <div className="absolute top-[5px] right-[5px] flex items-center gap-1">
-                                  <button
-                                    onClick={async () => {
-                                      if (editingId === item.id) {
-                                        const newQuantity = Math.max(
-                                          editedQuantity,
-                                          1
-                                        );
-                                        try {
-                                          await addToCart(
-                                            item.product_id,
-                                            newQuantity,
-                                            item.id
-                                          );
-                                          setEditingId(null);
-                                        } catch (error) {
-                                          updateLocalQuantity(
-                                            item.product_id,
-                                            item.quantity
-                                          );
-                                          setCart((prevCart) =>
-                                            prevCart.map((cartItem) =>
-                                              cartItem.id === item.id
-                                                ? {
-                                                  ...cartItem,
-                                                  quantity: item.quantity,
-                                                }
-                                                : cartItem
-                                            )
-                                          );
-                                          toast.error(
-                                            "Failed to update quantity"
-                                          );
-                                        }
-                                      } else {
-                                        setEditingId(item.id!);
-                                        setEditedQuantity(item.quantity);
-                                      }
-                                    }}
-                                    className="text-[#2b3990] hover:text-[#00aeef] cursor-pointer duration-200 ease-in-out transition-all w-[18px] h-[18px] flex items-center justify-center overflow-hidden"
-                                  >
-                                    {editingId === item.id ? (
-                                      <Save className="p-1" />
-                                    ) : (
-                                      <Edit className="p-1" />
-                                    )}
-                                  </button>
                                   <button
                                     onClick={() => removeFromCart(item.id!)}
                                     className="text-[#c00] hover:text-[#000] cursor-pointer duration-200 ease-in-out transition-all w-[18px] h-[18px] flex items-center justify-center overflow-hidden"

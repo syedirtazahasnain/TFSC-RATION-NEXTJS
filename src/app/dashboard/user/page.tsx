@@ -15,6 +15,7 @@ interface UserData {
   id: number;
   name: string;
   email: string;
+  emp_id: string;
   my_role: string;
   role?: string;
   created_at: string;
@@ -26,51 +27,51 @@ interface UserData {
 const data = [
   {
     name: 'Jan',
-    uv: 0,
+    Ration: 0,
   },
   {
     name: 'Feb',
-    uv: 500,
+    Ration: 500,
   },
   {
     name: 'Mar',
-    uv: 1000,
+    Ration: 1000,
   },
   {
     name: 'Apr',
-    uv: 1580,
+    Ration: 1580,
   },
   {
     name: 'May',
-    uv: 1190,
+    Ration: 1190,
   },
   {
     name: 'Jun',
-    uv: 950,
+    Ration: 950,
   },
   {
     name: 'Jul',
-    uv: 1490,
+    Ration: 1490,
   },
   {
     name: 'Aug',
-    uv: 2090,
+    Ration: 2090,
   },
   {
     name: 'Sep',
-    uv: 1090,
+    Ration: 1090,
   },
   {
     name: 'Oct',
-    uv: 3490,
+    Ration: 3490,
   },
   {
     name: 'Nov',
-    uv: 2490,
+    Ration: 2490,
   },
   {
     name: 'Dec',
-    uv: 90,
+    Ration: 90,
   },
 ];
 
@@ -262,7 +263,7 @@ export default function UserDashboard({ my_role }: UserData) {
               <p className="my-0 text-[24px] font-semibold">
                 15
               </p>
-              <p className="text-[12px] my-0">Total Rashan Count</p>
+              <p className="text-[12px] my-0">Total Ration Count</p>
             </div>
           </div>
           <div className="bg-[#fbaf2c] bg-opacity-10 rounded-[15px] xl:rounded-[20px] p-[10px] lg:p-[15px] xl:p-[20px]">
@@ -271,7 +272,7 @@ export default function UserDashboard({ my_role }: UserData) {
             </div>
             <div className="mt-[10px] pl-[5px]">
               <p className="my-0 text-[24px] font-semibold">
-                Rashan
+                Ration
               </p>
               <p className="text-[12px] my-0">Current Month</p>
             </div>
@@ -281,7 +282,7 @@ export default function UserDashboard({ my_role }: UserData) {
           <div className="bg-[#f9f9f9] rounded-[15px] xl:rounded-[20px] p-[10px] lg:p-[15px] xl:p-[20px]">
             <div className="mb-[20px]">
               <p className="my-0 text-[24px] font-semibold">
-                Rashan Details
+                Ration Details
               </p>
               <p className="text-[12px] my-0">Amount of rashan purchased per month.</p>
             </div>
@@ -302,7 +303,7 @@ export default function UserDashboard({ my_role }: UserData) {
                   <XAxis className="text-xs" dataKey="name" />
                   <YAxis className="text-xs" />
                   <Tooltip />
-                  <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
+                  <Line type="monotone" dataKey="Ration" stroke="#82ca9d" />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -317,7 +318,7 @@ export default function UserDashboard({ my_role }: UserData) {
             <div className="bg-[#fff] p-[10px] rounded-[15px] xl:rounded-[20px]">
               <table className="w-full">
                 <thead className="">
-                  <tr className="">
+                  <tr className="uppercase">
                     <th className="py-2 px-2 text-left rounded-l-xl bg-[#e0e0e0]">
                       <p className="text-xs font-semibold">
                         Sr No.
@@ -330,7 +331,7 @@ export default function UserDashboard({ my_role }: UserData) {
                     </th>
                     <th className="py-2 px-2 text-left bg-[#e0e0e0]">
                       <p className="text-xs font-semibold">
-                        Rashan / Cash
+                        Ration / Cash
                       </p>
                     </th>
                     <th className="py-2 px-2 text-left bg-[#e0e0e0]">
@@ -359,19 +360,19 @@ export default function UserDashboard({ my_role }: UserData) {
                     </td>
                     <td className="flex items-center mt-[5px] ml-[10px]">
                       <div className="px-4 py-1 text-xs bg-green-100 rounded-[10px]">
-                        <p className="my-0 text-green-800 font-semibold">
+                        <p className="my-0 text-green-800 uppercase">
                           Yes
                         </p>
                       </div>
                     </td>
                     <td className="py-2 px-2">
                       <p className="text-md">
-                        24600 <span className="text-sm ml-[2px]">Rs</span>
+                        <span className="text-xs ml-[2px]">PKR</span> 24600
                       </p>
                     </td>
                     <td className="flex items-center mt-[6px] ml-[10px]">
                       <div className="px-4 py-1 text-xs bg-orange-100 rounded-[10px]">
-                        <p className="my-0 text-orange-800 font-semibold">
+                        <p className="my-0 text-orange-800 uppercase">
                           Pending
                         </p>
                       </div>
@@ -390,19 +391,19 @@ export default function UserDashboard({ my_role }: UserData) {
                     </td>
                     <td className="flex items-center mt-[5px] ml-[10px]">
                       <div className="px-4 py-1 text-xs bg-orange-100 rounded-[10px]">
-                        <p className="my-0 text-orange-800 font-semibold">
+                        <p className="my-0 text-orange-800 uppercase">
                           No
                         </p>
                       </div>
                     </td>
                     <td className="py-2 px-2">
                       <p className="text-md">
-                        7000 <span className="text-sm ml-[2px]">Rs</span>
+                        <span className="text-xs ml-[2px]">PKR</span> 7000
                       </p>
                     </td>
                     <td className="flex items-center mt-[6px] ml-[10px]">
                       <div className="px-4 py-1 text-xs bg-green-100 rounded-[10px]">
-                        <p className="my-0 text-green-800 font-semibold">
+                        <p className="my-0 text-green-800 uppercase">
                           Received
                         </p>
                       </div>

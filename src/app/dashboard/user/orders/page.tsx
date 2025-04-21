@@ -106,23 +106,23 @@ export default function OrdersPage() {
         </div>
 
         <div className="overflow-x-auto mb-8">
-          <div className="p-[25px] rounded-[20px] xl:rounded-[25px] bg-[#f9f9f9]">
-            <table className="min-w-full bg-white rounded-[15px] overflow-hidden">
-              <thead className="bg-[#2b3990]">
+          <div className="p-[15px] rounded-[20px] xl:rounded-[25px] bg-[#f9f9f9]">
+            <table className="w-full">
+              <thead className="">
                 <tr>
-                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-100">
+                  <th className="px-6 py-2 text-left text-sm font-medium text-[#000] rounded-l-[15px] bg-gray-200">
                     Order #
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-100">
+                  <th className="px-6 py-2 text-left text-sm font-medium text-[#000] bg-gray-200">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-100">
+                  <th className="px-6 py-2 text-left text-sm font-medium text-[#000] bg-gray-200">
                     Date
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-100">
+                  <th className="px-6 py-2 text-left text-sm font-medium text-[#000] bg-gray-200">
                     Total
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-100">
+                  <th className="px-6 py-2 text-left text-sm font-medium text-[#000] bg-gray-200 rounded-r-[15px]">
                     Actions
                   </th>
                 </tr>
@@ -134,27 +134,29 @@ export default function OrdersPage() {
                     className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"
                       }`}
                   >
-                    <td className="px-6 py-4 text-sm text-gray-900">
+                    <td className="px-6 py-2 text-sm text-gray-900">
                       {order.order_number}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-900 capitalize">
+                    <td className="px-6 py-2 text-sm text-gray-900 capitalize">
                       <div className="bg-yellow-400 rounded-[10px] uppercase text-xs inline-block px-2 py-1 text-[#000]">
                         {order.status}
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
+                    <td className="px-6 py-2 text-sm text-gray-900">
                       {order.created_at}
                     </td>
-                    <td className="px-6 py-4 text-lg text-gray-900 font-semibold">
-                      <span className="text-xs font-normal"> PKR </span>
+                    <td className="px-6 py-2 text-lg text-gray-900 font-semibold">
+                      <span className="text-xs font-normal mr-[5px]"> PKR </span>
                       {order.grand_total}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
+                    <td className="px-6 py-2 text-sm text-gray-900">
                       <Link
                         href={`/dashboard/user/orders/${order.id}`}
                         className="text-blue-300 hover:text-blue-800"
                       >
-                        <Visibility className="w-5 h-5" />
+                        <div className="bg-blue-500 rounded-[10px] uppercase text-xs inline-block px-2 py-1 text-[#fff]">
+                          View
+                        </div>
                       </Link>
                     </td>
                   </tr>

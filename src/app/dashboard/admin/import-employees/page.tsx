@@ -189,8 +189,7 @@ export default function Page() {
                 >
                   {isSubmitting ? (
                     <>
-                      <Loader size={20} color="white" />
-                      <span>Processing...</span>
+                      <Loader />
                     </>
                   ) : (
                     "Import"

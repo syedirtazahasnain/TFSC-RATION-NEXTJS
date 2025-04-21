@@ -114,7 +114,7 @@ export default function OrderDetailsPage() {
                     Order #{order.order_number}
                   </h3>
                 </div>
-                <div className="flex items-center rounded justify-center bg-green-400 px-3 py-1 text-xs uppercase leading-none font-semibold">
+                <div className="flex items-center rounded justify-center bg-green-700 px-3 py-1 text-xs uppercase leading-none font-semibold text-[#fff]">
                   {order.status}
                 </div>
               </div>
@@ -298,7 +298,7 @@ export default function OrderDetailsPage() {
                     <td className="py-2 px-4">
                       <div className="flex items-center justify-center">
                         <p className="rounded-full px-2 py-0.5 text-lg text-[#2b3990] font-semibold">
-                        <span className="text-xs font-normal"> PKR </span> {item.price}
+                          <span className="text-xs font-normal"> PKR </span> {item.price}
                         </p>
                       </div>
                     </td>

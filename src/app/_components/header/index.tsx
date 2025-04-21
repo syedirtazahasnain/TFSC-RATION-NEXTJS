@@ -87,7 +87,7 @@ export default function Index() {
     <div className="h-[60px] border-b-[1px] flex items-center justify-between py-[10px] px-[20px]">
       <div>
         <h2 className="text-3xl font-semibold">
-          TFSC<span className="text-xl font-normal"> - Rashan Scheme </span>
+          TFSC<span className="text-xl font-normal"> - Ration Scheme </span>
         </h2>
       </div>
 

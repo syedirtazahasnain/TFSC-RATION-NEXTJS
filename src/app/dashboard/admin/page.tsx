@@ -36,62 +36,62 @@ import {
 const data01 = [
   {
     name: "Jan",
-    Rashan: 3000,
+    Ration: 3000,
     Cash: 1398,
   },
   {
     name: "Feb",
-    Rashan: 2000,
+    Ration: 2000,
     Cash: 9800,
   },
   {
     name: "Mar",
-    Rashan: 2780,
+    Ration: 2780,
     Cash: 3908,
   },
   {
     name: "Apr",
-    Rashan: 1890,
+    Ration: 1890,
     Cash: 4800,
   },
   {
     name: "May",
-    Rashan: 2390,
+    Ration: 2390,
     Cash: 3800,
   },
   {
     name: "Jun",
-    Rashan: 10490,
+    Ration: 10490,
     Cash: 2300,
   },
   {
     name: "Jul",
-    Rashan: 3490,
+    Ration: 3490,
     Cash: 4300,
   },
   {
     name: "Aug",
-    Rashan: 490,
+    Ration: 490,
     Cash: 5300,
   },
   {
     name: "Sep",
-    Rashan: 3490,
+    Ration: 3490,
     Cash: 4300,
   },
   {
     name: "Oct",
-    Rashan: 7490,
+    Ration: 7490,
     Cash: 6300,
   },
   {
     name: "Nov",
-    Rashan: 3490,
+    Ration: 3490,
     Cash: 4300,
   },
   {
     name: "Dec",
-    Rashan: 13490,
+    Ration: 13490,
     Cash: 100,
   },
 ];
@@ -175,7 +175,7 @@ export default function AdminDashboard() {
             </div>
             <div className="mt-[10px] pl-[5px]">
               <p className="my-0 text-[24px] font-semibold">15</p>
-              <p className="text-[12px] my-0">Total Rashan Count</p>
+              <p className="text-[12px] my-0">Total Ration Count</p>
             </div>
           </div>
           <div className="bg-[#2b3990] bg-opacity-10 rounded-[15px] xl:rounded-[20px] p-[10px] lg:p-[15px] xl:p-[20px]">
@@ -185,7 +185,7 @@ export default function AdminDashboard() {
             <div className="mt-[10px] pl-[5px]">
               <p className="my-0 text-[24px] font-semibold">5</p>
               <p className="text-[12px] my-0">
-                Employee Order Rashan -{" "}
+                Employee Order Ration -{" "}
                 <span className="text-[10px]"> This Month</span>
               </p>
             </div>
@@ -251,7 +251,7 @@ export default function AdminDashboard() {
           <div className="bg-[#f9f9f9] rounded-[15px] xl:rounded-[20px] p-[10px] lg:p-[15px] xl:p-[20px] lg:col-span-2">
             <div className="pb-[10px] border-b-[1px]">
               <p className="my-0 text-[18px] font-semibold">
-                Users Rashan/Cash
+                Users Ration/Cash
               </p>
             </div>
             <div className="w-full h-[250px] mt-[20px]">
@@ -265,7 +265,7 @@ export default function AdminDashboard() {
                   <YAxis className="text-xs" />
                   <Tooltip />
                   <Legend />
-                  <Line type="monotone" dataKey="Rashan" stroke="#00aeef" />
+                  <Line type="monotone" dataKey="Ration" stroke="#00aeef" />
                   <Line type="monotone" dataKey="Cash" stroke="#2b3990" />
                 </LineChart>
               </ResponsiveContainer>
@@ -275,7 +275,7 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-[10px] lg:gap-[15px] xl:gap-[20px]">
           <div className="bg-[#f9f9f9] rounded-[15px] xl:rounded-[20px] p-[10px] lg:p-[15px] xl:p-[20px]">
             <div className="mb-[20px]">
-              <p className="my-0 text-[24px] font-semibold">Rashan Orders</p>
+              <p className="my-0 text-[24px] font-semibold">Ration Orders</p>
               <p className="text-[12px] my-0">
                 Amount of rashan purchased per month.
               </p>
@@ -312,7 +312,7 @@ export default function AdminDashboard() {
             </div>
             <div className="bg-[#fff] p-[10px] rounded-[15px] xl:rounded-[20px]">
               <table className="w-full">
-                <thead className="">
+                <thead className="uppercase">
                   <tr className="">
                     <th className="py-2 px-2 text-left rounded-l-xl bg-[#e0e0e0]">
                       <p className="text-xs font-semibold">Order No.</p>
@@ -362,7 +362,7 @@ export default function AdminDashboard() {
                       </td>
                       <td className="flex items-center mt-[6px] ml-[10px]">
                         <div className="px-4 py-1 text-xs bg-orange-100 rounded-[10px]">
-                          <p className="my-0 text-orange-800 font-semibold">
+                          <p className="my-0 text-orange-800 uppercase">
                             Pending
                           </p>
                         </div>

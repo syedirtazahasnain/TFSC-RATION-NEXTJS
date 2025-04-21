@@ -231,7 +231,7 @@ export default function Index() {
                         type="datetime-local"
                         name="last_date"
                         id="last_date"
-                        label="Rashan Last Date"
+                        label="Ration Last Date"
                         className="w-full"
                         classNames={{ inputWrapper: "" }}
                         isRequired

@@ -13,6 +13,9 @@ interface Order {
   id: number;
   order_number: string;
   status: string;
+  user: {
+    emp_id: string;
+  };
   grand_total: string;
   created_at: string;
   items: {
@@ -24,8 +27,12 @@ interface Order {
     product: {
       id: number;
       name: string;
+      image: string;
       detail: string;
       price: string;
+      type: string;
+      brand: string;
+      measure: string;
     };
   }[];
 }
