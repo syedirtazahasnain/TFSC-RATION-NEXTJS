@@ -8,6 +8,8 @@ import Breadcrumb from "@/app/_components/ui/Breadcrumb";
 import "@/app/extra.css";
 import { AddShoppingCart, Delete, HighlightOff, Close, ArrowForwardIos } from "@mui/icons-material";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import ErrorMessage from "@/app/_components/error/index";
+import Loader from "@/app/_components/loader/index";
 
 interface UserData {
   id: number;
@@ -102,7 +104,7 @@ export default function UserDashboard({ my_role }: UserData) {
         const data = await response.json();
         setUser(data.data);
         console.log(data.data);
-      
+
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
@@ -115,22 +117,18 @@ export default function UserDashboard({ my_role }: UserData) {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-20">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
+      <Loader />
     );
   }
 
   if (error) {
     return (
-      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-        {error}
-      </div>
+      <ErrorMessage error={error} />
     );
   }
 
   if (!user) {
-    return <div className="text-gray-500">No user data available</div>;
+    return <ErrorMessage error="No user data available" />;
   }
 
   return (

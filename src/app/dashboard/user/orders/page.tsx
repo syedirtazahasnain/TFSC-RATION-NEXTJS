@@ -75,21 +75,21 @@ export default function OrdersPage() {
   }, [currentPage, router]);
 
 
-    if (loading) {
-      return (
-        <Loader />
-      );
-    }
-  
-    if (error) {
-      return (
-        <ErrorMessage error={error} />
-      );
-    }
-  
-    if (!orders?.data.length) {
-      return <ErrorMessage error="No orders found" />;
-    }
+  if (loading) {
+    return (
+      <Loader />
+    );
+  }
+
+  if (error) {
+    return (
+      <ErrorMessage error={error} />
+    );
+  }
+
+  if (!orders?.data.length) {
+    return <ErrorMessage error="No orders found" />;
+  }
 
   return (
     <div className="min-h-screen flex gap-[20px] px-[20px] xl:px-[30px]">
@@ -138,13 +138,16 @@ export default function OrdersPage() {
                       {order.order_number}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-900 capitalize">
-                      {order.status}
+                      <div className="bg-yellow-400 rounded-[10px] uppercase text-xs inline-block px-2 py-1 text-[#000]">
+                        {order.status}
+                      </div>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-900">
                       {order.created_at}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-900 font-semibold">
-                      ${order.grand_total}
+                    <td className="px-6 py-4 text-lg text-gray-900 font-semibold">
+                      <span className="text-xs font-normal"> PKR </span>
+                      {order.grand_total}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-900">
                       <Link
@@ -176,8 +179,8 @@ export default function OrdersPage() {
                 key={index}
                 href={`/dashboard/user/orders?page=${page}`}
                 className={`m-0 w-[30px] h-[30px] flex items-center justify-center rounded-lg ${isActive
-                    ? "bg-[#2b3990] text-white"
-                    : "bg-white text-gray-700 hover:bg-gray-50"
+                  ? "bg-[#2b3990] text-white"
+                  : "bg-white text-gray-700 hover:bg-gray-50"
                   } ${isPrevious || isNext ? "font-semibold" : ""}`}
               >
                 {isPrevious ? "«" : isNext ? "»" : link.label}

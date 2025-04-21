@@ -23,6 +23,7 @@ interface PaginatedOrders {
   last_page: number;
   per_page: number;
   total: number;
+  emp_id: string;
   links: {
     url: string | null;
     label: string;
@@ -110,7 +111,7 @@ export default function OrdersPage() {
           <div className="p-[25px] rounded-[20px] xl:rounded-[25px] bg-[#f9f9f9]">
             <div className='flex justify-between items-center mb-4'>
               <div>
-                <p className='my-0 font-semibold text-lg my-0'>Recent Orders</p>
+                <p className='my-0 font-semibold text-lg'>Recent Orders</p>
               </div>
               <div className='flex items-center gap-2'>
                 <Input type="text" placeholder="Search here ..."
@@ -165,7 +166,7 @@ export default function OrdersPage() {
                       {order.user.emp_id}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-900 capitalize">
-                      {order.status}
+                      {order.status}  
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-900">
                       {order.created_at}

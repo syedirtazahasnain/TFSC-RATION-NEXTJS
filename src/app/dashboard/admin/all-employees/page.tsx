@@ -100,7 +100,7 @@ export default function Page() {
         // Clear validation error when user types
         if (validationErrors[name]) {
             setValidationErrors(prev => {
-                const newErrors = {...prev};
+                const newErrors = { ...prev };
                 delete newErrors[name];
                 return newErrors;
             });
@@ -223,9 +223,9 @@ export default function Page() {
                             <div className="flex gap-[10px] xl:gap-[20px]">
                                 <div>
                                     <div className="w-[60px] h-[60px] rounded-full flex justify-center items-center overflow-hidden bg-gray-200">
-                                        <img 
-                                            src="/images/logo/irtaza.webp" 
-                                            alt="User Avatar" 
+                                        <img
+                                            src="/images/logo/irtaza.webp"
+                                            alt="User Avatar"
                                             className="w-full h-full object-cover"
                                         />
                                     </div>
@@ -246,7 +246,7 @@ export default function Page() {
                                     onClick={() => handleEdit(user)}
                                     className="absolute top-[10px] right-[10px] text-gray-700 hover:text-[#00aeef]"
                                 >
-                                    <DriveFileRenameOutline />
+                                    <p className='my-0 px-[10px] bg-[#00aeef] text-[#fff] rounded text-xs uppercase'>Edit</p>
                                 </button>
                             </div>
                         </div>
@@ -267,11 +267,10 @@ export default function Page() {
                                 <Link
                                     key={index}
                                     href={`/dashboard/admin/all-employees?page=${page}`}
-                                    className={`px-4 py-2 rounded-lg border ${
-                                        isActive
+                                    className={`px-4 py-2 rounded-lg border ${isActive
                                             ? 'bg-[#2b3990] text-white border-blue-500'
                                             : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                                    } ${(isPrevious || isNext) ? 'font-semibold' : ''}`}
+                                        } ${(isPrevious || isNext) ? 'font-semibold' : ''}`}
                                 >
                                     {isPrevious ? '«' : isNext ? '»' : link.label}
                                 </Link>
@@ -300,15 +299,14 @@ export default function Page() {
                                     value={formData.name}
                                     onChange={handleChange}
                                     placeholder="Full Name"
-                                    className={`w-full border rounded px-3 py-2 ${
-                                        validationErrors.name ? 'border-red-500' : ''
-                                    }`}
+                                    className={`w-full border rounded px-3 py-2 ${validationErrors.name ? 'border-red-500' : ''
+                                        }`}
                                 />
                                 {validationErrors.name && (
                                     <p className="mt-1 text-sm text-red-500">{validationErrors.name[0]}</p>
                                 )}
                             </div>
-                            
+
                             <div>
                                 <input
                                     type="email"
@@ -316,23 +314,21 @@ export default function Page() {
                                     value={formData.email}
                                     onChange={handleChange}
                                     placeholder="Email"
-                                    className={`w-full border rounded px-3 py-2 ${
-                                        validationErrors.email ? 'border-red-500' : ''
-                                    }`}
+                                    className={`w-full border rounded px-3 py-2 ${validationErrors.email ? 'border-red-500' : ''
+                                        }`}
                                 />
                                 {validationErrors.email && (
                                     <p className="mt-1 text-sm text-red-500">{validationErrors.email[0]}</p>
                                 )}
                             </div>
-                            
+
                             <div>
                                 <select
                                     name="status"
                                     value={formData.status}
                                     onChange={handleChange}
-                                    className={`w-full border rounded px-3 py-2 ${
-                                        validationErrors.status ? 'border-red-500' : ''
-                                    }`}
+                                    className={`w-full border rounded px-3 py-2 ${validationErrors.status ? 'border-red-500' : ''
+                                        }`}
                                 >
                                     <option value="">Select Status</option>
                                     <option value="Permanent">Permanent</option>

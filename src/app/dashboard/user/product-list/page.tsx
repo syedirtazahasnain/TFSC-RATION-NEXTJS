@@ -23,7 +23,7 @@ interface CartItem {
   id?: number;
   cart_id?: number;
   product_id: number;
-  quantity: number | string;
+  quantity: number;
   unit_price: number | string;
   total: number | string;
   created_at?: string;
@@ -33,7 +33,7 @@ interface CartItem {
     id: number;
     name: string;
     detail: string;
-    price: string;
+    price: number;
     image?: string;
     measure?: string;
   };
@@ -44,11 +44,11 @@ interface CartResponse {
   status_code: number;
   message: string;
   data?: {
-    cart_data: CartItem[] | { items: CartItem[] }; 
+    cart_data: CartItem[] | { items: CartItem[] };
     payable_amount: number;
   };
   errors?: {
-    cart_data: CartItem[] | { items: CartItem[] }; 
+    cart_data: CartItem[] | { items: CartItem[] };
     payable_amount: number;
   };
 }
@@ -63,6 +63,8 @@ interface CartData {
 interface Product {
   id: number;
   name: string;
+  image: string;
+  type: string;
   detail: string;
   price: number;
 }
@@ -171,8 +173,8 @@ export default function ProductListPage() {
 
         setCart(cartItems);
         setCartData({
-          id: 0, 
-          user_id: 0, 
+          id: 0,
+          user_id: 0,
           items: cartItems,
           payable_amount: data.data.payable_amount,
         });
@@ -186,8 +188,7 @@ export default function ProductListPage() {
       }
     } catch (err) {
       toast.error(
-        `Error fetching cart: ${
-          err instanceof Error ? err.message : String(err)
+        `Error fetching cart: ${err instanceof Error ? err.message : String(err)
         }`
       );
       console.error("Error fetching cart:", err);
@@ -287,7 +288,7 @@ export default function ProductListPage() {
 
         setCart(updatedCart);
         setCartData({
-          id: 0, 
+          id: 0,
           user_id: 0,
           items: updatedCart,
           payable_amount: data.data.payable_amount,
@@ -327,7 +328,7 @@ export default function ProductListPage() {
     // Update local quantities
     const quantities: { [key: number]: number } = {};
     cartItems.forEach((item: CartItem) => {
-      quantities[item.product_id] = item.quantity;
+      quantities[item.product_id] = item.quantity as number;
     });
     setLocalQuantities(quantities);
   };
@@ -349,18 +350,35 @@ export default function ProductListPage() {
     let updatedCart;
     if (itemId) {
       updatedCart = cart.map((item) =>
-        item.id === itemId ? { ...item, quantity: quantity } : item
+        item.id === itemId ? { ...item, quantity } : item
       );
     } else {
-      const existingProduct = cart.find(
-        (item) => item.product_id === productId
-      );
+      const existingProduct = cart.find((item) => item.product_id === productId);
       if (existingProduct) {
         updatedCart = cart.map((item) =>
-          item.product_id === productId ? { ...item, quantity: quantity } : item
+          item.product_id === productId ? { ...item, quantity } : item
         );
       } else {
-        updatedCart = [...cart, { product_id: productId, quantity: quantity }];
+        // ✅ Get the full product info
+        const product = allProducts.find((p) => p.id === productId);
+
+        if (!product) {
+          console.error("Product not found");
+          return;
+        }
+
+        const unit_price = product.price;
+        const total = unit_price * quantity;
+
+        const newItem: CartItem = {
+          product_id: productId,
+          quantity,
+          unit_price,
+          total,
+          product,
+        };
+
+        updatedCart = [...cart, newItem];
       }
     }
 
@@ -465,7 +483,7 @@ export default function ProductListPage() {
       confirmButtonText: "Yes, place order!",
       cancelButtonText: "Cancel"
     });
-  
+
     if (!result.isConfirmed) {
       return;
     }
@@ -520,9 +538,12 @@ export default function ProductListPage() {
 
   // Calculate total price and quantity
   const totalPrice =
-    cartData?.payable_amount ||
-    cart.reduce((total, item) => total + (item.total || 0), 0);
-  const totalQuantity = cart.reduce((total, item) => total + item.quantity, 0);
+    cartData?.payable_amount ??
+    cart.reduce((total, item) => total + Number(item.total || 0), 0);
+
+  const totalQuantity =
+    cart.reduce((total, item) => total + Number(item.quantity || 0), 0);
+
 
   return (
     <div className="min-h-screen flex gap-[20px] px-[20px] xl:px-[30px]">
@@ -537,7 +558,7 @@ export default function ProductListPage() {
           <h1 className="text-2xl font-bold my-0">All Products</h1>
           <Breadcrumb items={[{ label: "Dashboard" }, { label: "Products" }]} />
           <div
-            className="absolute top-[10px] right-[10px] z-40 bg-[#fff] p-[10px] rounded-[15px] cursor-pointer"
+            className="hidden absolute top-[10px] right-[10px] z-40 bg-[#fff] p-[10px] rounded-[15px] cursor-pointer"
             onClick={() => setIsCartOpen(!isCartOpen)}
           >
             {isCartOpen ? (
@@ -690,19 +711,19 @@ export default function ProductListPage() {
                   ) : (
                     <>
                       <div className="my-2">
-                        <div className="flex justify-between items-center gap-[5px] text-right">
-                          <p className="font-semibold text-xs uppercase py-[1px] px-[10px] rounded-[5px] text-[#fff] bg-[#2b3990]">
-                            Items: {totalQuantity}
-                          </p>
-                          <p className="font-semibold text-xl">
-                            <span className="text-sm font-normal pr-[10px]">
-                              Total Price{" "}
-                            </span>{" "}
+
+                        <div>
+                          <p className='my-0 text-xs'>Employee Contribution - <span className='text-[10px]'>PKR</span> <span className="text-sm font-semibold">
+                            0000
+                          </span> </p>
+                          <p className='my-0 text-xs'>Company Contribution - <span className='text-[10px]'>PKR</span> <span className="text-sm font-semibold">
+                            0000
+                          </span> </p>
+                          <p className='text-right my-0 text-sm text-red-500 font-semibold'>Grand Total - <span className='text-xs'>PKR</span> <span className="text-lg font-semibold">
                             {cartData?.payable_amount
                               ? cartData.payable_amount.toFixed(0)
-                              : totalPrice.toFixed(0)}{" "}
-                            <span className="text-xs pl-[2px]">Rs </span>
-                          </p>
+                              : totalPrice.toFixed(0)}
+                          </span> </p>
                           <div className="flex justify-end">
                             <p className="font-semibold text-xs uppercase py-[1px] px-[10px] rounded-[5px] text-[#fff] bg-[#2b3990]">
                               Items:{" "}

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from "react-toastify";
+import { Input } from "@heroui/react";
 import {
   Dashboard,
   AccountCircle,
@@ -16,6 +17,7 @@ import {
   ShoppingCartCheckout,
   Badge,
   ImportExport,
+  Restore,
 } from "@mui/icons-material";
 
 export default function Index() {
@@ -25,6 +27,17 @@ export default function Index() {
   const [showProfile, setShowProfile] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [userData, setUserData] = useState<any>(null);
+  const [showDialog, setShowDialog] = useState(false);
+
+  const [lastDate, setLastDate] = useState(() => {
+    const now = new Date();
+    // Add 5 hours for Pakistan Standard Time (UTC+5)
+    now.setHours(now.getHours() + 5);
+    return now.toISOString().slice(0, 16); // Format as "YYYY-MM-DDTHH:MM"
+  });
+
+
+
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -176,11 +189,18 @@ export default function Index() {
               </div>
               <button
                 onClick={fetchAllOrders}
-                className="inline-flex items-center w-full text-sm transition-all duration-300 px-6 hover:ml-2 ease-in-out"
+                className="hidden inline-flex items-center w-full text-sm transition-all duration-300 px-6 hover:ml-2 ease-in-out"
               >
                 <Assessment className="w-5 h-5" />
                 <span className="ml-4">All Orders</span>
               </button>
+              <Link
+                href="/dashboard/admin/order-new"
+                className="inline-flex items-center w-full text-sm transition-all duration-300 px-6 hover:ml-2 ease-in-out"
+              >
+                <Assessment className="w-5 h-5" />
+                <span className="ml-4">All Orders</span>
+              </Link>
               <Link
                 href="/dashboard/admin/products/add"
                 className="inline-flex items-center w-full text-sm transition-all duration-300 px-6 hover:ml-2 ease-in-out"
@@ -195,6 +215,49 @@ export default function Index() {
                 <Category className="w-5 h-5" />
                 <span className="ml-4">Products</span>
               </Link>
+              <button
+                onClick={() => setShowDialog(true)}
+                className="inline-flex items-center w-full text-sm transition-all duration-300 px-6 hover:ml-2 ease-in-out"
+              >
+                <Restore className="w-5 h-5" />
+                <span className="ml-4">Last Date</span>
+              </button>
+
+              {showDialog && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                  <div className="bg-white rounded-[15px] xl:rounded-[20px] shadow-lg w-full max-w-md p-6 relative">
+                    <form action="">
+                      <Input
+                        type="datetime-local"
+                        name="last_date"
+                        id="last_date"
+                        label="Rashan Last Date"
+                        className="w-full"
+                        classNames={{ inputWrapper: "" }}
+                        isRequired
+                        value={lastDate}
+                        onChange={(e) => setLastDate(e.target.value)}
+                      />
+
+                      <div className="flex justify-end gap-[10px] mt-4">
+                        <button
+                          type="submit"
+                          className={`px-[15px] bg-[#f9f9f9] text-[#000] py-2 rounded-lg hover:bg-[#000] hover:text-[#fff] transition`}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          className={`px-[15px] bg-[#2b3990] text-white py-2 rounded-lg hover:bg-[#00aeef] transition`}
+                        >
+                          Submit
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )}
+
             </>
           </li>
           <li>

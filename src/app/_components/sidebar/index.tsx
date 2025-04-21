@@ -11,6 +11,7 @@ import {
   Password,
   AddShoppingCart,
   Assessment,
+  Policy,
   Category,
   ProductionQuantityLimits,
   ShoppingCartCheckout,
@@ -141,12 +142,11 @@ export default function Index() {
   };
 
   return (
-    <aside className={`z-20 hidden w-[15%] overflow-y-auto ${userRole === 'admin' || userRole === "super_admin" ? 'bg-[#2b3990] text-[#fff]' : 'bg-[#f9f9f9] text-[#000]'
-      }  md:block flex-shrink-0 scrollbar-hide h-screen fixed top-0 left-0`}>
+    <aside className={`z-20 hidden w-[15%] overflow-y-auto  md:block flex-shrink-0 scrollbar-hide h-screen fixed top-0 left-0`}>
       <div className="px-4 py-6">
         <div className="overflow-hidden flex items-center justify-center">
           <Image
-            src={userRole === 'admin' || userRole === "super_admin" ? '/images/logo/logo-light.webp' : '/images/logo/logo-dark.webp'}
+            src="/images/logo/logo-dark.webp"
             alt="Company Logo"
             width={200}
             height={50}
@@ -161,75 +161,34 @@ export default function Index() {
             </p>
           </li>
           <li className="relative">
-            {userRole === "user" && (
-              <>
-                <Link
-                  href="/dashboard/user"
-                  className="inline-flex items-center w-full text-sm transition-all duration-300 px-6 hover:ml-2 ease-in-out"
-                >
-                  <Dashboard className="w-5 h-5" />
-                  <span className="ml-4">Dashboard</span>
-                </Link>
-                <div className="py-2 mt-4">
-                  <p className="text-sm transition-all font-semibold">
-                    <span className="ml-3">Orders & More</span>
-                  </p>
-                </div>
-                <Link
-                  href="/dashboard/user/orders"
-                  className="inline-flex items-center w-full text-sm transition-all duration-300 px-6 hover:ml-2 ease-in-out"
-                >
-                  <Assessment className="w-5 h-5" />
-                  <span className="ml-4">Orders</span>
-                </Link>
-                <Link
-                  href="/dashboard/user/product-list"
-                  className="inline-flex items-center w-full text-sm transition-all duration-300 px-6 hover:ml-2 ease-in-out"
-                >
-                  <AddShoppingCart className="w-5 h-5" />
-                  <span className="ml-4">Order Now</span>
-                </Link>
-              </>
-            )}
-          </li>
-          <li className="relative">
-            {userRole && (userRole === "admin" || userRole === "super_admin") && (
-              <>
-                <button
-                  onClick={() => router.push("/dashboard/admin")}
-                  className="inline-flex items-center w-full text-sm transition-all duration-300 px-6 hover:ml-2 ease-in-out"
-                >
-                  <Dashboard className="w-5 h-5" />
-                  <span className="ml-4">Dashboard</span>
-                </button>
-                <div className="py-2 mt-4">
-                  <p className="text-sm transition-all font-semibold">
-                    <span className="ml-3">Orders & More</span>
-                  </p>
-                </div>
-                <button
-                  onClick={fetchAllOrders}
-                  className="inline-flex items-center w-full text-sm transition-all duration-300 px-6 hover:ml-2 ease-in-out"
-                >
-                  <Assessment className="w-5 h-5" />
-                  <span className="ml-4">All Orders</span>
-                </button>
-                <button
-                  onClick={() => router.push("/dashboard/admin/products/add")}
-                  className="inline-flex items-center w-full text-sm transition-all duration-300 px-6 hover:ml-2 ease-in-out"
-                >
-                  <ShoppingCartCheckout className="w-5 h-5" />
-                  <span className="ml-4">Create Product</span>
-                </button>
-                <button
-                  onClick={() => router.push("/dashboard/admin/products")}
-                  className="inline-flex items-center w-full text-sm transition-all duration-300 px-6 hover:ml-2 ease-in-out"
-                >
-                  <Category className="w-5 h-5" />
-                  <span className="ml-4">Products</span>
-                </button>
-              </>
-            )}
+            <>
+              <Link
+                href="/dashboard/user"
+                className="inline-flex items-center w-full text-sm transition-all duration-300 px-6 hover:ml-2 ease-in-out"
+              >
+                <Dashboard className="w-5 h-5" />
+                <span className="ml-4">Dashboard</span>
+              </Link>
+              <div className="py-2 mt-4">
+                <p className="text-sm transition-all font-semibold">
+                  <span className="ml-3">Orders & More</span>
+                </p>
+              </div>
+              <Link
+                href="/dashboard/user/orders"
+                className="inline-flex items-center w-full text-sm transition-all duration-300 px-6 hover:ml-2 ease-in-out"
+              >
+                <Assessment className="w-5 h-5" />
+                <span className="ml-4">Orders</span>
+              </Link>
+              <Link
+                href="/dashboard/user/product-list"
+                className="inline-flex items-center w-full text-sm transition-all duration-300 px-6 hover:ml-2 ease-in-out"
+              >
+                <AddShoppingCart className="w-5 h-5" />
+                <span className="ml-4">Order Now</span>
+              </Link>
+            </>
           </li>
           <li>
             <>
@@ -251,6 +210,22 @@ export default function Index() {
               >
                 <Password className="w-5 h-5" />
                 <span className="ml-4">Change Password</span>
+              </Link>
+            </>
+          </li>
+          <li>
+            <>
+              <div className="py-2 mt-4">
+                <p className="text-sm transition-all font-semibold">
+                  <span className="ml-3">Policies & More</span>
+                </p>
+              </div>
+              <Link
+                href="/dashboard/user/rashan-policy"
+                className="inline-flex items-center w-full text-sm transition-all duration-300 px-6 hover:ml-2 ease-in-out"
+              >
+                <Policy className="w-5 h-5" />
+                <span className="ml-4">Rashan Policy</span>
               </Link>
             </>
           </li>

@@ -188,7 +188,7 @@ export default function OrderDetailsPage() {
                             />
                           </div>
                           <div>
-                            <p className="font-medium text-gray-800 text-theme-sm dark:text-white/90 capitalize">
+                            <p className="font-medium text-gray-800 text-sm dark:text-white/90 capitalize">
                               {item.product.name}
                             </p>
                             <span className="text-gray-500">
@@ -200,28 +200,28 @@ export default function OrderDetailsPage() {
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center justify-center">
-                        <p className="text-gray-500 text-theme-sm dark:text-gray-400">
+                        <p className="text-gray-500 text-sm dark:text-gray-400">
                           {item.product.type}
                         </p>
                       </div>
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center justify-center">
-                        <p className="text-gray-500 text-theme-sm dark:text-gray-400">
+                        <p className="text-gray-500 text-sm dark:text-gray-400">
                           {item.product.brand}
                         </p>
                       </div>
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center justify-center">
-                        <p className="text-gray-500 text-theme-sm dark:text-gray-400">
+                        <p className="text-gray-500 text-sm dark:text-gray-400">
                           {item.product.measure}
                         </p>
                       </div>
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center justify-center">
-                        <p className="text-gray-500 text-theme-sm dark:text-gray-400">
+                        <p className="text-gray-500 text-sm dark:text-gray-400">
                           {item.quantity}x
                         </p>
                       </div>

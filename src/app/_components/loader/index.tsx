@@ -9,6 +9,5 @@ export default function index() {
                 Loading, please wait...
             </p>
         </div>
-
     );
 }

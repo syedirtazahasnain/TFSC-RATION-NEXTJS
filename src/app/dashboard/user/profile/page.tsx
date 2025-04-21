@@ -7,6 +7,8 @@ import Breadcrumb from "@/app/_components/ui/Breadcrumb";
 import Image from "next/image";
 import Header from "@/app/_components/header/index";
 import { toast } from "react-toastify";
+import ErrorMessage from "@/app/_components/error/index";
+import Loader from "@/app/_components/loader/index";
 
 interface UserData {
   id: number;
@@ -241,9 +243,7 @@ export default function page({ my_role }: UserData) {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-20">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
+      <Loader />
     );
   }
 
@@ -277,12 +277,12 @@ export default function page({ my_role }: UserData) {
             <div>
               <div className="flex flex-col items-center w-full gap-6 xl:flex-row">
                 <div className="w-20 h-20 overflow-hidden border border-gray-200 rounded-full dark:border-gray-800">
-                  <img 
-                  src={user.image ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${user.image}` : "/images/logo/irtaza.webp"} 
-                  onError={(e) => {
-                  e.currentTarget.src = "/images/logo/irtaza.webp";
-                  }}
-                  alt="user" />
+                  <img
+                    src={user.image ? `${process.env.NEXT_PUBLIC_BACKEND_URL_PUBLIC}${user.image}` : "/images/logo/irtaza.webp"}
+                    onError={(e) => {
+                      e.currentTarget.src = "/images/logo/irtaza.webp";
+                    }}
+                    alt="user" />
                 </div>
                 <div className="order-3 xl:order-2">
                   <h4 className="mb-2 text-lg font-semibold text-center text-gray-800 dark:text-white/90 xl:text-left">

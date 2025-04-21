@@ -257,7 +257,7 @@ export default function ProductsPage() {
                     }}
                   />
                 </div>
-                <div className="pt-2 pb-10 px-3">
+                <div className="py-2 px-3">
                   <div className="">
                     <h2 className="text-sm font-semibold my-0 capitalize">
                       {product.name}
@@ -289,36 +289,30 @@ export default function ProductsPage() {
                     </button>
                   </div>
                 </div>
-                <div className="w-full absolute bottom-2 left-2">
-                  <div className="flex justify-between items-center">
-                    <div className='group relative'>
-                      <button
-                        onClick={() => toggleProductStatus(product.id, product.status)}
-                        className={`w-8 h-4 flex items-center rounded-full p-1 transition duration-300 ease-in-out ${product.status === 1 ? 'bg-[#2b3990]' : 'bg-gray-300'
-                          }`}
-                      >
-                        <div
-                          className={`bg-white w-2.5 h-2.5 rounded-full shadow-md transform duration-300 ease-in-out ${product.status === 1 ? 'translate-x-4' : 'translate-x-0'
-                            }`}
-                        />
-                      </button>
-                      <span className="absolute top-[-20px] left-[0px] my-0 px-[5px] py-[2px] text-[10px] text-white bg-[#c00] rounded opacity-0 group-hover:opacity-100 transition text-nowrap">
-                        {product.status === 1 ? 'Disable Product' : 'Enable Product'}
-                      </span>
-                    </div>
-                    <div className="mr-[15px]">
-                      <Link
-                        href={`/dashboard/admin/products/edit/${product.id}`}
-                        className="text-[#2b3990] hover:text-[#00aeef] relative group"
-                      >
-                        <DriveFileRenameOutline />
-                        <span className="absolute top-[-15px] right-[-5px] my-0 px-[5px] py-[2px] text-[10px] text-white bg-[#c00] rounded opacity-0 group-hover:opacity-100 transition text-nowrap">
-                          Edit Product
-                        </span>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
+              </div>
+
+              <div className="absolute top-[10px] right-0 mr-[15px]">
+                <Link
+                  href={`/dashboard/admin/products/edit/${product.id}`}
+                  className="text-[#2b3990] hover:text-[#00aeef] relative group"
+                >
+                  <p className='my-0 px-[10px] bg-[#00aeef] text-[#fff] rounded text-xs uppercase'>Edit</p>
+                </Link>
+              </div>
+              <div className='absolute bottom-[10px] right-[10px] group'>
+                <button
+                  onClick={() => toggleProductStatus(product.id, product.status)}
+                  className={`w-[30px] h-4 flex items-center rounded-full p-1 transition duration-300 ease-in-out ${product.status === 1 ? 'bg-[#2b3990]' : 'bg-gray-300'
+                    }`}
+                >
+                  <div
+                    className={`bg-white w-2.5 h-2.5 rounded-full shadow-md transform duration-300 ease-in-out ${product.status === 1 ? 'translate-x-[13px]' : 'translate-x-0'
+                      }`}
+                  />
+                </button>
+                <span className="absolute top-[-20px] right-[0px] my-0 px-[5px] py-[2px] text-[10px] text-white bg-[#c00] rounded opacity-0 group-hover:opacity-100 transition text-nowrap">
+                  {product.status === 1 ? 'Disable Product' : 'Enable Product'}
+                </span>
               </div>
             </div>
           ))}
