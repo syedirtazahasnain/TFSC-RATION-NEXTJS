@@ -46,10 +46,14 @@ interface CartResponse {
   data?: {
     cart_data: CartItem[] | { items: CartItem[] };
     payable_amount: number;
+    employee_contribution: number;
+    company_discount: number;
   };
   errors?: {
     cart_data: CartItem[] | { items: CartItem[] };
     payable_amount: number;
+    employee_contribution: number;
+    company_discount: number;
   };
 }
 
@@ -58,6 +62,8 @@ interface CartData {
   user_id: number;
   items: CartItem[];
   payable_amount: number;
+  employee_contribution: number;
+  company_discount: number;
 }
 
 interface Product {
@@ -178,6 +184,8 @@ export default function ProductListPage() {
           user_id: 0,
           items: cartItems,
           payable_amount: data.data.payable_amount,
+          employee_contribution: data.data.employee_contribution,
+          company_discount: data.data.company_discount,
         });
 
         // Initialize local quantities
@@ -256,6 +264,8 @@ export default function ProductListPage() {
             user_id: 0,
             items: errorCartItems,
             payable_amount: data.errors.payable_amount,
+            employee_contribution: data.errors.employee_contribution,
+            company_discount: data.errors.company_discount,
           });
         }
         toast.error(data.message || "Failed to sync cart with backend");
@@ -293,6 +303,8 @@ export default function ProductListPage() {
           user_id: 0,
           items: updatedCart,
           payable_amount: data.data.payable_amount,
+          employee_contribution: data.data.employee_contribution,
+          company_discount: data.data.company_discount,
         });
 
         const quantities: { [key: number]: number } = {};
@@ -470,6 +482,24 @@ export default function ProductListPage() {
 
       toast.error(errorMessage);
       setError(errorMessage);
+    }
+  };
+  
+  const handleClearCart = async () => {
+    const result = await MySwal.fire({
+      title: "Clear your cart?",
+      text: "This will remove all items from your cart. This action cannot be undone!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, clear cart!",
+      cancelButtonText: "Cancel",
+      reverseButtons: true
+    });
+  
+    if (result.isConfirmed) {
+      await clearCart();
     }
   };
 
@@ -704,7 +734,7 @@ export default function ProductListPage() {
                   <div className="flex justify-between items-center mt-4">
                     <h2 className="text-xl font-bold my-0">Cart Items</h2>
                     <Delete
-                      onClick={clearCart}
+                      onClick={handleClearCart}
                       className="text-[#c00] cursor-pointer w-3 h-3"
                     />
                   </div>
@@ -716,10 +746,14 @@ export default function ProductListPage() {
 
                         <div>
                           <p className='my-0 text-xs'>Employee Contribution - <span className='text-[10px]'>PKR</span> <span className="text-sm font-semibold">
-                            0000
+                            {cartData?.employee_contribution
+                                ? cartData.employee_contribution.toFixed(2)
+                                : totalPrice.toFixed(2)}
                           </span> </p>
                           <p className='my-0 text-xs'>Company Contribution - <span className='text-[10px]'>PKR</span> <span className="text-sm font-semibold">
-                            0000
+                          {cartData?.company_discount
+                                ? cartData.company_discount.toFixed(2)
+                                : totalPrice.toFixed(2)}
                           </span> </p>
                           <p className='text-right my-0 text-sm text-red-500 font-semibold'>Grand Total - <span className='text-xs'>PKR</span> <span className="text-lg font-semibold">
                             {cartData?.payable_amount
