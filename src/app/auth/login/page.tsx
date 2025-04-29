@@ -17,7 +17,7 @@ export default function LoginPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('http://household.test/api/login', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-[#f9f9f9]">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
         
@@ -105,7 +105,7 @@ export default function LoginPage() {
           <button 
             type="submit" 
             disabled={isSubmitting}
-            className={`w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 mb-4 transition-colors
+            className={`w-full bg-[#2b3990] text-white py-2 rounded-lg hover:bg-[#00aeef] mb-4 transition-colors
               ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
             {isSubmitting ? 'Logging in...' : 'Login'}

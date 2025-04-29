@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { toast } from "react-toastify";
 
 export default async function handler(
   req: NextApiRequest,
@@ -28,21 +29,23 @@ export default async function handler(
     const contentType = response.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
       const text = await response.text();
-      throw new Error(`Expected JSON but got: ${text}`);
+      toast.error(`Expected JSON but got: ${text}`);
     }
 
     const data = await response.json();
 
     if (!response.ok) {
+      toast.error(data.message || "Login failed");
       return res.status(response.status).json({
         message: data.message || 'Login failed'
       });
     }
-
+    toast.success("Login successful!");
     return res.status(response.status).json(data);
     
   } catch (error: any) {
     console.error('Login error:', error);
+    toast.error(error.message || "Internal server error");
     return res.status(500).json({
       message: error.message || 'Internal server error'
     });

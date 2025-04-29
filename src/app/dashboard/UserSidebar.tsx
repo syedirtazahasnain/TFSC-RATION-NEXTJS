@@ -21,21 +21,24 @@ export default function UserSidebar() {
       </div>
       
       <nav className="space-y-2">
-        {navItems.map((item) => (
-          <Link
-            key={item.name}
-            href={item.href}
-            className={`flex items-center p-3 rounded-lg transition-colors ${
-              pathname === item.href
-                ? 'bg-blue-700 text-white'
-                : 'hover:bg-gray-700 text-gray-300'
-            }`}
-          >
-            <item.icon className="mr-3" />
-            <span>{item.name}</span>
-          </Link>
-        ))}
-      </nav>
+  {navItems.map((item) => (
+    <Link
+      key={item.name}
+      href={item.href}
+    >
+      <a
+        className={`flex items-center p-3 rounded-lg transition-colors ${
+          pathname === item.href
+            ? 'bg-blue-700 text-white'
+            : 'hover:bg-gray-700 text-gray-300'
+        }`}
+      >
+        <item.icon className="mr-3" />
+        <span>{item.name}</span>
+      </a>
+    </Link>
+  ))}
+</nav>
     </div>
   );
 }

@@ -6,8 +6,9 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Order } from "@/types";
 import Header from '@/app/_components/Header';
-
-
+import { toast } from "react-toastify";
+import ErrorMessage from "@/app/_components/error/index";
+import Loader from "@/app/_components/loader/index";
 interface PaginatedOrders {
   data: Order[];
   current_page: number;
@@ -38,14 +39,14 @@ export default function OrdersPage() {
           return;
         }
 
-        const response = await fetch(`http://household.test/api/orders?page=${currentPage}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/orders?page=${currentPage}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
         if (!response.ok) {
-          throw new Error('Failed to fetch orders');
+          toast.error('Failed to fetch orders');
         }
 
         const data = await response.json();
@@ -60,13 +61,25 @@ export default function OrdersPage() {
     fetchOrders();
   }, [currentPage, router]);
 
-  if (loading) return <div className="container mx-auto p-4">Loading...</div>;
-  if (error) return <div className="container mx-auto p-4 text-red-500">{error}</div>;
-  if (!orders?.data.length) return <div className="container mx-auto p-4">No orders found</div>;
+  if (loading) {
+    return (
+      <Loader />
+    );
+  }
+
+  if (error) {
+    return (
+      <ErrorMessage error={error} />
+    );
+  }
+
+  if (!orders?.data.length) {
+    return <ErrorMessage error="No orders found" />;
+  }
 
   return (
-      <div className="container mx-auto p-4">
-        <Header />
+    <div className="container mx-auto p-4">
+      <Header />
       <h1 className="text-2xl font-bold mb-6">Your Orders</h1>
       <div className="space-y-4 mb-8">
         {orders.data.map((order) => (
@@ -78,11 +91,11 @@ export default function OrdersPage() {
                   Status: <span className="capitalize">{order.status}</span>
                 </p>
                 <p className="text-gray-600">
-                  Date: {new Date(order.created_at).toLocaleDateString()}
+                  Date: {order.created_at}
                 </p>
                 <p className="text-lg font-bold">Total: ${order.grand_total}</p>
               </div>
-              <Link href={`/dashboard/user/orders/${order.id}`} className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+              <Link href={`/dashboard/user/orders/${order.id}`} className="bg-[#2b3990] text-white px-4 py-2 rounded-lg hover:bg-[#00aeef]"
               >
                 View Details
               </Link>
@@ -95,7 +108,7 @@ export default function OrdersPage() {
       <div className="flex justify-center gap-2">
         {orders.links.map((link, index) => {
           if (link.url === null) return null;
-          
+
           const page = new URL(link.url).searchParams.get('page') || '1';
           const isActive = link.active;
           const isPrevious = link.label.includes('Previous');
@@ -105,13 +118,11 @@ export default function OrdersPage() {
             <Link
               key={index}
               href={`/orders?page=${page}`}
-              className={`px-4 py-2 rounded-lg border ${
-                isActive
-                  ? 'bg-blue-500 text-white border-blue-500'
-                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-              } ${
-                (isPrevious || isNext) ? 'font-semibold' : ''
-              }`}
+              className={`px-4 py-2 rounded-lg border ${isActive
+                ? 'bg-[#2b3990] text-white border-blue-500'
+                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                } ${(isPrevious || isNext) ? 'font-semibold' : ''
+                }`}
             >
               {isPrevious ? '«' : isNext ? '»' : link.label}
             </Link>
