@@ -58,7 +58,7 @@ export default function LoginPage() {
       setIsSubmitting(false);
     }
   };
-
+  
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f9f9f9]">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
@@ -113,12 +113,12 @@ export default function LoginPage() {
           
           <div className="text-center text-sm">
             <span className="text-gray-600">Don't have an account? </span>
-            <Link 
-              href="/signup" 
+            <button
+              onClick={() =>  router.push('/auth/signup')}
               className="text-blue-500 hover:text-blue-700 font-medium"
             >
               Sign up here
-            </Link>
+            </button>
           </div>
         </form>
       </div>
