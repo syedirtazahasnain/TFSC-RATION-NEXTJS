@@ -291,9 +291,7 @@ export default function Index() {
                     <button
                       type="button"
                       className={`px-[15px] bg-[#f9f9f9] text-[#000] py-2 rounded-lg hover:bg-[#000] hover:text-[#fff] transition`}
-                      onClick={() => {
-                        // Close the modal or cancel action
-                      }}
+                      onClick={() => setShowDialog(false)}
                     >
                       Cancel
                     </button>
