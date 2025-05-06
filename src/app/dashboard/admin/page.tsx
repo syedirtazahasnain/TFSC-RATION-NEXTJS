@@ -22,132 +22,110 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  PieChart,
-  Pie,
 } from "recharts";
-import {
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar,
-} from "recharts";
+import ErrorMessage from "@/app/_components/error/index";
+import Loader from "@/app/_components/loader/index";
 
-const data01 = [
-  {
-    name: "Jan",
-    Ration: 3000,
-    Cash: 1398,
-  },
-  {
-    name: "Feb",
-    Ration: 2000,
-    Cash: 9800,
-  },
-  {
-    name: "Mar",
-    Ration: 2780,
-    Cash: 3908,
-  },
-  {
-    name: "Apr",
-    Ration: 1890,
-    Cash: 4800,
-  },
-  {
-    name: "May",
-    Ration: 2390,
-    Cash: 3800,
-  },
-  {
-    name: "Jun",
-    Ration: 10490,
-    Cash: 2300,
-  },
-  {
-    name: "Jul",
-    Ration: 3490,
-    Cash: 4300,
-  },
-  {
-    name: "Aug",
-    Ration: 490,
-    Cash: 5300,
-  },
-  {
-    name: "Sep",
-    Ration: 3490,
-    Cash: 4300,
-  },
-  {
-    name: "Oct",
-    Ration: 7490,
-    Cash: 6300,
-  },
-  {
-    name: "Nov",
-    Ration: 3490,
-    Cash: 4300,
-  },
-  {
-    name: "Dec",
-    Ration: 13490,
-    Cash: 100,
-  },
-];
-
-const data = [
-  {
-    name: "Jan",
-    Orders: 0,
-  },
-  {
-    name: "Feb",
-    Orders: 500,
-  },
-  {
-    name: "Mar",
-    Orders: 1000,
-  },
-  {
-    name: "Apr",
-    Orders: 1580,
-  },
-  {
-    name: "May",
-    Orders: 1190,
-  },
-  {
-    name: "Jun",
-    Orders: 950,
-  },
-  {
-    name: "Jul",
-    Orders: 1490,
-  },
-  {
-    name: "Aug",
-    Orders: 2090,
-  },
-  {
-    name: "Sep",
-    Orders: 1090,
-  },
-  {
-    name: "Oct",
-    Orders: 3490,
-  },
-  {
-    name: "Nov",
-    Orders: 2490,
-  },
-  {
-    name: "Dec",
-    Orders: 90,
-  },
-];
+interface AdminDashboardData {
+  success: boolean;
+  status_code: number;
+  message: string;
+  data: {
+    total_users: number;
+    employee_ration_this_month: number;
+    employee_cash_this_month: number;
+    recent_orders: Array<{
+      order_no: number;
+      user_name: string;
+      grand_total: string;
+      discount: string;
+    }>;
+    top_users: Array<{
+      employee_name: string;
+      grand_total: number;
+    }>;
+    month_wise_ration: Array<{
+      month: string;
+      grand_total: string | number;
+    }>;
+  };
+}
 
 export default function AdminDashboard() {
+  const [dashboardData, setDashboardData] = useState<AdminDashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          router.push("/auth/login");
+          return;
+        }
+
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/dashboard-summary`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.message || "Failed to fetch dashboard data");
+        }
+
+        const data = await response.json();
+        setDashboardData(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, [router]);
+
+  // Prepare chart data from month_wise_ration
+  const prepareRationChartData = () => {
+    if (!dashboardData?.data?.month_wise_ration) return [];
+
+    return dashboardData.data.month_wise_ration.map(item => ({
+      name: item.month.split(" ")[0], // Get just the month name
+      Orders: typeof item.grand_total === 'string' ? parseFloat(item.grand_total) : item.grand_total,
+    }));
+  };
+
+  // Prepare recent orders data for table
+  const prepareRecentOrders = () => {
+    if (!dashboardData?.data?.recent_orders) return [];
+    
+    return dashboardData.data.recent_orders.map(order => ({
+      ...order,
+      employeeContribution: (parseFloat(order.grand_total) - parseFloat(order.discount)).toFixed(2),
+      companyContribution: order.discount,
+    }));
+  };
+
+  if (loading) {
+    return <Loader />;
+  }
+
+  if (error) {
+    return <ErrorMessage error={error} />;
+  }
+
+  if (!dashboardData) {
+    return <ErrorMessage error="No dashboard data available" />;
+  }
+
   return (
     <div className="min-h-screen flex gap-[20px] px-[20px] xl:px-[30px]">
       <div className="w-[15%] relative">
@@ -159,13 +137,16 @@ export default function AdminDashboard() {
           <Header />
         </div>
 
+        {/* Dashboard Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[10px] lg:gap-[15px] xl:gap-[20px]">
           <div className="bg-[#00aeef] bg-opacity-10 rounded-[15px] xl:rounded-[20px] p-[10px] lg:p-[15px] xl:p-[20px]">
             <div className="w-[50px] h-[50px] bg-[#fff] rounded-[15px] flex items-center justify-center">
               <AddShoppingCart />
             </div>
             <div className="mt-[10px] pl-[5px]">
-              <p className="my-0 text-[24px] font-semibold">20</p>
+              <p className="my-0 text-[24px] font-semibold">
+                {dashboardData.data.total_users}
+              </p>
               <p className="text-[12px] my-0">Total Users</p>
             </div>
           </div>
@@ -174,7 +155,9 @@ export default function AdminDashboard() {
               <AddShoppingCart />
             </div>
             <div className="mt-[10px] pl-[5px]">
-              <p className="my-0 text-[24px] font-semibold">15</p>
+              <p className="my-0 text-[24px] font-semibold">
+                {dashboardData.data.employee_ration_this_month}
+              </p>
               <p className="text-[12px] my-0">Total Ration Count</p>
             </div>
           </div>
@@ -183,7 +166,9 @@ export default function AdminDashboard() {
               <AddShoppingCart />
             </div>
             <div className="mt-[10px] pl-[5px]">
-              <p className="my-0 text-[24px] font-semibold">5</p>
+              <p className="my-0 text-[24px] font-semibold">
+                {dashboardData.data.employee_ration_this_month}
+              </p>
               <p className="text-[12px] my-0">
                 Employee Order Ration -{" "}
                 <span className="text-[10px]"> This Month</span>
@@ -195,7 +180,9 @@ export default function AdminDashboard() {
               <AddShoppingCart />
             </div>
             <div className="mt-[10px] pl-[5px]">
-              <p className="my-0 text-[24px] font-semibold">150</p>
+              <p className="my-0 text-[24px] font-semibold">
+                {dashboardData.data.employee_cash_this_month}
+              </p>
               <p className="text-[12px] my-0">
                 Employee Take Cash -{" "}
                 <span className="text-[10px]"> This Month</span>
@@ -204,7 +191,9 @@ export default function AdminDashboard() {
           </div>
         </div>
 
+        {/* Top Users and Month Sections */}
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-[10px] lg:gap-[15px] xl:gap-[20px]">
+          {/* Top Month */}
           <div className="bg-[#f9f9f9] rounded-[15px] xl:rounded-[20px] p-[10px] lg:p-[15px] xl:p-[20px]">
             <div className="pb-[10px] border-b-[1px]">
               <p className="my-0 text-[18px] font-semibold">Top Month</p>
@@ -213,21 +202,28 @@ export default function AdminDashboard() {
               </p>
             </div>
             <div className="py-[10px] flex items-center justify-between gap-[10px]">
-              <p className="text-[12px] my-0 opacity-60">Employee Name</p>
+              <p className="text-[12px] my-0 opacity-60">Month</p>
               <p className="text-[12px] my-0 opacity-60">Amount</p>
             </div>
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
-              <div
-                key={item}
-                className="flex items-center justify-between gap-[10px] py-[2px]"
-              >
-                <p className="text-[14px] my-0">January</p>
-                <p className="text-[14px] my-0">
-                  2445000 <span className="text-[10px]">Rs</span>
-                </p>
-              </div>
-            ))}
+            {dashboardData.data.month_wise_ration
+              .slice(0, 8)
+              .map((item, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between gap-[10px] py-[2px]"
+                >
+                  <p className="text-[14px] my-0">{item.month}</p>
+                  <p className="text-[14px] my-0">
+                    {typeof item.grand_total === 'string' 
+                      ? parseFloat(item.grand_total).toFixed(2) 
+                      : item.grand_total}{" "}
+                    <span className="text-[10px]">Rs</span>
+                  </p>
+                </div>
+              ))}
           </div>
+
+          {/* Top Users */}
           <div className="bg-[#f9f9f9] rounded-[15px] xl:rounded-[20px] p-[10px] lg:p-[15px] xl:p-[20px]">
             <div className="pb-[10px] border-b-[1px]">
               <p className="my-0 text-[18px] font-semibold">Top Users</p>
@@ -239,25 +235,29 @@ export default function AdminDashboard() {
               <p className="text-[12px] my-0 opacity-60">Employee Name</p>
               <p className="text-[12px] my-0 opacity-60">Amount</p>
             </div>
-            {[9, 10, 11, 12, 13, 14, 15, 16].map((item) => (
-              <div className="flex items-center justify-between gap-[10px] py-[2px]">
-                <p className="text-[14px] my-0">Gohar Ali</p>
+            {dashboardData.data.top_users.slice(0, 8).map((user, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between gap-[10px] py-[2px]"
+              >
+                <p className="text-[14px] my-0">{user.employee_name}</p>
                 <p className="text-[14px] my-0">
-                  24450 <span className="text-[10px]">Rs</span>
+                  {user.grand_total.toFixed(2)}{" "}
+                  <span className="text-[10px]">Rs</span>
                 </p>
               </div>
             ))}
           </div>
+
+          {/* Users Ration/Cash Chart */}
           <div className="bg-[#f9f9f9] rounded-[15px] xl:rounded-[20px] p-[10px] lg:p-[15px] xl:p-[20px] lg:col-span-2">
             <div className="pb-[10px] border-b-[1px]">
-              <p className="my-0 text-[18px] font-semibold">
-                Users Ration/Cash
-              </p>
+              <p className="my-0 text-[18px] font-semibold">Users Ration/Cash</p>
             </div>
             <div className="w-full h-[250px] mt-[20px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart
-                  data={data01}
+                  data={prepareRationChartData()}
                   margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
@@ -265,14 +265,16 @@ export default function AdminDashboard() {
                   <YAxis className="text-xs" />
                   <Tooltip />
                   <Legend />
-                  <Line type="monotone" dataKey="Ration" stroke="#00aeef" />
-                  <Line type="monotone" dataKey="Cash" stroke="#2b3990" />
+                  <Line type="monotone" dataKey="Orders" stroke="#00aeef" />
                 </LineChart>
               </ResponsiveContainer>
             </div>
           </div>
         </div>
+
+        {/* Ration Orders and Recent Orders */}
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-[10px] lg:gap-[15px] xl:gap-[20px]">
+          {/* Ration Orders Chart */}
           <div className="bg-[#f9f9f9] rounded-[15px] xl:rounded-[20px] p-[10px] lg:p-[15px] xl:p-[20px]">
             <div className="mb-[20px]">
               <p className="my-0 text-[24px] font-semibold">Ration Orders</p>
@@ -286,7 +288,7 @@ export default function AdminDashboard() {
                 <LineChart
                   width={500}
                   height={300}
-                  data={data}
+                  data={prepareRationChartData()}
                   margin={{
                     top: 5,
                     right: 30,
@@ -303,6 +305,8 @@ export default function AdminDashboard() {
               </ResponsiveContainer>
             </div>
           </div>
+
+          {/* Recent Orders Table */}
           <div className="bg-[#f9f9f9] rounded-[15px] xl:rounded-[20px] p-[10px] lg:p-[15px] xl:p-[20px] xl:col-span-2">
             <div className="mb-[20px]">
               <p className="my-0 text-[24px] font-semibold">Recent Order</p>
@@ -311,66 +315,68 @@ export default function AdminDashboard() {
               </p>
             </div>
             <div className="bg-[#fff] p-[10px] rounded-[15px] xl:rounded-[20px]">
-              <table className="w-full">
-                <thead className="uppercase">
-                  <tr className="">
-                    <th className="py-2 px-2 text-left rounded-l-xl bg-[#e0e0e0]">
-                      <p className="text-xs font-semibold">Order No.</p>
-                    </th>
-                    <th className="py-2 px-2 text-left bg-[#e0e0e0]">
-                      <p className="text-xs font-semibold">Emp Id</p>
-                    </th>
-                    <th className="py-2 px-2 text-left bg-[#e0e0e0]">
-                      <p className="text-xs font-semibold">Name</p>
-                    </th>
-                    <th className="py-2 px-2 text-left bg-[#e0e0e0]">
-                      <p className="text-xs font-semibold">
-                        Employee Contribution
-                      </p>
-                    </th>
-                    <th className="py-2 px-2 text-left bg-[#e0e0e0]">
-                      <p className="text-xs font-semibold">
-                        Company Contribution
-                      </p>
-                    </th>
-                    <th className="py-2 px-2 text-left rounded-r-xl bg-[#e0e0e0]">
-                      <p className="text-xs font-semibold">Status</p>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[1, 2, 3, 4, 5, 6, 7].map((item) => (
-                    <tr className="border-b">
-                      <td className="py-2 px-5">
-                        <p className="font-semibold text-sm">{1000 + item}</p>
-                      </td>
-                      <td className="py-2 px-2">
-                        <p className="text-sm">0179</p>
-                      </td>
-                      <td className="py-2 px-2">
-                        <p className="text-sm">Gohar Ali Jafri</p>
-                      </td>
-                      <td className="py-2 px-2">
-                        <p className="text-sm">
-                          14470 <span className="text-sm ml-[2px]">Rs</span>
+              {prepareRecentOrders().length > 0 ? (
+                <table className="w-full">
+                  <thead className="uppercase">
+                    <tr className="">
+                      <th className="py-2 px-2 text-left rounded-l-xl bg-[#e0e0e0]">
+                        <p className="text-xs font-semibold">Order No.</p>
+                      </th>
+                      <th className="py-2 px-2 text-left bg-[#e0e0e0]">
+                        <p className="text-xs font-semibold">Name</p>
+                      </th>
+                      <th className="py-2 px-2 text-left bg-[#e0e0e0]">
+                        <p className="text-xs font-semibold">
+                          Employee Contribution
                         </p>
-                      </td>
-                      <td className="py-2 px-2">
-                        <p className="text-sm">
-                          10000 <span className="text-sm ml-[2px]">Rs</span>
+                      </th>
+                      <th className="py-2 px-2 text-left bg-[#e0e0e0]">
+                        <p className="text-xs font-semibold">
+                          Company Contribution
                         </p>
-                      </td>
-                      <td className="flex items-center mt-[6px] ml-[10px]">
-                        <div className="px-4 py-1 text-xs bg-orange-100 rounded-[10px]">
-                          <p className="my-0 text-orange-800 uppercase">
-                            Pending
-                          </p>
-                        </div>
-                      </td>
+                      </th>
+                      <th className="py-2 px-2 text-left rounded-r-xl bg-[#e0e0e0]">
+                        <p className="text-xs font-semibold">Status</p>
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {prepareRecentOrders().map((order, index) => (
+                      <tr key={index} className="border-b">
+                        <td className="py-2 px-5">
+                          <p className="font-semibold text-sm">{order.order_no}</p>
+                        </td>
+                        <td className="py-2 px-2">
+                          <p className="text-sm">{order.user_name}</p>
+                        </td>
+                        <td className="py-2 px-2">
+                          <p className="text-sm">
+                            {order.employeeContribution}{" "}
+                            <span className="text-sm ml-[2px]">Rs</span>
+                          </p>
+                        </td>
+                        <td className="py-2 px-2">
+                          <p className="text-sm">
+                            {order.discount}{" "}
+                            <span className="text-sm ml-[2px]">Rs</span>
+                          </p>
+                        </td>
+                        <td className="flex items-center mt-[6px] ml-[10px]">
+                          <div className="px-4 py-1 text-xs bg-orange-100 rounded-[10px]">
+                            <p className="my-0 text-orange-800 uppercase">
+                              Pending
+                            </p>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <div className="p-4 text-center text-gray-500">
+                  No recent orders available
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -378,9 +384,3 @@ export default function AdminDashboard() {
     </div>
   );
 }
-
-// export default function AdminDashboard() {
-//     return (
-//         <div>Admin</div>
-//     );
-// }
