@@ -55,44 +55,79 @@ export default function Page() {
     });
     const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [searchParams, setSearchParams] = useState({
+        emp_id: "",
+        name: ""
+    });
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const currentPage = searchParams.get('page') || '1';
+    const urlSearchParams = useSearchParams();
+    const currentPage = urlSearchParams.get('page') || '1';
+
+    const fetchUsers = async (searchPayload = null) => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                router.push('/auth/login');
+                return;
+            }
+
+            let url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/users/all?page=${currentPage}`;
+            if (searchPayload) {
+                url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/users/all`;
+            }
+            const response = await fetch(url, {
+                method: searchPayload ? 'POST' : 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: searchPayload ? JSON.stringify(searchPayload) : null,
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch users');
+            }
+
+            const data = await response.json();
+            setUsers(data.data);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to load users');
+            toast.error(err instanceof Error ? err.message : 'Failed to load users');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    router.push('/auth/login');
-                    return;
-                }
-
-                const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/users/all?page=${currentPage}`,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    }
-                );
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch users');
-                }
-
-                const data = await response.json();
-                setUsers(data.data);
-            } catch (err) {
-                setError(err instanceof Error ? err.message : 'Failed to load users');
-                toast.error(err instanceof Error ? err.message : 'Failed to load users');
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchUsers();
     }, [currentPage, router]);
+
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setSearchParams(prev => ({ ...prev, [name]: value }));
+    };
+    const handleSearch = () => {
+        setLoading(true);
+        const splitAndTrim = (input: string) =>
+            input
+                .split(',')
+                .map(s => s.trim())
+                .filter(Boolean);
+        const payload = {
+            emp_id: searchParams.emp_id ? splitAndTrim(searchParams.emp_id) : [],
+            name: searchParams.name ? splitAndTrim(searchParams.name) : []
+        };
+    
+        fetchUsers(payload);
+    };
+    const handleClearSearch = () => {
+        setSearchParams({
+            emp_id: "",
+            name: ""
+        });
+        setLoading(true);
+        fetchUsers();
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -217,65 +252,93 @@ export default function Page() {
 
                 <div>
                     <div className='flex gap-2'>
-                        <Input type="text"
+                        <Input 
+                            type="text"
+                            name="emp_id"
+                            value={searchParams.emp_id}
+                            onChange={handleSearchChange}
                             className="max-w-xs"
                             label="Search Employee ID"
                             classNames={{
                                 inputWrapper: "bg-white border-2 text-xs"
-                            }} />
-                        <Input type="text"
+                            }} 
+                        />
+                        <Input 
+                            type="text"
+                            name="name"
+                            value={searchParams.name}
+                            onChange={handleSearchChange}
                             className="max-w-xs"
                             label="Search Employee Name"
                             classNames={{
                                 inputWrapper: "bg-white border-2 text-xs"
-                            }} />
-                        <div className='shadow-sm border-[2px] rounded-[10px] flex items-center justify-center hover:bg-[#2b3990] hover:text-[#fff] transition-all duration-300 ease-in-out hover:border-[#2b3990]'>
+                            }} 
+                        />
+                        <div 
+                            onClick={handleSearch}
+                            className='shadow-sm border-[2px] rounded-[10px] flex items-center justify-center hover:bg-[#2b3990] hover:text-[#fff] transition-all duration-300 ease-in-out hover:border-[#2b3990] cursor-pointer'
+                        >
                             <button className="text-xs uppercase px-4 rounded-[10px] flex items-center gap-2">
                                 Search
                             </button>
                         </div>
+                        {(searchParams.emp_id || searchParams.name) && (
+                            <div 
+                                onClick={handleClearSearch}
+                                className='shadow-sm border-[2px] rounded-[10px] flex items-center justify-center hover:bg-gray-500 hover:text-[#fff] transition-all duration-300 ease-in-out hover:border-gray-500 cursor-pointer'
+                            >
+                                <button className="text-xs uppercase px-4 rounded-[10px] flex items-center gap-2">
+                                    Clear
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[10px] xl:gap-[15px]">
-                    {users?.data.map((user) => (
-                        <div
-                            key={user.id}
-                            className="rounded-[20px] overflow-hidden bg-[#f9f9f9] p-[10px] md:p-[15px] xl:p-[20px] relative"
-                        >
-                            <div className="flex gap-[10px] xl:gap-[20px]">
-                                <div>
-                                    <div className="w-[60px] h-[60px] rounded-full flex justify-center items-center overflow-hidden bg-gray-200">
-                                        <img
-                                            src="/images/logo/irtaza.webp"
-                                            alt="User Avatar"
-                                            className="w-full h-full object-cover"
-                                        />
+                {users?.data.length === 0 ? (
+                    <div className="text-center py-10">
+                        <p className="text-gray-500">No employees found matching your search criteria.</p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[10px] xl:gap-[15px]">
+                        {users?.data.map((user) => (
+                            <div
+                                key={user.id}
+                                className="rounded-[20px] overflow-hidden bg-[#f9f9f9] p-[10px] md:p-[15px] xl:p-[20px] relative"
+                            >
+                                <div className="flex gap-[10px] xl:gap-[20px]">
+                                    <div>
+                                        <div className="w-[60px] h-[60px] rounded-full flex justify-center items-center overflow-hidden bg-gray-200">
+                                            <img
+                                                src="/images/logo/irtaza.webp"
+                                                alt="User Avatar"
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </div>
                                     </div>
+                                    <div>
+                                        <p className="text-[14px] my-0 leading-none px-[10px] bg-[#2b3990] rounded-[10px] inline text-[#fff]">
+                                            {user.emp_id || String(user.id).padStart(4, "0")}
+                                        </p>
+                                        <p className="capitalize font-semibold text-[18px] my-1 leading-none">
+                                            {user.name}
+                                        </p>
+                                        <p className="text-[14px] my-0">{user.email}</p>
+                                        <p className="text-[12px] my-0 capitalize">
+                                            Status: {user.status.toLowerCase()}
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={() => handleEdit(user)}
+                                        className="absolute top-[10px] right-[10px] text-gray-700 hover:text-[#00aeef]"
+                                    >
+                                        <p className='my-0 px-[10px] bg-[#00aeef] text-[#fff] rounded text-xs uppercase'>Edit</p>
+                                    </button>
                                 </div>
-                                <div>
-                                    <p className="text-[14px] my-0 leading-none px-[10px] bg-[#2b3990] rounded-[10px] inline text-[#fff]">
-                                        {String(user.id).padStart(4, "0")}
-                                    </p>
-                                    <p className="capitalize font-semibold text-[18px] my-1 leading-none">
-                                        {user.name}
-                                    </p>
-                                    <p className="text-[14px] my-0">{user.email}</p>
-                                    <p className="text-[12px] my-0 capitalize">
-                                        Status: {user.status.toLowerCase()}
-                                    </p>
-                                </div>
-                                <button
-                                    onClick={() => handleEdit(user)}
-                                    className="absolute top-[10px] right-[10px] text-gray-700 hover:text-[#00aeef]"
-                                >
-                                    <p className='my-0 px-[10px] bg-[#00aeef] text-[#fff] rounded text-xs uppercase'>Edit</p>
-                                </button>
                             </div>
-                        </div>
-                    ))}
-                </div>
-
+                        ))}
+                    </div>
+                )}
                 {users && users.links.length > 0 && (
                     <div className="flex justify-center gap-2 mt-6">
                         {users.links.map((link, index) => {

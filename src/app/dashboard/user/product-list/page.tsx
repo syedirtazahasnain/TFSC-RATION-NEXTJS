@@ -356,10 +356,8 @@ export default function ProductListPage() {
       alert("Quantity must be greater than 0.");
       return;
     }
-
-    // Optimistically update local state first
     updateLocalQuantity(productId, quantity);
-
+  
     let updatedCart;
     if (itemId) {
       updatedCart = cart.map((item) =>
@@ -372,17 +370,15 @@ export default function ProductListPage() {
           item.product_id === productId ? { ...item, quantity } : item
         );
       } else {
-        // ✅ Get the full product info
         const product = allProducts.find((p) => p.id === productId);
-
         if (!product) {
           console.error("Product not found");
           return;
         }
-
+  
         const unit_price = product.price;
         const total = unit_price * quantity;
-
+  
         const newItem: CartItem = {
           product_id: productId,
           quantity,
@@ -390,15 +386,14 @@ export default function ProductListPage() {
           total,
           product,
         };
-
+  
         updatedCart = [...cart, newItem];
       }
     }
-
     setCart(updatedCart);
+  
     await syncCartWithBackend(updatedCart);
   };
-
   // Update local quantity state
   const updateLocalQuantity = (productId: number, value: number) => {
     setLocalQuantities((prev) => ({
