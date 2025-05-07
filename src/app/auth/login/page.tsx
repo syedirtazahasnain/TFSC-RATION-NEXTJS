@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // Import useEffect
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -10,6 +10,11 @@ export default function LoginPage() {
   const [error, setError] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+
+  // Clear localStorage when component mounts
+  useEffect(() => {
+    localStorage.clear();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,13 +49,11 @@ export default function LoginPage() {
       // Success case
       localStorage.setItem('token', data.data.token);
       localStorage.setItem('user', JSON.stringify(data.data.user));
-      // router.push('/product-list');
-      localStorage.setItem('userRole',data.data.role);
+      localStorage.setItem('userRole', data.data.role);
       if (data.data.role === 'admin' || data.data.role === 'superadmin') {
         router.push('/dashboard/admin');
       } else {
         router.push('/dashboard/user/product-list');
-        // router.push('/user/dashboard');
       }
     } catch (err) {
       setError('Network error. Please check your connection and try again.');
