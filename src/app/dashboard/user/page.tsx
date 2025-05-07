@@ -29,6 +29,7 @@ interface DashboardSummary {
   data: {
     total_ration_count: number;
     total_cash_count: number;
+    total_months_count: number;
     current_month_status: string;
     last_two_months: Array<{
       sr_no: number;
@@ -172,7 +173,7 @@ export default function UserDashboard({ my_role }: UserData) {
             </div>
             <div className="mt-[10px] pl-[5px]">
               <p className="my-0 text-[24px] font-semibold">
-                {dashboardData?.data ? dashboardData.data.total_ration_count + dashboardData.data.total_cash_count : 0}
+                {dashboardData?.data ? dashboardData.data.total_ration_count + dashboardData.data.total_months_count : 0}
               </p>
               <p className="text-[12px] my-0">Total Months</p>
             </div>

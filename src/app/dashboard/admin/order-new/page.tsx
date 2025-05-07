@@ -204,7 +204,7 @@ export default function OrdersPage() {
                   </div>
                   <div>
                     <p className='text-xs my-0 uppercase leading-none'>{order.user.emp_id}</p>
-                    <p className='font-semibold text-[15px] my-0 leading-none'>Gohar Ali</p>
+                    <p className='font-semibold text-[15px] my-0 leading-none'>{order.user.name}</p>
                     <p className='text-xs my-0 uppercase'>{order.order_number}</p>
                   </div>
                 </div>
@@ -223,7 +223,7 @@ export default function OrdersPage() {
                     <div className='grid grid-cols-1 gap-[10px] md:border-r-[1px]'>
                       <div>
                         <p className='my-0 text-xs'>Name</p>
-                        <p className='my-0 text-lg font-semibold'>Gohar Ali</p>
+                        <p className='my-0 text-lg font-semibold'>{selectedOrder.user.name}</p>
                       </div>
                       <div>
                         <p className='my-0 text-xs'>Order No</p>
