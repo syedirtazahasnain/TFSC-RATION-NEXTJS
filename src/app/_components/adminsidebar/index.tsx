@@ -262,6 +262,7 @@ export default function Index() {
                     
                     if (data.success) {
                       toast.success(data.message || "Order Date Updated Successfully");
+                      setShowDialog(false);
                     } else {
                       if (data.errors) {
                         Object.values(data.errors).forEach(errors => {
