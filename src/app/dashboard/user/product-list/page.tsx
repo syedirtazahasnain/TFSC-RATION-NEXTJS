@@ -611,7 +611,7 @@ export default function ProductListPage() {
                       const cartItem = cart.find(
                         (item) => item.product_id === product.id
                       );
-                      const quantity = localQuantities[product.id] || 1;
+                      const quantity = localQuantities[product.id] || 0;
 
                       return (
                         <div
@@ -648,7 +648,7 @@ export default function ProductListPage() {
                               </p>
                               <p className="my-0 text-sm font-semibold">{product?.measure ?? "Unit"}</p>
                             </div>
-                            <div className="absolute bottom-2 left-2">
+                            {/* <div className="absolute bottom-2 left-2">
                               <div className="grid grid-cols-2 gap-[10px]">
                                 <div className="flex items-center relative">
                                   <p className="text-sm ml-[3px] my-0">x</p>
@@ -700,6 +700,22 @@ export default function ProductListPage() {
                                     </div>
                                   </button>
                                 </div>
+                              </div>
+                            </div> */}
+                            <div className="absolute bottom-2 left-0 w-full">
+                              <div className="w-full px-[10px]">
+                                <button
+                                  onClick={() => {
+                                    const newQty = quantity + 1;
+                                    updateLocalQuantity(product.id, newQty);
+                                    addToCart(product.id, newQty);
+                                  }}
+                                  className="py-[5px] bg-[#2b3990] text-[10px] rounded-[5px] text-[#fff] font-semibold w-full"
+                                >
+                                  <div className="flex items-center justify-center">
+                                    <p className="text-center my-0">Add To Cart</p>
+                                  </div>
+                                </button>
                               </div>
                             </div>
                           </div>
@@ -861,7 +877,18 @@ export default function ProductListPage() {
 
                                           try {
                                             await addToCart(item.product_id, newQty, item.id);
-                                            setCart(updatedCart);
+                                            // setCart(updatedCart);
+                                            setCart(
+                                              updatedCart.map((cartItem) =>
+                                                cartItem.id === item.id
+                                                  ? {
+                                                      ...cartItem,
+                                                      quantity: newQty,
+                                                      total: (cartItem.product?.price || 0) * newQty,
+                                                    }
+                                                  : cartItem
+                                              )
+                                            );
                                           } catch (error) {
                                             toast.error("Failed to update quantity");
                                           }
