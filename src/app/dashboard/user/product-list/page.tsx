@@ -454,6 +454,7 @@ export default function ProductListPage() {
         {
           method: "DELETE",
           headers: {
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         }
@@ -469,8 +470,8 @@ export default function ProductListPage() {
       setCart([]);
       setCartData(null);
       setLocalQuantities({});
-      toast.success("Cart cleared Successfully!");
-      setApiResponse("Cart cleared successfully");
+      toast.success(data.message || "Cart cleared Successfully!");
+      setApiResponse(data.message ||"Cart cleared successfully");
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to clear cart";
