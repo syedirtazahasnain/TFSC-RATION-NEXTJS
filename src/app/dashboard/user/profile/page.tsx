@@ -17,6 +17,7 @@ interface UserData {
   my_role: string;
   role?: string;
   created_at: string;
+  doj: string;
   updated_at: string;
 }
 
@@ -407,7 +408,7 @@ export default function page({ my_role }: UserData) {
                       Phone
                     </p>
                     <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                      +09 363 398 46
+                      +92 000 000 00
                     </p>
                   </div>
 
@@ -424,7 +425,7 @@ export default function page({ my_role }: UserData) {
                       Member Since
                     </p>
                     <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                      {user.created_at}
+                      {user.doj}
                     </p>
                   </div>
                 </div>
