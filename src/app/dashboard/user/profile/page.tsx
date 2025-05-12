@@ -15,9 +15,11 @@ interface UserData {
   name: string;
   email: string;
   my_role: string;
+  emp_id: string;
   role?: string;
   created_at: string;
   doj: string;
+  location: string;
   updated_at: string;
 }
 
@@ -378,7 +380,7 @@ export default function page({ my_role }: UserData) {
                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
                   <div>
                     <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                      First Name
+                      Name
                     </p>
                     <p className="text-sm font-medium text-gray-800 dark:text-white/90">
                       {user.name}
@@ -387,10 +389,10 @@ export default function page({ my_role }: UserData) {
 
                   <div>
                     <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                      Last Name
+                      Location
                     </p>
                     <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                      {user.name}
+                      {user.location}
                     </p>
                   </div>
 
@@ -408,7 +410,7 @@ export default function page({ my_role }: UserData) {
                       Phone
                     </p>
                     <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                      +92 000 000 00
+                      +92 123 456 78
                     </p>
                   </div>
 
@@ -417,7 +419,7 @@ export default function page({ my_role }: UserData) {
                       Bio
                     </p>
                     <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                      {user.my_role}
+                      {user.emp_id}
                     </p>
                   </div>
                   <div>
