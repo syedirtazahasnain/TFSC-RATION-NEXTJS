@@ -416,7 +416,7 @@ export default function page({ my_role }: UserData) {
 
                   <div>
                     <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                      Bio
+                      Employee Id
                     </p>
                     <p className="text-sm font-medium text-gray-800 dark:text-white/90">
                       {user.emp_id}
