@@ -49,6 +49,18 @@ export default function Index() {
     }
   }, []);
 
+  const getProfileRoute = () => {
+    return userDetails.role.toLowerCase() === "admin" 
+      ? "/dashboard/admin/profile" 
+      : "/dashboard/user/profile";
+  };
+
+  const getPasswordRoute = () => {
+    return userDetails.role.toLowerCase() === "admin" 
+      ? "/dashboard/admin/update-password" 
+      : "/dashboard/user/update-password";
+  };
+
   const handleLogout = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -117,7 +129,7 @@ export default function Index() {
 
             <div className="flex flex-col gap-[5px]">
               <Link
-                href="/dashboard/user/profile"
+                href={getProfileRoute()}
                 className="flex gap-[10px] items-center rounded-[10px] hover:bg-[#e0e0e0] px-[5px] py-[4px] transition-all cursor-pointer"
                 onClick={() => setIsMenuOpen(false)}
               >
@@ -126,7 +138,7 @@ export default function Index() {
               </Link>
 
               <Link
-                href="/dashboard/user/update-password"
+                href={getPasswordRoute()}
                 className="flex gap-[10px] items-center rounded-[10px] hover:bg-[#e0e0e0] px-[5px] py-[4px] transition-all cursor-pointer"
                 onClick={() => setIsMenuOpen(false)}
               >

@@ -298,10 +298,9 @@ export default function ProductFormPage({ productId }: ProductFormProps) {
           <Textarea
             name="detail"
             className="w-full"
-            label="Product Image"
+            label="Product Detail"
             value={product.detail}
             onChange={handleChange}
-            accept="image/*"
             classNames={{
               inputWrapper: "",
             }}
