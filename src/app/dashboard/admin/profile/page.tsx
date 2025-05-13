@@ -6,17 +6,20 @@ import Sidebar from "@/app/_components/adminsidebar/index";
 import Breadcrumb from "@/app/_components/ui/Breadcrumb";
 import Image from "next/image";
 import Header from "@/app/_components/adminheader/index";
+import { toast } from "react-toastify";
 import ErrorMessage from "@/app/_components/error/index";
 import Loader from "@/app/_components/loader/index";
-import { toast } from "react-toastify";
 
 interface UserData {
   id: number;
   name: string;
   email: string;
   my_role: string;
+  emp_id: string;
   role?: string;
   created_at: string;
+  doj: string;
+  location: string;
   updated_at: string;
 }
 
@@ -249,14 +252,15 @@ export default function page({ my_role }: UserData) {
 
   if (error) {
     return (
-      <ErrorMessage error={error} />
+      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+        {error}
+      </div>
     );
   }
 
   if (!user) {
-    return <ErrorMessage error="User not found. Please check the ID or try again later." />;
+    return <div className="text-gray-500">No user data available</div>;
   }
-
 
   return (
     <div className="min-h-screen flex gap-[20px] px-[20px] xl:px-[30px]">
@@ -376,7 +380,7 @@ export default function page({ my_role }: UserData) {
                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
                   <div>
                     <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                      First Name
+                      Name
                     </p>
                     <p className="text-sm font-medium text-gray-800 dark:text-white/90">
                       {user.name}
@@ -385,10 +389,10 @@ export default function page({ my_role }: UserData) {
 
                   <div>
                     <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                      Last Name
+                      Location
                     </p>
                     <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                      {user.name}
+                      {user.location}
                     </p>
                   </div>
 
@@ -406,16 +410,16 @@ export default function page({ my_role }: UserData) {
                       Phone
                     </p>
                     <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                      +09 363 398 46
+                      +92 123 456 78
                     </p>
                   </div>
 
                   <div>
                     <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                      Bio
+                      Employee Id
                     </p>
                     <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                      {user.my_role}
+                      {user.emp_id}
                     </p>
                   </div>
                   <div>
@@ -423,7 +427,7 @@ export default function page({ my_role }: UserData) {
                       Member Since
                     </p>
                     <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                      {user.created_at}
+                      {user.doj}
                     </p>
                   </div>
                 </div>
