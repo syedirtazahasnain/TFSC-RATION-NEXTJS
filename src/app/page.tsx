@@ -1,18 +1,21 @@
-import Link from 'next/link';
+"use client";
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      router.push("/dashboard/user");
+    } else {
+      router.push("/auth/login");
+    }
+  }, [router]);
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-blue-500 gap-8">
-      <h1 className="text-3xl font-bold text-white underline">
-        Welcome To TFSC Ration Application
-      </h1>
-      
-      <Link 
-        href="/auth/login" 
-        className="px-6 py-3 bg-white text-blue-600 rounded-lg font-medium hover:bg-gray-100 transition-colors"
-      >
-        Login
-      </Link>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#ffff] gap-8">
     </div>
   );
 }

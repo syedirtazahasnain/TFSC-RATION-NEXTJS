@@ -2,6 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from "react-toastify";
+import ErrorMessage from "@/app/_components/error/index";
+import Loader from "@/app/_components/loader/index";
 
 export default function SignupPage() {
   const [name, setName] = useState<string>('');
@@ -19,35 +22,37 @@ export default function SignupPage() {
 
     // Basic validation
     if (password !== passwordConfirmation) {
+      toast.error('Passwords do not match');
       setError('Passwords do not match');
       setIsLoading(false);
       return;
     }
 
     try {
-      const response = await fetch('http://household.test/api/register', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          name, 
-          email, 
+        body: JSON.stringify({
+          name,
+          email,
           password,
-          password_confirmation: passwordConfirmation 
+          password_confirmation: passwordConfirmation
         }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Registration failed. Please try again.');
+        toast.error(data.message || 'Registration failed. Please try again.');
       }
       localStorage.setItem('token', data.data.token);
       router.push('/product-list'); // Redirect to product list page
-      
+
     } catch (err: any) {
       console.error('Registration error:', err);
+      toast.error(err.message || 'An error occurred during registration. Please try again.');
       setError(err.message || 'An error occurred during registration. Please try again.');
     } finally {
       setIsLoading(false);
@@ -55,7 +60,7 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-[#f9f9f9]">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <h1 className="text-2xl font-bold mb-6 text-center">Sign Up</h1>
         {error && (
@@ -119,20 +124,14 @@ export default function SignupPage() {
               minLength={8}
             />
           </div>
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={isLoading}
-            className={`w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors
+            className={`w-full bg-[#2b3990] text-white py-2 rounded-lg hover:bg-[#00aeef] transition-colors
               ${isLoading ? 'opacity-75 cursor-not-allowed' : ''}`}
           >
             {isLoading ? (
-              <span className="flex items-center justify-center">
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Processing...
-              </span>
+              <Loader />
             ) : 'Sign Up'}
           </button>
         </form>

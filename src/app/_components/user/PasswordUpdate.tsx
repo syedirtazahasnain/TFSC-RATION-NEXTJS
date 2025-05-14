@@ -43,7 +43,7 @@ export default function PasswordUpdateForm() {
         return;
       }
 
-      const response = await fetch('http://household.test/api/password-update', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/password-update`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -164,7 +164,7 @@ export default function PasswordUpdateForm() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className={`w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition ${
+          className={`w-full bg-[#2b3990] text-white py-2 rounded-lg hover:bg-[#00aeef] transition ${
             isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
           }`}
         >

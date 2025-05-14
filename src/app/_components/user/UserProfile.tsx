@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from "react-toastify";
+import ErrorMessage from "@/app/_components/error/index";
+import Loader from "@/app/_components/loader/index";
 
 interface UserData {
   id: number;
@@ -53,7 +56,7 @@ function PasswordUpdateForm() {
         return;
       }
 
-      const response = await fetch('http://household.test/api/password-update', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/password-update`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -66,8 +69,10 @@ function PasswordUpdateForm() {
 
       if (!response.ok) {
         if (data.errors) {
+          toast.error(data.errors || "Failed to update password");
           setErrors(data.errors);
         } else {
+          toast.error(data.errors || "Failed to update password");
           setErrors({ general: [data.message || 'Failed to update password'] });
         }
         return;
@@ -81,7 +86,7 @@ function PasswordUpdateForm() {
         new_password: '',
         new_password_confirmation: ''
       });
-      
+
       // Optionally redirect or refresh user data
       router.refresh();
 
@@ -95,7 +100,7 @@ function PasswordUpdateForm() {
   return (
     <div className="mt-8 max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-6 text-center">Update Password</h2>
-      
+
       {successMessage && (
         <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
           {successMessage}
@@ -119,9 +124,8 @@ function PasswordUpdateForm() {
             name="current_password"
             value={formData.current_password}
             onChange={handleChange}
-            className={`w-full px-3 py-2 border rounded-lg ${
-              errors.current_password ? 'border-red-500' : 'border-gray-300'
-            }`}
+            className={`w-full px-3 py-2 border rounded-lg ${errors.current_password ? 'border-red-500' : 'border-gray-300'
+              }`}
           />
           {errors.current_password && (
             <div className="text-red-500 text-sm mt-1">
@@ -142,9 +146,8 @@ function PasswordUpdateForm() {
             name="new_password"
             value={formData.new_password}
             onChange={handleChange}
-            className={`w-full px-3 py-2 border rounded-lg ${
-              errors.new_password ? 'border-red-500' : 'border-gray-300'
-            }`}
+            className={`w-full px-3 py-2 border rounded-lg ${errors.new_password ? 'border-red-500' : 'border-gray-300'
+              }`}
           />
           {errors.new_password && (
             <div className="text-red-500 text-sm mt-1">
@@ -165,18 +168,16 @@ function PasswordUpdateForm() {
             name="new_password_confirmation"
             value={formData.new_password_confirmation}
             onChange={handleChange}
-            className={`w-full px-3 py-2 border rounded-lg ${
-              errors.new_password ? 'border-red-500' : 'border-gray-300'
-            }`}
+            className={`w-full px-3 py-2 border rounded-lg ${errors.new_password ? 'border-red-500' : 'border-gray-300'
+              }`}
           />
         </div>
 
         <button
           type="submit"
           disabled={isSubmitting}
-          className={`w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition ${
-            isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
-          }`}
+          className={`w-full bg-[#2b3990] text-white py-2 rounded-lg hover:bg-[#00aeef] transition ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
         >
           {isSubmitting ? 'Updating...' : 'Update Password'}
         </button>
@@ -186,7 +187,7 @@ function PasswordUpdateForm() {
 }
 
 // export default function UserProfile() {
-  export default function UserProfile({ my_role }: UserData) {
+export default function UserProfile({ my_role }: UserData) {
   const [user, setUser] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -201,7 +202,7 @@ function PasswordUpdateForm() {
           return;
         }
 
-        const response = await fetch('http://household.test/api/user-details', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/user-details`, {
           headers: {
             Authorization: `Bearer ${token}`,
             'Accept': 'application/json',
@@ -210,7 +211,7 @@ function PasswordUpdateForm() {
 
         if (!response.ok) {
           const data = await response.json();
-          throw new Error(data.message || 'Failed to fetch user details');
+          toast.error(data.message || 'Failed to fetch user details');
         }
 
         const data = await response.json();
@@ -227,9 +228,7 @@ function PasswordUpdateForm() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-20">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
+      <Loader />
     );
   }
 
@@ -266,13 +265,13 @@ function PasswordUpdateForm() {
           <div className="flex justify-between border-b pb-2">
             <span className="text-gray-600">Member since:</span>
             <span className="font-medium">
-              {new Date(user.created_at).toLocaleDateString()}
+              {user.created_at}
             </span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">Last updated:</span>
             <span className="font-medium">
-              {new Date(user.updated_at).toLocaleDateString()}
+              {user.updated_at}
             </span>
           </div>
         </div>

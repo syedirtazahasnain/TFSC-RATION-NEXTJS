@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // Import useEffect
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -11,13 +11,18 @@ export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
+  // Clear localStorage when component mounts
+  useEffect(() => {
+    localStorage.clear();
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('http://household.test/api/login', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -44,13 +49,11 @@ export default function LoginPage() {
       // Success case
       localStorage.setItem('token', data.data.token);
       localStorage.setItem('user', JSON.stringify(data.data.user));
-      // router.push('/product-list');
-      localStorage.setItem('userRole',data.data.role);
+      localStorage.setItem('userRole', data.data.role);
       if (data.data.role === 'admin' || data.data.role === 'superadmin') {
         router.push('/dashboard/admin');
       } else {
         router.push('/dashboard/user/product-list');
-        // router.push('/user/dashboard');
       }
     } catch (err) {
       setError('Network error. Please check your connection and try again.');
@@ -58,9 +61,9 @@ export default function LoginPage() {
       setIsSubmitting(false);
     }
   };
-
+  
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-[#f9f9f9]">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
         
@@ -105,7 +108,7 @@ export default function LoginPage() {
           <button 
             type="submit" 
             disabled={isSubmitting}
-            className={`w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 mb-4 transition-colors
+            className={`w-full bg-[#2b3990] text-white py-2 rounded-lg hover:bg-[#00aeef] mb-4 transition-colors
               ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
             {isSubmitting ? 'Logging in...' : 'Login'}
@@ -113,12 +116,12 @@ export default function LoginPage() {
           
           <div className="text-center text-sm">
             <span className="text-gray-600">Don't have an account? </span>
-            <Link 
-              href="/signup" 
+            <button
+              onClick={() =>  router.push('/auth/signup')}
               className="text-blue-500 hover:text-blue-700 font-medium"
             >
               Sign up here
-            </Link>
+            </button>
           </div>
         </form>
       </div>

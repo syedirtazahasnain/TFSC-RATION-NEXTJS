@@ -13,7 +13,7 @@ export default function UserLayout({
     <ProtectedRoute allowedRoles={['user']}>
       <Suspense fallback={<LoadingSpinner />}>
         <div className="flex min-h-screen">
-          <div className="flex-1 p-8">
+          <div className="flex-1">
             {children}
           </div>
         </div>
