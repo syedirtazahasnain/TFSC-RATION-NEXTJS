@@ -134,7 +134,7 @@ export default function Index() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 <AccountCircle />
-                <p className="my-0 text-[14px] leading-none">Edit Profile</p>
+                <p className="my-0 text-[14px] leading-none">View Profile</p>
               </Link>
 
               <Link
