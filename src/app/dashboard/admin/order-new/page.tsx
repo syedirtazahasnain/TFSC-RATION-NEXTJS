@@ -12,16 +12,23 @@ import Sidebar from "@/app/_components/adminsidebar/index";
 import Breadcrumb from "@/app/_components/ui/Breadcrumb";
 
 interface PaginatedOrders {
-  data: Order[];
   current_page: number;
+  data: Order[];
+  first_page_url: string;
+  from: number;
   last_page: number;
-  per_page: number;
-  total: number;
+  last_page_url: string;
   links: {
     url: string | null;
     label: string;
     active: boolean;
   }[];
+  next_page_url: string | null;
+  path: string;
+  per_page: number;
+  prev_page_url: string | null;
+  to: number;
+  total: number;
 }
 
 export default function OrdersPage() {
@@ -30,9 +37,9 @@ export default function OrdersPage() {
   const [error, setError] = useState('');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [searchEmpId, setSearchEmpId] = useState('');
-  const [dateRange, setDateRange] = useState<{start?: Date, end?: Date}>({});
+  const [dateRange, setDateRange] = useState<{ start?: Date, end?: Date }>({});
   const [isSearching, setIsSearching] = useState(false);
-  
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentPage = searchParams.get('page') || '1';
@@ -49,7 +56,7 @@ export default function OrdersPage() {
 
       const params = new URLSearchParams();
       params.append('page', page);
-      
+
       if (empIds.length > 0) {
         params.append('emp_id', empIds.join(','));
       }
@@ -77,7 +84,7 @@ export default function OrdersPage() {
 
       setOrders(data.data);
       setSelectedOrder(data.data?.data?.[0] ?? null);
-      
+
       if (data.data?.data?.length === 0) {
         toast.info(data.message || 'No orders found matching your criteria');
       }
@@ -91,6 +98,12 @@ export default function OrdersPage() {
     }
   };
 
+  const handlePageChange = (page: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('page', page.toString());
+    router.push(`?${params.toString()}`);
+  };
+
   const handleSearch = () => {
     const formatDate = (date) => {
       if (!date) return '';
@@ -98,10 +111,10 @@ export default function OrdersPage() {
       const pad = (n) => n.toString().padStart(2, '0');
       return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
     };
-    
+
     const startDate = formatDate(dateRange.start);
     const endDate = formatDate(dateRange.end);
-    
+
     const empIds = searchEmpId
       .split(/[, ]+/)
       .filter(id => id.trim() !== '')
@@ -134,15 +147,15 @@ export default function OrdersPage() {
 
         <div>
           <div className='flex gap-2'>
-            <Input 
-              type="text" 
-              placeholder="Search Emp ID (comma separated)..." 
+            <Input
+              type="text"
+              placeholder="Search Emp ID (comma separated)..."
               className="max-w-xs"
               value={searchEmpId}
               onChange={(e) => setSearchEmpId(e.target.value)}
               classNames={{
                 inputWrapper: "bg-white border-2"
-              }} 
+              }}
             />
             <DateRangePicker
               className="max-w-xs"
@@ -150,11 +163,11 @@ export default function OrdersPage() {
               onChange={setDateRange}
               classNames={{
                 inputWrapper: "bg-white border-2"
-              }} 
-              visibleMonths={2} 
+              }}
+              visibleMonths={2}
             />
             <div className='shadow-sm border-[2px] rounded-[10px] flex items-center justify-center hover:bg-[#2b3990] hover:text-[#fff] transition-all duration-300 ease-in-out hover:border-[#2b3990]'>
-              <button 
+              <button
                 className="text-xs uppercase px-4 rounded-[10px] flex items-center gap-2"
                 onClick={handleSearch}
                 disabled={isSearching}
@@ -164,7 +177,7 @@ export default function OrdersPage() {
             </div>
           </div>
           <div className='flex gap-2 mt-2'>
-            <button 
+            <button
               className="text-xs text-gray-600 hover:text-gray-800"
               onClick={clearFilters}
             >
@@ -200,7 +213,7 @@ export default function OrdersPage() {
                   className={`cursor-pointer bg-[#fff] p-[8px] rounded-[15px] flex items-center gap-[10px] hover:bg-blue-50 ${selectedOrder?.id === order.id ? 'border border-blue-500' : ''}`}
                 >
                   <div className='w-[45px] h-[45px] bg-[#2b3990] rounded-full flex items-center justify-center overflow-hidden'>
-                    <img src="/images/items/arial.png" alt="Item" />
+                    <img src="/images/logo/irtaza.webp" alt="Item" />
                   </div>
                   <div>
                     <p className='text-xs my-0 uppercase leading-none'>{order.user.emp_id}</p>
@@ -209,6 +222,51 @@ export default function OrdersPage() {
                   </div>
                 </div>
               ))}
+
+              {/* Pagination Controls */}
+              {orders.last_page > 1 && (
+                <div className="flex justify-center items-center mt-4">
+                  <nav className="flex items-center gap-2">
+                    {/* Previous Page */}
+                    <button
+                      onClick={() => handlePageChange(orders.current_page - 1)}
+                      disabled={!orders.prev_page_url}
+                      className={`px-3 py-1 rounded-md ${!orders.prev_page_url ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:bg-blue-100'}`}
+                    >
+                      &laquo; Previous
+                    </button>
+
+                    {/* Page Numbers */}
+                    {orders.links.map((link, index) => {
+                      if (link.url === null || link.label.includes('Previous') || link.label.includes('Next')) return null;
+
+                      const page = link.label === '...' ? 
+                        null : 
+                        parseInt(link.label);
+                      
+                      return (
+                        <button
+                          key={index}
+                          onClick={() => page && handlePageChange(page)}
+                          className={`px-3 py-1 rounded-md ${link.active ? 'bg-blue-600 text-white' : 'text-blue-600 hover:bg-blue-100'}`}
+                          disabled={!page}
+                        >
+                          {link.label}
+                        </button>
+                      );
+                    })}
+
+                    {/* Next Page */}
+                    <button
+                      onClick={() => handlePageChange(orders.current_page + 1)}
+                      disabled={!orders.next_page_url}
+                      className={`px-3 py-1 rounded-md ${!orders.next_page_url ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:bg-blue-100'}`}
+                    >
+                      Next &raquo;
+                    </button>
+                  </nav>
+                </div>
+              )}
             </div>
 
             {/* Right: Invoice Viewer */}
