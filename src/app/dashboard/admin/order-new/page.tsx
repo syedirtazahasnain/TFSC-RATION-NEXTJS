@@ -39,6 +39,7 @@ export default function OrdersPage() {
   const [searchEmpId, setSearchEmpId] = useState('');
   const [dateRange, setDateRange] = useState<{ start?: Date, end?: Date }>({});
   const [isSearching, setIsSearching] = useState(false);
+  const [isGeneratingReport, setIsGeneratingReport] = useState(false);
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -122,6 +123,40 @@ export default function OrdersPage() {
 
     fetchOrders('1', empIds, startDate, endDate);
   };
+  const generateOrderReport = async () => {
+    try {
+      setIsGeneratingReport(true);
+      const token = localStorage.getItem('token');
+      if (!token) {
+        router.push('/auth/login');
+        return;
+      }
+
+      const url = new URL(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/order/summary`);
+
+      const response = await fetch(url.toString(), {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to generate report');
+      }
+      if (data.success && data.data?.url) {
+        window.open(data.data.url, '_blank');
+        toast.success('Report generated successfully');
+      } else {
+        throw new Error(data.message || 'Unexpected response format');
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to generate report';
+      toast.error(msg);
+    } finally {
+      setIsGeneratingReport(false);
+    }
+  };
 
   const clearFilters = () => {
     setSearchEmpId('');
@@ -146,33 +181,45 @@ export default function OrdersPage() {
         </div>
 
         <div>
-          <div className='flex gap-2'>
-            <Input
-              type="text"
-              placeholder="Search Emp ID (comma separated)..."
-              className="max-w-xs"
-              value={searchEmpId}
-              onChange={(e) => setSearchEmpId(e.target.value)}
-              classNames={{
-                inputWrapper: "bg-white border-2"
-              }}
-            />
-            <DateRangePicker
-              className="max-w-xs"
-              value={dateRange}
-              onChange={setDateRange}
-              classNames={{
-                inputWrapper: "bg-white border-2"
-              }}
-              visibleMonths={2}
-            />
-            <div className='shadow-sm border-[2px] rounded-[10px] flex items-center justify-center hover:bg-[#2b3990] hover:text-[#fff] transition-all duration-300 ease-in-out hover:border-[#2b3990]'>
+          <div className='flex gap-2 justify-between items-center'>
+            <div className='flex gap-2'>
+              <Input
+                type="text"
+                placeholder="Search Emp ID (comma separated)..."
+                className="max-w-xs"
+                value={searchEmpId}
+                onChange={(e) => setSearchEmpId(e.target.value)}
+                classNames={{
+                  inputWrapper: "bg-white border-2"
+                }}
+              />
+              <DateRangePicker
+                className="max-w-xs"
+                value={dateRange}
+                onChange={setDateRange}
+                classNames={{
+                  inputWrapper: "bg-white border-2"
+                }}
+                visibleMonths={2}
+              />
+              <div className='shadow-sm border-[2px] rounded-[10px] flex items-center justify-center hover:bg-[#2b3990] hover:text-[#fff] transition-all duration-300 ease-in-out hover:border-[#2b3990]'>
+                <button
+                  className="text-xs uppercase px-4 rounded-[10px] flex items-center gap-2"
+                  onClick={handleSearch}
+                  disabled={isSearching}
+                >
+                  {isSearching ? 'Searching...' : 'Search'}
+                </button>
+              </div>
+            </div>
+            <div className='shadow-sm border-[2px] rounded-[10px] flex items-center justify-center bg-[#2b3990] hover:bg-[#1a2a7a] text-[#fff] transition-all duration-300 ease-in-out border-[#2b3990]'>
               <button
-                className="text-xs uppercase px-4 rounded-[10px] flex items-center gap-2"
-                onClick={handleSearch}
-                disabled={isSearching}
+                className="text-xs uppercase px-4 py-2 rounded-[10px] flex items-center gap-2"
+                onClick={generateOrderReport}
+                disabled={isGeneratingReport}
+                title="Download order report for the current month"
               >
-                {isSearching ? 'Searching...' : 'Search'}
+                {isGeneratingReport ? 'Generating...' : 'Order Report'}
               </button>
             </div>
           </div>
@@ -240,10 +287,10 @@ export default function OrdersPage() {
                     {orders.links.map((link, index) => {
                       if (link.url === null || link.label.includes('Previous') || link.label.includes('Next')) return null;
 
-                      const page = link.label === '...' ? 
-                        null : 
+                      const page = link.label === '...' ?
+                        null :
                         parseInt(link.label);
-                      
+
                       return (
                         <button
                           key={index}
