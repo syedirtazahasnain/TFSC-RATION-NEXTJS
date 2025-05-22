@@ -53,6 +53,7 @@ export default function ProductsPage() {
   const [isOpen, setIsOpen] = useState(false);
   const [currentProduct, setCurrentProduct] = useState<Product | null>(null);
   const [price, setPrice] = useState('');
+  const [orderUpdate, setOrderUpdate] = useState(false);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -129,7 +130,8 @@ export default function ProductsPage() {
             price: product.price,
             measure: product.measure,
             type: product.type,
-            status: newStatus
+            status: newStatus,
+            order_update: orderUpdate ? 1 : 0
           }),
         }
       );
@@ -185,7 +187,8 @@ export default function ProductsPage() {
             price: price,
             measure: currentProduct.measure,
             type: currentProduct.type,
-            status: currentProduct.status
+            status: currentProduct.status,
+            order_update: orderUpdate ? 1 : 0
           }),
         }
       );
@@ -214,6 +217,7 @@ export default function ProductsPage() {
       toast.success('Product price updated successfully');
       setIsOpen(false);
       setPrice('');
+      setOrderUpdate(false); 
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Failed to update price');
     }
@@ -334,9 +338,24 @@ export default function ProductsPage() {
                 min="0"
                 step="0.01"
               />
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="orderEffect"
+                  checked={orderUpdate}
+                  onChange={(e) => setOrderUpdate(e.target.checked)}
+                  className="h-4 w-4 rounded border-gray-300 text-[#2b3990] focus:ring-[#2b3990]"
+                />
+                <label htmlFor="orderEffect" className="ml-2 text-sm text-gray-700">
+                  Order Effect
+                </label>
+              </div>
               <div className="flex justify-end gap-2">
                 <button
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => {
+                    setIsOpen(false);
+                    setOrderUpdate(false); // Reset checkbox when closing
+                  }}
                   className="px-4 py-2 text-sm rounded-[10px] hover:text-[#fff] bg-gray-200 hover:bg-gray-800"
                 >
                   Cancel
